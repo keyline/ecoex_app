@@ -1,0 +1,20 @@
+export const Colors = {
+    theme_light: '#2DA952',
+    theme_color: '#2D7E19',
+    theme_morelight: '#f3f7f2',
+    blue: '#264CD4',
+    yellow: 'rgba(231, 157, 12, 0.91)',
+    red: 'rgba(231, 12, 12, 0.79)',
+    white: '#FFFFFF',
+    black: '#000000',
+    grey_morelight: '#F5F5F5',
+    grey: 'grey',
+    violet: '#7B509D',
+    light_grey: '#E3E3E3',
+    process: '#EEC73B',
+    process_morelight: '#faf8f0',
+    reject: '#EC6E6E',
+    reject_morelight: '#f7eded',
+    light_blue:'#484CA6',
+    purple:'#652763'
+}
