@@ -7,6 +7,7 @@ import { ToastError, ToastMessage } from '../../Service/CommonFunction';
 import { DrawerContentScrollView, DrawerItem } from '@react-navigation/drawer';
 import { Colors } from '../../Utils/Colors';
 import { styles } from '../styles';
+import Apis from '../../Service/Apis';
 
 const PlantCustomDrawer = (props) => {
 
@@ -19,7 +20,7 @@ const PlantCustomDrawer = (props) => {
         { id: 3, name: 'Process Request', screen: 'ProcessRequest', icon: ImagePath.home, logiReq: false },
         { id: 4, name: 'Complete Request', screen: 'CompleteRequest', icon: ImagePath.home, logiReq: false },
         { id: 5, name: 'Reject Request', screen: 'RejectRequest', icon: ImagePath.home, logiReq: false },
-        // { id: 4, name: 'Log Out', screen: 'LogOut', icon: ImagePath.logout, logiReq: true },
+        { id: 6, name: 'Log Out', screen: 'LogOut', icon: ImagePath.logout, logiReq: true },
     ]
 
     const Icon = ({ props, source }) => (
@@ -58,9 +59,18 @@ const PlantCustomDrawer = (props) => {
 
     const onSignOut = useCallback(async () => {
         try {
-            await context.onClearStoreData();
-            ToastMessage('SignOut Successfully')
+            let res = await Apis.sign_out();
+            if (__DEV__) {
+                console.log('SignOut', JSON.stringify(res))
+            }
+            if (res.success) {
+                await context.onClearStoreData();
+            }
+            ToastMessage(res?.message);
         } catch (error) {
+            if(__DEV__){
+                console.log(error)
+            }
             ToastError();
         }
     })

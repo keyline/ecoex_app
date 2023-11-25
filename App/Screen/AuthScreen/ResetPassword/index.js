@@ -80,7 +80,7 @@ const ResetPassword = ({ navigation, route }) => {
         } else if (password.length < 8) {
             setState(prev => ({
                 ...prev,
-                passwordErr: 'Pasword should be min 8 Characters'
+                passwordErr: 'Password length must be of min 8 Characters'
             }));
             return;
         } else if (cnfPassword.trim() == '') {
@@ -92,7 +92,7 @@ const ResetPassword = ({ navigation, route }) => {
         } else if (cnfPassword.length < 8) {
             setState(prev => ({
                 ...prev,
-                cnfPasswordErr: 'Confirm Pasword should be min 8 Characters'
+                cnfPasswordErr: 'Confirm Password length must be of min 8 Characters'
             }));
             return;
         } else if (password != cnfPassword) {

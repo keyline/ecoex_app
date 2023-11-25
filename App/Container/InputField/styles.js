@@ -15,7 +15,8 @@ export const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginTop: '2%',
         paddingHorizontal: '4%',
-        borderRadius: 5
+        borderRadius: 5,
+        borderColor:'red'
     },
     input: {
         fontFamily: Font_Family.NunitoSans_Regular,

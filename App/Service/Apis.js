@@ -26,6 +26,14 @@ export default class Apis {
         return Network('post', 'signup', data)
     }
 
+    static signup_otpresend = (data) => {
+        return Network('post', 'signup-otp-resend', data)
+    }
+
+    static signup_otpvalidate = (data) => {
+        return Network('post', 'signup-otp-verify', data)
+    }
+
     static forgot_password = (data) => {
         return Network('post', 'forgot-password', data)
     }
@@ -44,6 +52,14 @@ export default class Apis {
 
     static sign_in = (data) => {
         return Network('post', 'signin', data)
+    }
+
+    static signin_mobile = (data) => {
+        return Network('post', 'signin-with-mobile', data)
+    }
+
+    static signin_mobile_otpvalidate = (data) => {
+        return Network('post', 'signin-validate-mobile', data)
     }
 
     static sign_out = () => {

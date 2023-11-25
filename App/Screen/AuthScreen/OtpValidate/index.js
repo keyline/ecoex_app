@@ -10,6 +10,8 @@ import Button from '../../../Container/Button'
 import { ToastError, ToastMessage } from '../../../Service/CommonFunction'
 import Apis from '../../../Service/Apis'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
+import { setAccessToken, setUserData } from '../../../Service/AsyncStorage'
+import DeviceInfo from 'react-native-device-info'
 
 const OtpValidate = ({ navigation, route }) => {
 
@@ -19,6 +21,7 @@ const OtpValidate = ({ navigation, route }) => {
     const [state, setState] = useState({
         loading: false,
         btnLoading: false,
+        page: route?.params?.page,
         data: route?.params?.data,
         otp: '',
         otpErr: ''
@@ -61,12 +64,22 @@ const OtpValidate = ({ navigation, route }) => {
     const onResendOtp = useCallback(async () => {
         try {
             showLoading();
-            let datas = {
-                id: state.data?.id
-            }
-            let res = await Apis.resend_otp(datas)
-            if (__DEV__) {
-                console.log('ResendOtp', JSON.stringify(res))
+            if (state.page == 'login') {
+                let datas = {
+                    phone: state.data?.phone
+                }
+                var res = await Apis.signin_mobile(datas);
+                if (__DEV__) {
+                    console.log('loginOtpResend', JSON.stringify(res))
+                }
+            } else {
+                let datas = {
+                    id: state.data?.id
+                }
+                var res = await Apis.resend_otp(datas)
+                if (__DEV__) {
+                    console.log('ResendOtp', JSON.stringify(res))
+                }
             }
             if (res.success) {
                 setState(prev => ({
@@ -86,9 +99,7 @@ const OtpValidate = ({ navigation, route }) => {
     })
 
     const onSubmit = useCallback(async () => {
-        // navigation.replace('ResetPassword');
-        // return
-        const { otp, data } = state;
+        const { otp, data, page } = state;
         if (otp.trim() == '') {
             ToastMessage('Enter OTP');
             return;
@@ -101,16 +112,43 @@ const OtpValidate = ({ navigation, route }) => {
                     ...prev,
                     btnLoading: true
                 }))
-                let datas = {
-                    id: data?.id,
-                    otp: otp
-                }
-                let response = await Apis.validate_otp(datas);
-                if (__DEV__) {
-                    console.log('ValidateOtp', JSON.stringify(response))
-                }
-                if (response.success) {
-                    navigation.replace('ResetPassword', { data: response?.data });
+                if (page == 'login') {
+                    let deviceId = DeviceInfo.getDeviceId();
+                    let datas = {
+                        phone: state.data?.phone,
+                        otp: state.otp,
+                        device_token: deviceId,
+                        fcm_token: '',
+                    }
+                    var response = await Apis.signin_mobile_otpvalidate(datas)
+                    if (__DEV__) {
+                        console.log('loginOtpSubmit')
+                    }
+                    if (response.success) {
+                        let userdata = response?.data;
+                        let token = response?.data?.app_access_token
+                        await setUserData(userdata);
+                        await setAccessToken(token);
+                        // await context.onGetStoreData();
+                        await context.setState(prevState => ({
+                            ...prevState,
+                            userdata: userdata,
+                            accesstoken: token,
+                            isLogin: true
+                        }))
+                    }
+                } else {
+                    let datas = {
+                        id: data?.id,
+                        otp: otp
+                    }
+                    var response = await Apis.validate_otp(datas);
+                    if (__DEV__) {
+                        console.log('ValidateOtp', JSON.stringify(response))
+                    }
+                    if (response.success) {
+                        navigation.replace('ResetPassword', { data: response?.data });
+                    }
                 }
                 setState(prev => ({
                     ...prev,

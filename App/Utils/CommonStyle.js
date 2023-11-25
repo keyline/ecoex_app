@@ -43,6 +43,7 @@ export const CommonStyle = StyleSheet.create({
     errortxt: {
         color: 'red',
         fontFamily: Font_Family.NunitoSans_Italic,
+        fontSize:12,
         paddingLeft: 4
     },
 })

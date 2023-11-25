@@ -115,6 +115,9 @@ const Login = ({ navigation }) => {
         hideLoading();
         ToastMessage(response?.message);
       } catch (error) {
+        if (__DEV__) {
+          console.log(error)
+        }
         hideLoading();
         ToastError();
       }
@@ -123,6 +126,10 @@ const Login = ({ navigation }) => {
 
   const onForgotPassword = useCallback(async () => {
     navigation.navigate('ForgotPassword')
+  })
+
+  const onSignInMobile = useCallback(async () => {
+    navigation.navigate('LoginWithMobile')
   })
 
   const onSignUp = useCallback(async () => {
@@ -138,7 +145,7 @@ const Login = ({ navigation }) => {
         <View style={styles.bodyContent}>
           <View style={{ alignItems: 'center' }}>
             <Image source={ImagePath.logo} style={styles.logo} />
-            <Text style={CommonStyle.headingText}>Login Here</Text>
+            <Text style={CommonStyle.headingText}>Sign In Here</Text>
           </View>
           <InputField
             name={'Email'}
@@ -160,6 +167,13 @@ const Login = ({ navigation }) => {
             name={'Sign In'}
             onPress={onSubmit}
             loading={state.loading}
+            width={'80%'}
+          />
+          <Text style={[CommonStyle.boldblacktext, { textAlign: 'center' }]}>OR</Text>
+          <Button
+            name={'Sign In With Mobile'}
+            onPress={onSignInMobile}
+            loading={false}
             width={'80%'}
           />
           <Text style={styles.btmText}>Not yet registered ? <Text onPress={onSignUp} style={CommonStyle.boldtext}>Create an account</Text></Text>

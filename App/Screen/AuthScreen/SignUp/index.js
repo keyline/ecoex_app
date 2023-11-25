@@ -14,14 +14,18 @@ import { useFocusEffect } from '@react-navigation/native'
 import Loader from '../../../Container/Loader'
 import Modal from 'react-native-modal';
 import OTPInputView from '@twotalltotems/react-native-otp-input'
+import LoaderTransparent from '../../../Container/LoaderTransparent'
+import { isValidEmail, isValidMobile } from '../../../Service/Valid'
 
 const SignUp = ({ navigation }) => {
 
     const [state, setState] = useState({
         loading: false,
         btnLoading: false,
+        loadingNew: false,
         gstNo: '',
         gstNoErr: '',
+        companyDetails: null,
         companyName: '',
         companyNameErr: '',
         plantAddress: '',
@@ -41,7 +45,8 @@ const SignUp = ({ navigation }) => {
         checkBoxValue: false,
         modalVisible: false,
         mobileOTP: '',
-        emailOTP: ''
+        emailOTP: '',
+        signupResponse: null
     })
 
     const [memberPicker, setmemberPicker] = useState(false)
@@ -99,7 +104,6 @@ const SignUp = ({ navigation }) => {
             } else {
                 ToastMessage(res?.message);
             }
-            // onGetProductCategory();
             hideLoading();
         } catch (error) {
             if (__DEV__) {
@@ -110,36 +114,12 @@ const SignUp = ({ navigation }) => {
         }
     })
 
-    // const onGetProductCategory = useCallback(async () => {
-    //     try {
-    //         // showLoading();
-    //         let res = await Apis.product_category();
-    //         if (__DEV__) {
-    //             console.log('ProductCategory', JSON.stringify(res))
-    //         }
-    //         if (res.success) {
-    //             let pro = res?.data;
-    //             if (pro.length > 0) {
-    //                 let prodatas = pro.map(item => {
-    //                     return { label: item?.name, value: item?.id }
-    //                 })
-    //                 setproductList(prodatas);
-    //             }
-    //         } else {
-    //             ToastMessage(res?.message);
-    //         }
-    //         hideLoading();
-    //     } catch (error) {
-    //         if (__DEV__) {
-    //             console.log(error)
-    //         }
-    //         hideLoading();
-    //         ToastError();
-    //     }
-    // })
-
     const onGetCompanyDetails = useCallback(async (gstno) => {
         try {
+            setState(prev => ({
+                ...prev,
+                loadingNew: true
+            }))
             let datas = {
                 gst_no: gstno
             }
@@ -149,10 +129,14 @@ const SignUp = ({ navigation }) => {
             }
             if (res.success) {
                 let address = res?.data?.address
+                let cname = res?.data?.trade_name
                 setState(prev => ({
                     ...prev,
+                    companyName: cname,
                     plantAddress: address,
-                    plantAddressErr: ''
+                    plantAddressErr: '',
+                    companyDetails: res?.data,
+                    loadingNew: false
                 }))
             } else {
                 ToastMessage(res?.message);
@@ -161,7 +145,10 @@ const SignUp = ({ navigation }) => {
             if (__DEV__) {
                 console.log(error)
             }
-            hideLoading();
+            setState(prev => ({
+                ...prev,
+                loadingNew: false
+            }))
             ToastError();
         }
     })
@@ -282,16 +269,225 @@ const SignUp = ({ navigation }) => {
         navigation.navigate('Login');
     })
 
-    const onResendOtp = useCallback(async () => {
+    const onSubmit = useCallback(async () => {
+        if (state.gstNo.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                gstNoErr: 'Enter GST No'
+            }))
+            return;
+        } else if (state.plantAddress.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                plantAddressErr: 'Enter Plant Address'
+            }))
+            return;
+        } else if (state.email.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                emailErr: 'Enter Email'
+            }))
+            return;
+        } else if (!isValidEmail(state.email)) {
+            setState(prev => ({
+                ...prev,
+                emailErr: 'Enter a Valid Email'
+            }))
+            return;
+        } else if (state.phnNo.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                phnNoErr: 'Enter Mobile Number'
+            }))
+            return;
+        } else if (!isValidMobile(state.phnNo)) {
+            setState(prev => ({
+                ...prev,
+                phnNoErr: 'Enter a Valid Mobile Number'
+            }))
+            return;
+        } else if (state.phnNo.length < 10) {
+            setState(prev => ({
+                ...prev,
+                phnNoErr: 'Enter a Valid Mobile Number'
+            }))
+            return;
+        } else if (state.memberType == '') {
+            setState(prev => ({
+                ...prev,
+                memberTypeErr: 'Select Member Type'
+            }))
+            return;
+        } else if (state.password.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                passwordErr: 'Enter Password'
+            }))
+            return;
+        } else if (state.password.length < 8) {
+            setState(prev => ({
+                ...prev,
+                passwordErr: 'Password length must be of min 8 Characters'
+            }))
+            return;
+        } else if (state.cnfPassword.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                cnfPasswordErr: 'Enter Confirm Password'
+            }))
+            return;
+        } else if (state.cnfPassword.length < 8) {
+            setState(prev => ({
+                ...prev,
+                cnfPasswordErr: 'Confirm Password length must be of min 8 Characters'
+            }))
+            return;
+        } else if (state.password != state.cnfPassword) {
+            ToastMessage('Password & Confirm Password Mismatch');
+            return;
+        } else if (state.checkBoxValue == false) {
+            ToastMessage('Check Terms & Condition');
+            return
+        } else {
+            try {
+                showLoading();
+                let datas = {
+                    gst_no: state.gstNo,
+                    company_name: state.companyName,
+                    full_address: state.plantAddress,
+                    holding_no: state.companyDetails?.holding_no,
+                    street: state.companyDetails?.street,
+                    district: state.companyDetails?.district,
+                    state: state.companyDetails?.state,
+                    pincode: state.companyDetails?.pincode,
+                    location: state.companyDetails?.location,
+                    email: state.email,
+                    phone: state.phnNo,
+                    password: state.password,
+                    confirm_password: state.cnfPassword,
+                    member_type: state.memberType
+                }
+                // console.log('postBody',JSON.stringify(datas))
+                let response = await Apis.sign_up(datas);
+                if (__DEV__) {
+                    console.log('SignUpResponse', JSON.stringify(response))
+                }
+                if (response.success) {
+                    setState(prev => ({
+                        ...prev,
+                        signupResponse: response?.data
+                    }))
+                    showModal();
+                }
+                hideLoading();
+                ToastMessage(response?.message);
+            } catch (error) {
+                if (__DEV__) {
+                    console.log(error)
+                }
+                hideLoading();
+                ToastError();
+            }
+        }
+    })
 
+    const onResendOtp = useCallback(async () => {
+        if (state.signupResponse && state.signupResponse?.id) {
+            try {
+                setState(prev => ({
+                    ...prev,
+                    loadingNew: true
+                }))
+                let datas = {
+                    id: state.signupResponse?.id
+                }
+                let res = await Apis.signup_otpresend(datas);
+                if (__DEV__) {
+                    console.log('ResendOtp', JSON.stringify(res))
+                }
+                if (res.success) {
+                    setState(prev => ({
+                        ...prev,
+                        signupResponse: res?.data,
+                        loadingNew: false
+                    }))
+                } else {
+                    setState(prev => ({
+                        ...prev,
+                        loadingNew: false
+                    }))
+                }
+                ToastMessage(res?.message);
+            } catch (error) {
+                if (__DEV__) {
+                    console.log(error)
+                }
+                setState(prev => ({
+                    ...prev,
+                    loadingNew: false
+                }))
+                ToastError();
+            }
+        } else {
+            ToastError();
+        }
+    })
+
+    const onSubmitOTP = useCallback(async () => {
+        if (state.emailOTP == '' && state.mobileOTP == '') {
+            ToastMessage('Enter Email & Mobile OTP');
+            return;
+        } else if (state.emailOTP && state.emailOTP.length < 6) {
+            ToastMessage('Enter Valid Email OTP');
+            return;
+        } else if (state.emailOTP && state.emailOTP != state.signupResponse?.otp) {
+            ToastMessage('Wrong Email OTP');
+            return;
+        } else if (state.mobileOTP && state.mobileOTP.length < 6) {
+            ToastMessage('Enter Valid Mobile OTP');
+            return;
+        } else if (state.mobileOTP && state.mobileOTP != state.signupResponse?.mobile_otp) {
+            ToastMessage('Wrong Mobile OTP');
+            return;
+        } else {
+            try {
+                setState(prev => ({
+                    ...prev,
+                    btnLoading: true
+                }))
+                let datas = {
+                    id: state.signupResponse?.id,
+                    email_otp_input: state.emailOTP,
+                    mobile_otp_input: state.mobileOTP
+                }
+                let res = await Apis.signup_otpvalidate(datas)
+                if (__DEV__) {
+                    console.log('ValidtateOtp', JSON.stringify(res))
+                }
+                if (res.success) {
+                    onSkipVerify();
+                }
+                setState(prev => ({
+                    ...prev,
+                    btnLoading: false
+                }))
+                ToastMessage(res?.message);
+            } catch (error) {
+                if (__DEV__) {
+                    console.log(error)
+                }
+                setState(prev => ({
+                    ...prev,
+                    btnLoading: false
+                }))
+                ToastError();
+            }
+        }
     })
 
     const onSkipVerify = useCallback(async () => {
+        hideModal();
         navigation.replace('Login');
-    })
-
-    const onSubmit = useCallback(async () => {
-        showModal();
     })
 
     return (
@@ -339,6 +535,7 @@ const SignUp = ({ navigation }) => {
                             name={'Mobile'}
                             value={state.phnNo}
                             onChangeText={onChangePhnNo}
+                            maxLength={10}
                             error={state.phnNoErr}
                             keyboardType={'phone-pad'}
                         />
@@ -398,8 +595,8 @@ const SignUp = ({ navigation }) => {
                 animationOutTiming={800}
                 coverScreen={false}
                 style={styles.modalStyle}
-                onBackdropPress={() => hideModal()}
-                onBackButtonPress={() => hideModal()}
+                onBackdropPress={() => console.log('Close')}
+                onBackButtonPress={() => console.log('Close')}
             >
                 <View style={styles.modalContainer}>
                     <ScrollView>
@@ -444,7 +641,7 @@ const SignUp = ({ navigation }) => {
                                 <View style={{ marginTop: '2%' }}>
                                     <Button
                                         name={'Validate'}
-                                        onPress={onSubmit}
+                                        onPress={onSubmitOTP}
                                         loading={state.btnLoading}
                                         width={'80%'}
                                     />
@@ -455,6 +652,9 @@ const SignUp = ({ navigation }) => {
                     </ScrollView>
                 </View>
             </Modal>
+            {(state.loadingNew) && (
+                <LoaderTransparent loading={state.loadingNew} />
+            )}
         </SafeAreaView>
     )
 }

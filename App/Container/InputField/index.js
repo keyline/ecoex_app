@@ -9,7 +9,7 @@ const InputField = ({ leftIcon, name, maxLength, rightIcon, rightonPress, width,
             {(name) && (
                 <Text style={CommonStyle.boldtext}>{name}</Text>
             )}
-            <View style={styles.inputContainer}>
+            <View style={[styles.inputContainer, { borderWidth: error ? 1.5 : 0 }]}>
                 <TextInput
                     value={value}
                     placeholder={placeholder ? placeholder : `Enter ${name}`}
