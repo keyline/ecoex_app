@@ -117,6 +117,7 @@ export const styles = StyleSheet.create({
         height: 38,
         borderColor: Colors.grey,
         paddingHorizontal: 10,
+        color:Colors.black
         // backgroundColor: Colors.light_grey
     },
     productInput: {

@@ -35,6 +35,7 @@
     "react-native-screens": "^3.26.0",
     "react-native-select-dropdown": "^3.4.0",
     "react-native-simple-toast": "^3.0.2",
+    "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^14.0.0"
   },
   "devDependencies": {

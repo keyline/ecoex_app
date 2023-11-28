@@ -99,6 +99,7 @@ const LoginWithMobile = ({ navigation }) => {
                         name={'Mobile'}
                         value={state.mobile}
                         onChangeText={onChangeMobile}
+                        maxLength={10}
                         error={state.mobileErr}
                     />
                     <View style={{ marginTop: '8%' }}>

@@ -42,11 +42,14 @@ export const styles = StyleSheet.create({
     nametxt: {
         fontFamily: Font_Family.NunitoSans_Bold,
         color: Colors.theme_color,
-        fontSize: 12
+        fontSize: 12,
+        // backgroundColor:'red',
+        width:'100%'
     },
     valuetxt: {
         fontFamily: Font_Family.NunitoSans_SemiBold,
-        color: Colors.black
+        color: Colors.black,
+        // backgroundColor:'blue'
     },
     profileInfo: {
         paddingLeft: '3%',
@@ -95,6 +98,9 @@ export const styles = StyleSheet.create({
     },
     btmtext: {
         fontFamily: Font_Family.NunitoSans_ExtraBold,
-        color:Colors.white
+        color:Colors.white,
+        width:'100%',
+        textAlign:'center',
+        fontSize:12
     }
 })

@@ -9,6 +9,7 @@ import AuthContext from './App/Service/Context'
 import PlantDrawerStack from './App/Navigation/Plant/PlantDrawerStack'
 import { ToastError, ToastMessage } from './App/Service/CommonFunction'
 import Apis from './App/Service/Apis'
+import SplashScreen from 'react-native-splash-screen'
 
 const App = () => {
 
@@ -23,21 +24,28 @@ const App = () => {
   })
 
   useEffect(() => {
-    onGetStoreData();
+    // onGetStoreData();
     onGetData();
   }, [])
 
   const onGetData = useCallback(async () => {
     try {
+      setState(prev => ({
+        ...prev,
+        loading: true
+      }))
       let response = await Apis.app_setting()
       if (__DEV__) {
         console.log('AppSettingApp.js', JSON.stringify(response))
       }
+      await onGetStoreData();
       if (response.success) {
         setState(prev => ({
           ...prev,
           siteData: response?.data,
+          loading: false
         }))
+        SplashScreen.hide();
       } else {
         ToastMessage(response?.message);
       }
@@ -100,12 +108,16 @@ const App = () => {
     <NavigationContainer>
       <AuthContext.Provider value={{ allData: state, setState, onGetStoreData, onClearStoreData }}>
         <StatusBar backgroundColor={Colors.theme_color} barStyle={'light-content'} />
-        {(state.isLogin) ?
-          // <DrawerStack />
-          <PlantDrawerStack />
-          :
-          <AuthStack />
-        }
+        {(!state.loading) && (
+          <>
+            {(state.isLogin) ?
+              // <DrawerStack />
+              <PlantDrawerStack />
+              :
+              <AuthStack />
+            }
+          </>
+        )}
       </AuthContext.Provider>
     </NavigationContainer>
   )

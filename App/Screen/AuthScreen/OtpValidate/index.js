@@ -38,7 +38,7 @@ const OtpValidate = ({ navigation, route }) => {
             }
         }, 1000) //each count lasts for a second
         return () => clearInterval(interval)
-    }, []);
+    }, [timer]);
 
     const showLoading = useCallback(async () => {
         setState(prev => ({
@@ -86,6 +86,7 @@ const OtpValidate = ({ navigation, route }) => {
                     ...prev,
                     data: res?.data
                 }))
+                setTimer(60);
             }
             hideLoading();
             ToastMessage(res?.message);
