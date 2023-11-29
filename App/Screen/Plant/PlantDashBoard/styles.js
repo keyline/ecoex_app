@@ -60,11 +60,12 @@ export const styles = StyleSheet.create({
         textAlign: 'center'
     },
     btnContent: {
-        backgroundColor: Colors.grey_morelight,
+        backgroundColor: Colors.white,
         marginVertical: '4%',
-        paddingHorizontal: '2%',
-        paddingVertical: '2%',
+        paddingHorizontal: '4%',
+        paddingVertical: '4%',
         borderWidth: 2,
+        borderColor:Colors.light_grey,
         borderRadius: 5,
         ...Platform.select({
             ios: {
@@ -85,12 +86,12 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginVertical:'4%'
+        marginVertical:'6%'
     },
     btmcontainer: {
         backgroundColor: Colors.theme_color,
         paddingVertical: '4%',
-        paddingHorizontal: '3%',
+        paddingHorizontal: '2%',
         alignItems: 'center',
         borderRadius: 5,
         marginBottom: '8%'

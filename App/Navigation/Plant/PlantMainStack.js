@@ -8,6 +8,7 @@ import ProcessRequest from '../../Screen/Plant/ProcessRequest';
 import CompleteRequest from '../../Screen/Plant/CompleteRequest';
 import RejectRequest from '../../Screen/Plant/RejectRequest';
 import ProcessesRequestDetails from '../../Screen/Plant/ProcessesRequestDetails';
+import PlantEditProfile from '../../Screen/Plant/PlantEditProfile';
 
 const PlantMainStack = () => {
 
@@ -25,6 +26,7 @@ const PlantMainStack = () => {
             <Stack.Screen name='CompleteRequest' component={CompleteRequest} />
             <Stack.Screen name='RejectRequest' component={RejectRequest} />
             <Stack.Screen name='ProcessesRequestDetails' component={ProcessesRequestDetails} />
+            <Stack.Screen name='PlantEditProfile' component={PlantEditProfile} />
 
         </Stack.Navigator>
     )

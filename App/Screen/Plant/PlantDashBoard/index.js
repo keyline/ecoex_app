@@ -16,8 +16,8 @@ const PlantDashBoard = ({ navigation }) => {
     const [state, setState] = useState({
         loading: false,
         data: '',
-        progressValue: 100,
-        progressColor: Colors.blue
+        progressValue: 0,
+        progressColor: '#264CD4'
     })
 
     useFocusEffect(
@@ -52,6 +52,7 @@ const PlantDashBoard = ({ navigation }) => {
                 setState(prev => ({
                     ...prev,
                     data: response?.data,
+                    progressValue: response?.data?.step1_percent,
                     loading: false
                 }))
             } else {
@@ -116,21 +117,11 @@ const PlantDashBoard = ({ navigation }) => {
                         <View style={styles.btnContent}>
                             <Text style={styles.headingText}>Request Status Wise Count</Text>
                             <View style={styles.statusContent}>
-                                <View style={{ width: '55%' }}>
-                                    <Bottom onPress={() => onRequest(100, Colors.blue)} name={state.data?.step0_label} color={Colors.blue} />
-                                    <Bottom onPress={() => onRequest(state.data?.step1_percent, 'orange')} name={state.data?.step1_label} color={'orange'} />
-                                    <Bottom onPress={() => onRequest(state.data?.step2_percent, 'violet')} name={state.data?.step2_label} color={'violet'} />
-                                    <Bottom onPress={() => onRequest(state.data?.step3_percent, '#bd5185')} name={state.data?.step3_label} color={'#bd5185'} />
-                                    <Bottom onPress={() => onRequest(state.data?.step4_percent, '#69d6d4')} name={state.data?.step4_label} color={'#69d6d4'} />
-                                    <Bottom onPress={() => onRequest(state.data?.step5_percent, '#90bd51')} name={state.data?.step5_label} color={'#90bd51'} />
-                                    <Bottom onPress={() => onRequest(state.data?.step6_percent, '#52a2ba')} name={state.data?.step6_label} color={'#52a2ba'} />
-                                    <Bottom onPress={() => onRequest(state.data?.step7_percent, '#51bd7e')} name={state.data?.step7_label} color={'#51bd7e'} />
-                                    <Bottom onPress={() => onRequest(state.data?.step8_percent, Colors.theme_light)} name={state.data?.step8_label} color={Colors.theme_light} />
-                                    <Bottom onPress={() => onRequest(state.data?.step9_percent, Colors.red)} name={state.data?.step9_label} color={Colors.red} />
-                                    {/* 
-                                    <Bottom onPress={() => onRequest(50, Colors.yellow)} name={'In Process Request'} color={Colors.yellow} />
-                                    <Bottom onPress={() => onRequest(60, Colors.red)} name={'Rejected Request'} color={Colors.red} />
-                                    <Bottom onPress={() => onRequest(80, Colors.theme_light)} name={'Close Request'} color={Colors.theme_light} /> */}
+                                <View style={{ width: '50%' }}>
+                                    <Bottom onPress={() => onRequest(state.data?.step1_percent, '#264CD4')} name={state.data?.step1_label} color={'#264CD4'} />
+                                    <Bottom onPress={() => onRequest(state.data?.step2_percent, '#E79D0CE8')} name={state.data?.step2_label} color={'#E79D0CE8'} />
+                                    <Bottom onPress={() => onRequest(state.data?.step3_percent, '#E70C0CC9')} name={state.data?.step3_label} color={'#E70C0CC9'} />
+                                    <Bottom onPress={() => onRequest(state.data?.step4_percent, '#2DA952')} name={state.data?.step4_label} color={'#2DA952'} />
                                 </View>
                                 <View style={{ width: '40%', alignItems: 'center' }}>
                                     <CircularProgress

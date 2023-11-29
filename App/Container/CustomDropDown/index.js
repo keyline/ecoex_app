@@ -4,7 +4,7 @@ import DropDownPicker from 'react-native-dropdown-picker'
 import { Colors } from '../../Utils/Colors'
 import { styles } from './styles'
 
-const CustomDropDown = ({ name, placeholder, width, open, headingColor, listMode, value, onChangeValue, searchable, items, setOpen, setValue, setItems, error }) => {
+const CustomDropDown = ({ name, placeholder, disabled, width, open, headingColor, listMode, value, onChangeValue, searchable, items, setOpen, setValue, setItems, error }) => {
     return (
         <View style={[styles.container, { width: width ? width : '100%' }]}>
             {(name) && (
@@ -13,6 +13,7 @@ const CustomDropDown = ({ name, placeholder, width, open, headingColor, listMode
             <DropDownPicker
                 open={open}
                 value={value}
+                disabled={disabled ? disabled : false}
                 items={items}
                 setOpen={setOpen}
                 setValue={setValue}
