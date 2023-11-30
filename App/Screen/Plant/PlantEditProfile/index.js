@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, Image, ScrollView } from 'react-native'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { CommonStyle } from '../../../Utils/CommonStyle'
 import { ImagePath } from '../../../Utils/ImagePath'
 import { styles } from './styles'
@@ -9,11 +9,18 @@ import Apis from '../../../Service/Apis'
 import { ToastError, ToastMessage } from '../../../Service/CommonFunction'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
 import { useFocusEffect } from '@react-navigation/native'
-import CustomDropDown from '../../../Container/CustomDropDown'
 import Header from '../../../Container/Header'
 import Button from '../../../Container/Button'
+import { isValidEmail, isValidMobile } from '../../../Service/Valid'
+import Modal from 'react-native-modal';
+import OTPInputView from '@twotalltotems/react-native-otp-input'
+import { Colors } from '../../../Utils/Colors'
+import AuthContext from '../../../Service/Context'
 
 const PlantEditProfile = ({ navigation }) => {
+
+    const context = useContext(AuthContext)
+    const { siteData } = context.allData
 
     const [state, setState] = useState({
         loading: false,
@@ -45,9 +52,14 @@ const PlantEditProfile = ({ navigation }) => {
         phnNoErr: '',
         memberType: '',
         memberTypeErr: '',
+        modalVisible: false,
+        mobileOTP: '',
+        emailOTP: '',
     })
     const [memberPicker, setmemberPicker] = useState(false);
     const [memberList, setmemberList] = useState([]);
+    const [timer, setTimer] = useState(60)
+
 
     useFocusEffect(
         useCallback(() => {
@@ -55,6 +67,18 @@ const PlantEditProfile = ({ navigation }) => {
             return () => unsubscribe
         }, [navigation])
     )
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            if (timer > 0) {
+                setTimer(lastTimerCount => {
+                    lastTimerCount <= 1 && clearInterval(interval)
+                    return lastTimerCount - 1
+                })
+            }
+        }, 1000) //each count lasts for a second
+        return () => clearInterval(interval)
+    }, [timer]);
 
     const showLoading = useCallback(async () => {
         setState(prev => ({
@@ -71,9 +95,7 @@ const PlantEditProfile = ({ navigation }) => {
     }, [state.loading])
 
     const onHeaderPress = useCallback(async () => {
-        if (__DEV__) {
-            console.log('hiiiii')
-        }
+        navigation.navigate('PlantDashBoard')
     })
 
     // const onGetMemberType = useCallback(async () => {
@@ -128,7 +150,7 @@ const PlantEditProfile = ({ navigation }) => {
                     email: data?.email,
                     phnNo: data?.phone,
                     memberType: data?.member_type,
-                    data: res.data,
+                    data: data,
                     loading: false
                 }))
             } else {
@@ -297,6 +319,20 @@ const PlantEditProfile = ({ navigation }) => {
         }))
     }, [state.memberType])
 
+    const showModal = useCallback(async () => {
+        setState(prev => ({
+            ...prev,
+            modalVisible: true
+        }))
+    }, [state.modalVisible])
+
+    const hideModal = useCallback(async () => {
+        setState(prev => ({
+            ...prev,
+            modalVisible: false
+        }))
+    }, [state.modalVisible])
+
     const onSubmit = useCallback(async () => {
         if (state.gstNo.trim() == '') {
             setState(prev => ({
@@ -334,6 +370,136 @@ const PlantEditProfile = ({ navigation }) => {
                 streetErr: 'Enter Street'
             }));
             return;
+        } else if (state.location.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                locationErr: 'Enter Location'
+            }));
+            return;
+        } else if (state.district.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                districtErr: 'Enter District'
+            }));
+            return;
+        } else if (state.state.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                stateErr: 'Enter State'
+            }));
+            return;
+        } else if (state.pincode.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                pincodeErr: 'Enter Pincode'
+            }));
+            return;
+        } else if (state.pincode.length < 6) {
+            setState(prev => ({
+                ...prev,
+                pincodeErr: 'Enter Valid Pincode'
+            }));
+            return;
+        } else if (state.email.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                emailErr: 'Enter Email'
+            }));
+            return;
+        } else if (!isValidEmail(state.email)) {
+            setState(prev => ({
+                ...prev,
+                emailErr: 'Enter Valid Email'
+            }));
+            return;
+        } else if (state.phnNo.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                phnNoErr: 'Enter Phone No'
+            }));
+            return;
+        } else if (!isValidMobile(state.phnNo)) {
+            setState(prev => ({
+                ...prev,
+                phnNoErr: 'Enter Valid Mobile Number'
+            }));
+            return;
+        } else {
+            if (state.data?.phone != state.phnNo) {
+                onSendOtp();
+            } else if (state.data?.email != state.email) {
+                onSendOtp();
+            } else {
+                onUpdate();
+            }
+        }
+    })
+
+    const onChangeEmailOtp = useCallback(async (value) => {
+        setState(prev => ({
+            ...prev,
+            emailOTP: value
+        }))
+    }, [state.emailOTP])
+
+    const onChangeMobileOtp = useCallback(async (value) => {
+        setState(prev => ({
+            ...prev,
+            mobileOTP: value
+        }))
+    }, [state.mobileOTP])
+
+    const onSendOtp = useCallback(async () => {
+        setTimer(60)
+        showModal();
+    })
+
+    const onResendOtp = useCallback(async () => {
+        setTimer(60)
+        console.log('ResendOtp');
+    })
+
+    const onSubmitOTP = useCallback(async () => {
+        console.log('SubmitOtp');
+    })
+
+    const onUpdate = useCallback(async () => {
+        try {
+            setState(prev => ({
+                ...prev,
+                btnLoading: true
+            }))
+            let datas = {
+                gst_no: state.gstNo,
+                company_name: state.companyName,
+                full_address: state.plantAddress,
+                holding_no: state.holding_no,
+                street: state.street,
+                location: state.location,
+                district: state.district,
+                state: state.state,
+                pincode: state.pincode,
+                email: state.email,
+                phone: state.phnNo
+            }
+            let response = await Apis.update_profile(datas);
+            if (__DEV__) {
+                console.log('UpdateProfile', JSON.stringify(response))
+            }
+            setState(prev => ({
+                ...prev,
+                btnLoading: false
+            }))
+            ToastMessage(response?.message);
+        } catch (error) {
+            if (__DEV__) {
+                console.log(error)
+            }
+            setState(prev => ({
+                ...prev,
+                btnLoading: false
+            }))
+            ToastError();
         }
     })
 
@@ -353,7 +519,7 @@ const PlantEditProfile = ({ navigation }) => {
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View style={styles.bodyContent}>
                         <View style={{ alignItems: 'center', marginBottom: '4%' }}>
-                            <Image source={ImagePath.logo} style={styles.logo} />
+                            <Image source={siteData.site_logo ? { uri: siteData?.site_logo } : ImagePath.logo} style={styles.logo} />
                             <Text style={CommonStyle.headingText}>Update Profile</Text>
                         </View>
                         <InputField
@@ -448,6 +614,73 @@ const PlantEditProfile = ({ navigation }) => {
                     </View>
                 </ScrollView>
             }
+            <Modal
+                isVisible={state.modalVisible}
+                animationInTiming={800}
+                animationOutTiming={800}
+                coverScreen={false}
+                style={styles.modalStyle}
+                onBackdropPress={() => console.log('Close')}
+                onBackButtonPress={() => console.log('Close')}
+            >
+                <View style={styles.modalContainer}>
+                    <ScrollView>
+                        <View style={styles.modalContent}>
+                            <Text style={[CommonStyle.headingText, { textAlign: 'center', fontSize: 18, marginBottom: '8%' }]}>Verify Email/Mobile</Text>
+                            <View>
+                                {(state.data?.email != state.email) && (
+                                    <View style={{ flex: 1, marginBottom: '6%' }}>
+                                        <Text style={[CommonStyle.boldtext, { marginBottom: '6%' }]}>Enter Email OTP :</Text>
+                                        <OTPInputView
+                                            pinCount={6}
+                                            code={state.emailOTP}
+                                            autoFocusOnLoad={false}
+                                            onCodeChanged={code => onChangeEmailOtp(code)}
+                                            style={styles.otp}
+                                            codeInputFieldStyle={styles.underlineStyleBase}
+                                            codeInputHighlightStyle={styles.underlineStyleHighLighted}
+                                            placeholderTextColor={Colors.black}
+                                        // onCodeFilled={(code) => onSubmitOtp(code)}
+                                        />
+                                    </View>
+                                )}
+                                {(state.data?.phone != state.phnNo) && (
+                                    <View style={{ flex: 1 }}>
+                                        <Text style={[CommonStyle.boldtext, { marginBottom: '6%' }]}>Enter Mobile OTP :</Text>
+                                        <OTPInputView
+                                            pinCount={6}
+                                            code={state.mobileOTP}
+                                            autoFocusOnLoad={false}
+                                            onCodeChanged={code => onChangeMobileOtp(code)}
+                                            style={styles.otp}
+                                            codeInputFieldStyle={styles.underlineStyleBase}
+                                            codeInputHighlightStyle={styles.underlineStyleHighLighted}
+                                            placeholderTextColor={Colors.black}
+                                        // onCodeFilled={(code) => onSubmitOtp(code)}
+                                        />
+                                    </View>
+                                )}
+                                <View style={styles.resendContainer}>
+                                    {(timer > 0) ?
+                                        <Text style={styles.resendTimer}>Resend OTP in <Text style={{ color: Colors.theme_color }}>{timer} Sec</Text></Text>
+                                        :
+                                        <Text onPress={onResendOtp} style={styles.resendText}>Resend OTP</Text>
+                                    }
+                                </View>
+                                <View style={{ marginTop: '2%' }}>
+                                    <Button
+                                        name={'Validate'}
+                                        onPress={onSubmitOTP}
+                                        loading={state.btnLoading}
+                                        width={'80%'}
+                                    />
+                                </View>
+                                {/* <Text onPress={onSkipVerify} style={styles.skiptext}>Skip for now</Text> */}
+                            </View>
+                        </View>
+                    </ScrollView>
+                </View>
+            </Modal>
             {(state.loadingNew) && (
                 <LoaderTransparent loading={state.loadingNew} />
             )}

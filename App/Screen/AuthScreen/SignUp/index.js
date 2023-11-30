@@ -70,7 +70,7 @@ const SignUp = ({ navigation }) => {
             }
         }, 1000) //each count lasts for a second
         return () => clearInterval(interval)
-    }, []);
+    }, [timer]);
 
     const showLoading = useCallback(async () => {
         setState(prev => ({
@@ -406,6 +406,7 @@ const SignUp = ({ navigation }) => {
                     console.log('ResendOtp', JSON.stringify(res))
                 }
                 if (res.success) {
+                    setTimer(60);
                     setState(prev => ({
                         ...prev,
                         signupResponse: res?.data,

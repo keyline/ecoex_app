@@ -21,6 +21,7 @@ const PlantCustomDrawer = (props) => {
         { id: 4, name: 'Complete Request', screen: 'CompleteRequest', icon: ImagePath.home, logiReq: true },
         { id: 5, name: 'Reject Request', screen: 'RejectRequest', icon: ImagePath.home, logiReq: true },
         { id: 6, name: 'Edit Profile', screen: 'PlantEditProfile', icon: ImagePath.home, logiReq: true },
+        { id: 6, name: 'Change Password', screen: 'PlantChangePassword', icon: ImagePath.home, logiReq: true },
         { id: 7, name: 'Sign Out', screen: 'LogOut', icon: ImagePath.logout, logiReq: true },
     ]
 
