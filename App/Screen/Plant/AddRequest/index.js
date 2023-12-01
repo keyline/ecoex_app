@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, ScrollView, Image, TouchableOpacity, FlatList } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, Image, TouchableOpacity, FlatList, Keyboard, TextInput } from 'react-native'
 import React, { useCallback, useState } from 'react'
 import { CommonStyle } from '../../../Utils/CommonStyle'
 import Header from '../../../Container/Header'
@@ -7,9 +7,13 @@ import { styles } from './styles'
 import ElementDropDown from '../../../Container/ElementDropDown'
 import List from './List'
 import ModalPop from './ModalPop'
-import { LaunchCamera, LaunchImageLibary, ToastMessage } from '../../../Service/CommonFunction'
+import { LaunchCamera, LaunchImageLibary, ToastMessage, dateConvertNew, generateRandomId } from '../../../Service/CommonFunction'
 import ImageOptions from '../../../Container/ImageOptions'
 import ImageView from '../../../Container/ImageView'
+import { useFocusEffect } from '@react-navigation/native'
+import Apis from '../../../Service/Apis'
+import { Colors } from '../../../Utils/Colors'
+import DateTimePickers from '../../../Container/DateTimePickers'
 
 const products = [
     { label: 'Product 1', value: '1' },
@@ -28,7 +32,7 @@ const category = [
 const AddRequest = ({ navigation }) => {
 
     const [state, setState] = useState({
-        laoding: false,
+        loading: false,
         data: null,
         product: '',
         productErr: '',
@@ -39,33 +43,84 @@ const AddRequest = ({ navigation }) => {
         pickerModal: false,
         product_image: null,
         pickerModalType: '',
+        collectionDate: '',
+        collectionDatePicker: false,
         gps_img: null,
         viewImgeUri: null
     })
-
+    const [productList, setProductList] = useState([]);
     const [reqList, setReqList] = useState([
-        { sl_no: 1, gps_image: '', product_id: '', hsn: '12345', productErr: '', new_product: false }
+        { sl_no: generateRandomId(), product_id: '', hsn: '', productErr: '', new_product: false }
     ])
 
     const onHeaderPress = useCallback(async () => {
         navigation.goBack();
     })
 
-    const onChangeProduct = useCallback(async (item, pr) => {
-        console.log('item', item)
-        console.log('pr', pr)
-        // setState(prev => ({
-        //     ...prev,
-        //     product: item.value,
-        //     productErr: ''
-        // }))
+    useFocusEffect(
+        useCallback(() => {
+            const unsubscribe = onGetProduct();
+            return () => unsubscribe
+        }, [navigation])
+    )
 
+    const onGetProduct = useCallback(async () => {
+        try {
+            showLoading();
+            let response = await Apis.get_product();
+            if (__DEV__) {
+                console.log('ProductList', JSON.stringify(response))
+            }
+            if (response.success) {
+                let data = response?.data
+                if (data.length > 0) {
+                    let parray = data.map(item => {
+                        return { ...item, label: item.name, value: item.id }
+                    })
+                    setProductList(parray)
+                    return parray;
+                }
+            }
+        } catch (error) {
+            if (__DEV__) {
+                console.log(error)
+            }
+            hideLoading();
+            ToastError();
+        }
+    })
+
+    const showLoading = useCallback(async () => {
+        setState(prev => ({
+            ...prev,
+            loading: true
+        }))
+    }, [state.loading])
+
+    const hideLoading = useCallback(async () => {
+        setState(prev => ({
+            ...prev,
+            loading: false
+        }))
+    }, [state.loading])
+
+    const onChangeProduct = useCallback(async (item, pr) => {
+        // console.log('item', item)
+        // console.log('pr', pr)
+        if (item && pr) {
+            let updateArray = reqList.map(obj => {
+                if (obj.sl_no === item.sl_no) {
+                    return { ...obj, product_id: pr.value, hsn: pr.hsn_code, productErr: '' }
+                }
+                return obj;
+            });
+            setReqList(updateArray);
+        }
     })
 
     const onAddMore = useCallback(async () => {
         let myArr = reqList
-        let slno = reqList.length + 1
-        let obj = { sl_no: slno, gps_image: '', product_id: '', hsn: '12345', productErr: '', new_product: false }
+        let obj = { sl_no: generateRandomId(), product_id: '', hsn: '', productErr: '', new_product: false }
         myArr.push(obj);
         let tempData = [];
         myArr.map(item => {
@@ -120,6 +175,7 @@ const AddRequest = ({ navigation }) => {
     }, [state.checkValue])
 
     const onShowPicker = useCallback(async (type) => {
+        Keyboard.dismiss();
         setState(prev => ({
             ...prev,
             pickerModalType: type,
@@ -138,7 +194,7 @@ const AddRequest = ({ navigation }) => {
     const onSelectImageOption = useCallback(async (value) => {
         try {
             if (value == 1) {
-                let libaryImageRes = await LaunchImageLibary();
+                let libaryImageRes = await LaunchImageLibary(true);
                 if (__DEV__) {
                     console.log('LibaryImage', libaryImageRes)
                 }
@@ -160,7 +216,7 @@ const AddRequest = ({ navigation }) => {
                     onHidePicker();
                 }
             } else {
-                let cameraImageRes = await LaunchCamera();
+                let cameraImageRes = await LaunchCamera(true);
                 if (__DEV__) {
                     console.log('CameraImage', cameraImageRes)
                 }
@@ -199,7 +255,7 @@ const AddRequest = ({ navigation }) => {
             return
         } else {
             let data = {
-                // category_id: state.cat_id,
+                sl_no: generateRandomId(),
                 product_name: state.pr_name,
                 hsn: state.hsn,
                 product_image: state.product_image,
@@ -227,6 +283,55 @@ const AddRequest = ({ navigation }) => {
         }
     }, [state.viewImgeUri])
 
+    const onOpenDatePicker = useCallback(async () => {
+        setState(prev => ({
+            ...prev,
+            collectionDatePicker: true
+        }))
+    }, [state.collectionDatePicker])
+
+    const onChangeCollectionDate = useCallback(async (value) => {
+        if (value.type == 'set') {
+            let time = value?.nativeEvent?.timestamp;
+            setState(prev => ({
+                ...prev,
+                collectionDate: time,
+                collectionDatePicker: false
+            }))
+        } else {
+            setState(prev => ({
+                ...prev,
+                collectionDatePicker: false
+            }))
+        }
+    }, [state.collectionDate])
+
+    const onSubmit = useCallback(async () => {
+        let findEmptyindex = reqList.findIndex(obj => (obj.new_product == false && obj.product_id == ''));
+        if (findEmptyindex != -1) {
+            let updateArray = reqList.map(item => {
+                if (item.new_product == false && item.product_id == '') {
+                    return { ...item, productErr: 'Select Product' }
+                }
+                return item
+            })
+            setReqList(updateArray);
+            return;
+        } else if (state.collectionDate == '') {
+            ToastMessage('Select Collection Request Date');
+            return;
+        } else if (!state.gps_img) {
+            ToastMessage('Upload GPS Track Image');
+            return;
+        } else {
+            let datas = {
+                requestList: reqList,
+                gps_image: state.gps_img,
+                collection_date: dateConvertNew(state.collectionDate)
+            }
+            console.log('PostBody', JSON.stringify(datas))
+        }
+    })
 
     const renderFooter = () => (
         <View style={{ marginBottom: '2%' }}>
@@ -270,7 +375,7 @@ const AddRequest = ({ navigation }) => {
                     renderItem={({ item }) =>
                         <List
                             item={item}
-                            products={products}
+                            products={productList}
                             onChangeProduct={onChangeProduct}
                             onDelete={onDelete}
                             arrLength={reqList.length}
@@ -284,8 +389,9 @@ const AddRequest = ({ navigation }) => {
             <View style={styles.bottomContainer}>
                 <View style={styles.flexNew}>
                     <Text style={CommonStyle.boldblacktext}>Tentative collection request date:  </Text>
-                    <TouchableOpacity activeOpacity={0.5}>
-                        <Image source={ImagePath.date} style={{ width: 20, height: 20 }} />
+                    <TouchableOpacity onPress={onOpenDatePicker} activeOpacity={0.5} style={{ width: '30%' }}>
+                        <TextInput value={dateConvertNew(state.collectionDate)} editable={false} placeholder='Select Date' style={[styles.productInput, { width: '100%' }]} />
+                        {/* <Image source={ImagePath.date} style={{ width: 20, height: 20 }} /> */}
                     </TouchableOpacity>
                 </View>
                 <View style={styles.uploadContainer}>
@@ -301,7 +407,7 @@ const AddRequest = ({ navigation }) => {
                         </TouchableOpacity>
                     }
                 </View>
-                <TouchableOpacity activeOpacity={0.5} style={styles.submitBtn}>
+                <TouchableOpacity onPress={onSubmit} activeOpacity={0.5} style={styles.submitBtn}>
                     <Text style={styles.uploadText}>SUBMIT</Text>
                 </TouchableOpacity>
             </View>
@@ -326,6 +432,14 @@ const AddRequest = ({ navigation }) => {
                 <ImageView
                     imageUri={state.viewImgeUri}
                     onClose={onViewImage}
+                />
+            )}
+            {(state.collectionDatePicker) && (
+                <DateTimePickers
+                    value={state.collectionDate ? new Date(state.collectionDate) : new Date()}
+                    mode={'date'}
+                    onConfirm={onChangeCollectionDate}
+                    minimumDate={new Date()}
                 />
             )}
             {/* </ScrollView> */}

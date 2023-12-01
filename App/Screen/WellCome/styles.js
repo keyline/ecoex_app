@@ -21,13 +21,16 @@ export const styles = StyleSheet.create({
     },
     bodyContent: {
         flex: 1,
-        justifyContent: 'center',
-        alignItems: 'center'
+        // justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: '30%',
+        marginBottom: '6%'
     },
     logo: {
         width: width * 0.4,
         height: height * 0.05,
-        resizeMode: 'contain'
+        resizeMode: 'contain',
+        // alignSelf:'center'
     },
     boldText: {
         fontFamily: Font_Family.NunitoSans_Bold,

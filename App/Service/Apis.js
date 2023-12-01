@@ -81,4 +81,9 @@ export default class Apis {
     static plant_dashboard = () => {
         return Network('post', 'dashboard')
     }
+
+    static get_product = () => {
+        return Network('post', 'get-product')
+    }
+
 }

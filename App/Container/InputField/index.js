@@ -11,7 +11,7 @@ const InputField = ({ leftIcon, name, maxLength, rightIcon, rightonPress, width,
             )}
             <View style={[styles.inputContainer, { borderWidth: error ? 1.5 : 0 }]}>
                 <TextInput
-                    value={value}
+                    value={value ? value : ''}
                     placeholder={placeholder ? placeholder : `Enter ${name}`}
                     onChangeText={text => onChangeText(text)}
                     secureTextEntry={secureTextEntry ? secureTextEntry : false}

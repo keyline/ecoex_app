@@ -5,6 +5,7 @@ import DashBoard from '../Screen/Plant/PlantDashBoard';
 import AddRequest from '../Screen/AddRequest_old';
 import ProcessRequest from '../Screen/ProcessRequest_old';
 import ProcessRequestDetails from '../Screen/ProcessRequestDetails';
+import PdfViewer from '../Screen/PdfViewer';
 
 const MainStack = () => {
 
@@ -20,6 +21,8 @@ const MainStack = () => {
             <Stack.Screen name='AddRequest' component={AddRequest} />
             <Stack.Screen name='ProcessRequest' component={ProcessRequest} />
             <Stack.Screen name='ProcessRequestDetails' component={ProcessRequestDetails} />
+            <Stack.Screen name='PdfViewer' component={PdfViewer} />
+
         </Stack.Navigator>
     )
 }

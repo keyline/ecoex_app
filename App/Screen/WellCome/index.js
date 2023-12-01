@@ -88,31 +88,27 @@ const WellCome = ({ navigation }) => {
       {(state.loading) ?
         <Loader loading={state.loading} />
         :
-        <>
+        <ScrollView showsVerticalScrollIndicator={false}>
           {(state.data) && (
             <View style={styles.bodyContent}>
-              {/* <SvgUri
-                width={200}
-                height={200}
-                uri={siteData?.site_logo}
-                
-              /> */}
               <Image source={(siteData && siteData.site_logo) ? { uri: siteData?.site_logo } : ImagePath.logo} style={styles.logo} />
               <Text style={styles.boldText}>Empowering the recycling industry.</Text>
               <Image source={ImagePath.wellcome_logo} style={styles.image} />
               {/* <Text style={styles.infoText}>Ecoex is a term that combines "eco" (short for ecology or ecological) and "ex" (short for exchange). It can refer to various concepts related to ecological exchange, sustainability, or environmentally-friendly practices. Depending on the context, Ecoex could represent a company, organization, or initiative focused on promoting eco-friendly products, services, or exchanges that benefit the environment. The specific meaning and purpose of "Ecoex" would depend on its use and context.</Text> */}
+              <View style={{marginHorizontal:'6%',alignItems:'center'}}>
               <RenderHTML
-                contentWidth={width * 0.9}
+                contentWidth={width * 0.5}
                 source={{ html: state.data?.long_description }}
                 tagsStyles={tagsStyles}
               />
+              </View>
               <Button
                 name={'Get Started'}
                 onPress={onSubmit}
               />
             </View>
           )}
-        </>
+        </ScrollView>
       }
     </SafeAreaView>
   )

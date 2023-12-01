@@ -20,35 +20,40 @@ const ElementDropDown = ({ name, setValue, data, mode, value, search, labelField
     const [isFocus, setIsFocus] = useState(false);
 
     return (
-        <View style={styles.container}>
-            {(name) && (
-                <Text style={CommonStyle.boldblacktext}>{name} :</Text>
+        <View>
+            <View style={styles.container}>
+                {(name) && (
+                    <Text style={CommonStyle.boldblacktext}>{name} :</Text>
+                )}
+
+                <Dropdown
+                    data={data}
+                    style={[styles.dropdown, { width: width ? width : '60%' }, error && { borderColor: 'red', borderWidth: 2 }, isFocus && { borderColor: 'blue', borderWidth: 1 }]}
+                    placeholderStyle={styles.placeholderStyle}
+                    selectedTextStyle={styles.selectedTextStyle}
+                    inputSearchStyle={styles.inputSearchStyle}
+                    maxHeight={200}
+                    labelField={labelField ? labelField : "label"}
+                    valueField={valueField ? valueField : "value"}
+                    placeholder={placeholder ? placeholder : `Select ${name}`}
+                    searchPlaceholder={`Search ${name}`}
+                    value={value}
+                    search={search ? search : false}
+                    onFocus={() => setIsFocus(true)}
+                    onBlur={() => setIsFocus(false)}
+                    onChange={item => {
+                        setValue(item);
+                        setIsFocus(false);
+                    }}
+                    containerStyle={{
+                        borderWidth: 1,
+                    }}
+                    mode={mode ? mode : 'auto'}
+                />
+            </View>
+            {(error) && (
+                <Text style={styles.errortext}>{error}</Text>
             )}
-            <Dropdown
-                data={data}
-                style={[styles.dropdown, { width: width ? width : '60%' }, error && { borderColor: 'red', borderWidth: 2 }, isFocus && { borderColor: 'blue', borderWidth: 1 }]}
-                placeholderStyle={styles.placeholderStyle}
-                selectedTextStyle={styles.selectedTextStyle}
-                inputSearchStyle={styles.inputSearchStyle}
-                maxHeight={200}
-                labelField={labelField ? labelField : "label"}
-                valueField={valueField ? valueField : "value"}
-                placeholder={placeholder ? placeholder : `Select ${name}`}
-                searchPlaceholder={`Search ${name}`}
-                value={value}
-                search={search ? search : false}
-                onFocus={() => setIsFocus(true)}
-                onBlur={() => setIsFocus(false)}
-                onChange={item => {
-                    setValue(item);
-                    setIsFocus(false);
-                }}
-                containerStyle={{
-                    borderWidth: 1,
-                }}
-                mode={mode ? mode : 'auto'}
-            />
-            {/* <Text>Select Product</Text> */}
         </View>
     )
 }

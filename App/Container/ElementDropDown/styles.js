@@ -37,7 +37,7 @@ export const styles = StyleSheet.create({
     },
     selectedTextStyle: {
         fontSize: 14,
-        fontFamily:Font_Family.NunitoSans_Bold
+        fontFamily: Font_Family.NunitoSans_Bold
     },
     iconStyle: {
         width: 20,
@@ -48,4 +48,10 @@ export const styles = StyleSheet.create({
         fontSize: 14,
         // borderWidth:0.8
     },
+    errortext: {
+        color: 'red',
+        fontFamily: Font_Family.NunitoSans_Italic,
+        fontSize: 12,
+marginLeft:'42%'
+    }
 })

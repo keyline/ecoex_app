@@ -38,7 +38,9 @@ const List = ({ item, products, onChangeProduct, onDelete, arrLength, onViewImag
                     />
                 </View>
             }
-            <Text style={styles.hsntext}>HSN Code : {item?.hsn}</Text>
+            {(item.hsn) && (
+                <Text style={styles.hsntext}>HSN Code : {item?.hsn}</Text>
+            )}
             {(item?.new_product && item?.product_image) && (
                 <View style={{ width: '80%', alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: '3%' }}>
                     <Text style={[styles.modalText, { marginTop: 10 }]}>Product Image :</Text>

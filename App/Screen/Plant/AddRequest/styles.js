@@ -10,16 +10,17 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'center',
-        paddingHorizontal: '4%'
+        paddingHorizontal: '2%'
     },
     headerLeft: {
-        width: '45%',
+        width: '42%',
         // borderRightWidth: 2
     },
     headerRight: {
-        width: '50%',
+        width: '55%',
         paddingLeft: 10,
-        borderLeftWidth: 2
+        borderLeftWidth: 2,
+        overflow:'hidden'
     },
     itemContainer: {
         backgroundColor: Colors.light_grey,

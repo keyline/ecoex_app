@@ -96,5 +96,18 @@ export const styles = StyleSheet.create({
         fontFamily: Font_Family.NunitoSans_Bold,
         color: Colors.grey,
         textDecorationLine: 'underline'
+    },
+    viewdocContainer:{
+        backgroundColor:'#91c3f2',
+        alignSelf:'flex-start',
+        paddingHorizontal:'2%',
+        paddingVertical:'0.5%',
+        marginTop:'2%',
+        marginLeft:'2%',
+        borderRadius:10
+    },
+    viewdocText:{
+        fontFamily:Font_Family.NunitoSans_Regular,
+        color:Colors.white
     }
 })

@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, Image, ScrollView } from 'react-native'
+import { View, Text, SafeAreaView, Image, ScrollView, TouchableOpacity } from 'react-native'
 import React, { useCallback, useContext, useEffect, useState } from 'react'
 import { CommonStyle } from '../../../Utils/CommonStyle'
 import { ImagePath } from '../../../Utils/ImagePath'
@@ -6,7 +6,7 @@ import { styles } from './styles'
 import Loader from '../../../Container/Loader'
 import InputField from '../../../Container/InputField'
 import Apis from '../../../Service/Apis'
-import { ToastError, ToastMessage } from '../../../Service/CommonFunction'
+import { DocumentPickers, ToastError, ToastMessage, checkStoragePermission } from '../../../Service/CommonFunction'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
 import { useFocusEffect } from '@react-navigation/native'
 import Header from '../../../Container/Header'
@@ -16,6 +16,8 @@ import Modal from 'react-native-modal';
 import OTPInputView from '@twotalltotems/react-native-otp-input'
 import { Colors } from '../../../Utils/Colors'
 import AuthContext from '../../../Service/Context'
+import DocumentPicker from 'react-native-document-picker';
+import RNFetchBlob from 'rn-fetch-blob'
 
 const PlantEditProfile = ({ navigation }) => {
 
@@ -29,6 +31,8 @@ const PlantEditProfile = ({ navigation }) => {
         data: null,
         gstNo: '',
         gstNoErr: '',
+        gstCertificate: null,
+        gstCertificateErr: '',
         companyDetails: null,
         companyName: '',
         companyNameErr: '',
@@ -55,6 +59,8 @@ const PlantEditProfile = ({ navigation }) => {
         modalVisible: false,
         mobileOTP: '',
         emailOTP: '',
+        pdfViewer: false,
+        pdfViewFile: ''
     })
     const [memberPicker, setmemberPicker] = useState(false);
     const [memberList, setmemberList] = useState([]);
@@ -503,6 +509,35 @@ const PlantEditProfile = ({ navigation }) => {
         }
     })
 
+    const onPickGstCertificate = useCallback(async () => {
+        try {
+            let response = await DocumentPickers()
+            if (__DEV__) {
+                console.log('pickerresponse', JSON.stringify(response))
+            }
+            if (response.length > 0) {
+                setState(prev => ({
+                    ...prev,
+                    gstCertificate: response[0]
+                }))
+            }
+            // else {
+            //     ToastError();
+            // }
+        } catch (error) {
+            if (__DEV__)
+                console.log('CertificstePickerError', error)
+        }
+    })
+
+    const viewPdf = useCallback(async (link) => {
+        let results = await checkStoragePermission();
+        console.log('permissionresult',results)
+        // navigation.navigate('PdfViewer', { source: link })
+        navigation.navigate('PdfViewer')
+
+    })
+
     return (
         <SafeAreaView style={CommonStyle.container}>
             <Header
@@ -529,6 +564,22 @@ const PlantEditProfile = ({ navigation }) => {
                             error={state.gstNoErr}
                             maxLength={15}
                         />
+                        <InputField
+                            name={'GST Certificate'}
+                            // value={state.gstNo}
+                            onChangeText={onChangeGstNo}
+                            editable={false}
+                            error={state.gstNoErr}
+                            rightIcon={ImagePath.camera}
+                            rightonPress={onPickGstCertificate}
+                        // maxLength={15}
+                        />
+                        {/* {(state.gstCertificate) && ( */}
+                            {/* <TouchableOpacity onPress={()=>viewPdf(state.gstCertificate.uri)} activeOpacity={0.5} style={styles.viewdocContainer}> */}
+                            <TouchableOpacity onPress={viewPdf} activeOpacity={0.5} style={styles.viewdocContainer}>
+                                <Text style={styles.viewdocText}>View Document</Text>
+                            </TouchableOpacity>
+                        {/* )} */}
                         <InputField
                             name={'Company Name'}
                             value={state.companyName}
