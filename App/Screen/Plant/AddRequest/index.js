@@ -1,26 +1,26 @@
-import { View, Text, SafeAreaView, ScrollView, Image, TouchableOpacity, FlatList, Keyboard, TextInput } from 'react-native'
-import React, { useCallback, useState } from 'react'
+import { View, Text, SafeAreaView, Image, TouchableOpacity, FlatList, Keyboard, TextInput } from 'react-native'
+import React, { useCallback, useState, useContext } from 'react'
 import { CommonStyle } from '../../../Utils/CommonStyle'
 import Header from '../../../Container/Header'
 import { ImagePath } from '../../../Utils/ImagePath'
 import { styles } from './styles'
-import ElementDropDown from '../../../Container/ElementDropDown'
 import List from './List'
 import ModalPop from './ModalPop'
-import { LaunchCamera, LaunchImageLibary, ToastMessage, dateConvertNew, generateRandomId } from '../../../Service/CommonFunction'
+import { LaunchCamera, LaunchImageLibary, ToastError, ToastMessage, dateConvertNew, generateRandomId } from '../../../Service/CommonFunction'
 import ImageOptions from '../../../Container/ImageOptions'
 import ImageView from '../../../Container/ImageView'
 import { useFocusEffect } from '@react-navigation/native'
 import Apis from '../../../Service/Apis'
-import { Colors } from '../../../Utils/Colors'
 import DateTimePickers from '../../../Container/DateTimePickers'
+import { LocationPermission, OpenAppSetting } from '../../../Service/Permission'
+import { getCurrentLocation } from '../../../Service/Location'
+import { ImageMarker } from '../../../Service/ImageMarker'
+import DeviceInfo from 'react-native-device-info'
+import LoaderTransparent from '../../../Container/LoaderTransparent'
+import AuthContext from '../../../Service/Context'
+import SuccessModal from '../../../Container/SuccessModal'
 
-const products = [
-    { label: 'Product 1', value: '1' },
-    { label: 'Product 2', value: '2' },
-    { label: 'Product 3', value: '3' },
-    { label: 'Product 4', value: '4' },
-]
+
 
 const category = [
     { label: 'Category 1', value: '1' },
@@ -30,6 +30,9 @@ const category = [
 ]
 
 const AddRequest = ({ navigation }) => {
+
+    const context = useContext(AuthContext);
+    const { userProfile } = context.allData;
 
     const [state, setState] = useState({
         loading: false,
@@ -46,15 +49,31 @@ const AddRequest = ({ navigation }) => {
         collectionDate: '',
         collectionDatePicker: false,
         gps_img: null,
-        viewImgeUri: null
+        viewImgeUri: null,
+        latitude: '',
+        longitude: '',
+        deviceModel: '',
+        deviceBrand: '',
+        successModalVisible: false
     })
     const [productList, setProductList] = useState([]);
     const [reqList, setReqList] = useState([
         { sl_no: generateRandomId(), product_id: '', hsn: '', productErr: '', new_product: false }
     ])
 
+    const initialState = () => {
+        setState(prev => ({
+            ...prev,
+            gps_img: null,
+            collectionDate: ''
+        }))
+        setReqList([
+            { sl_no: generateRandomId(), product_id: '', hsn: '', productErr: '', new_product: false }
+        ])
+    }
+
     const onHeaderPress = useCallback(async () => {
-        navigation.goBack();
+        navigation.navigate('PlantDashBoard');
     })
 
     useFocusEffect(
@@ -78,15 +97,49 @@ const AddRequest = ({ navigation }) => {
                         return { ...item, label: item.name, value: item.id }
                     })
                     setProductList(parray)
-                    return parray;
+                    // return parray;
                 }
             }
+            hideLoading();
+            onGetLocation();
+            onGetDeviceId();
         } catch (error) {
             if (__DEV__) {
                 console.log(error)
             }
             hideLoading();
             ToastError();
+        }
+    })
+
+    const onGetDeviceId = useCallback(async () => {
+        let devicemodel = DeviceInfo.getModel();
+        let devicebrand = DeviceInfo.getBrand();
+        // console.log('deviceModel', devicemodel);
+        // console.log('deviceBrand',devicebrand)
+        setState(prev => ({
+            ...prev,
+            deviceModel: devicemodel,
+            deviceBrand: devicebrand
+        }))
+    })
+
+    const onGetLocation = useCallback(async () => {
+        let permission = await LocationPermission();
+        if (permission) {
+            let location = await getCurrentLocation();
+            if (__DEV__) {
+                console.log('location', location)
+            }
+            if (location.coords) {
+                setState(prev => ({
+                    ...prev,
+                    latitude: location?.coords?.latitude,
+                    longitude: location?.coords?.longitude
+                }))
+            }
+        } else {
+            OpenAppSetting();
         }
     })
 
@@ -195,9 +248,9 @@ const AddRequest = ({ navigation }) => {
         try {
             if (value == 1) {
                 let libaryImageRes = await LaunchImageLibary(true);
-                if (__DEV__) {
-                    console.log('LibaryImage', libaryImageRes)
-                }
+                // if (__DEV__) {
+                //     console.log('LibaryImage', libaryImageRes)
+                // }
                 if (libaryImageRes.assets && libaryImageRes.assets.length > 0) {
                     if (state.pickerModalType == 'gps') {
                         setState(prev => ({
@@ -205,6 +258,15 @@ const AddRequest = ({ navigation }) => {
                             gps_img: libaryImageRes.assets[0]
                         }))
                         onHidePicker();
+                        // let markerres = await ImageMarker(libaryImageRes.assets[0].uri, state.latitude, state.longitude);
+                        // console.log('imagemarker',JSON.stringify(markerres))
+                        // setState(prev => ({
+                        //     ...prev,
+                        //     gps_img: {
+                        //         uri:`file://${markerres}`,
+                        //         fileName:libaryImageRes.assets[0].fileName
+                        //     }
+                        // }))
                     } else {
                         setState(prev => ({
                             ...prev,
@@ -217,9 +279,9 @@ const AddRequest = ({ navigation }) => {
                 }
             } else {
                 let cameraImageRes = await LaunchCamera(true);
-                if (__DEV__) {
-                    console.log('CameraImage', cameraImageRes)
-                }
+                // if (__DEV__) {
+                //     console.log('CameraImage', cameraImageRes)
+                // }
                 if (cameraImageRes.assets && cameraImageRes.assets.length > 0) {
                     if (state.pickerModalType == 'gps') {
                         setState(prev => ({
@@ -324,13 +386,48 @@ const AddRequest = ({ navigation }) => {
             ToastMessage('Upload GPS Track Image');
             return;
         } else {
-            let datas = {
-                requestList: reqList,
-                gps_image: state.gps_img,
-                collection_date: dateConvertNew(state.collectionDate)
+            try {
+                showLoading();
+                let datas = {
+                    requestList: reqList,
+                    gps_image: state.gps_img,
+                    collection_date: dateConvertNew(state.collectionDate),
+                    latitude: state.latitude,
+                    longitude: state.longitude,
+                    device_model: state.deviceModel,
+                    device_brand: state.deviceBrand
+                }
+                let response = await Apis.plant_addrequest(datas);
+                if (__DEV__) {
+                    console.log('AddRequest', JSON.stringify(response))
+                }
+                if (response.success) {
+                    // navigation.navigate('ProcessRequest');
+                    setState(prev => ({
+                        ...prev,
+                        successModalVisible: true
+                    }))
+                    initialState();
+                } else {
+                    ToastMessage(response?.message);
+                }
+                hideLoading();
+            } catch (error) {
+                if (__DEV__) {
+                    console.log(error)
+                }
+                ToastError();
+                hideLoading();
             }
-            console.log('PostBody', JSON.stringify(datas))
         }
+    })
+
+    const onFinish = useCallback(async () => {
+        navigation.navigate('ProcessRequest');
+        setState(prev => ({
+            ...prev,
+            successModalVisible: false
+        }))
     })
 
     const renderFooter = () => (
@@ -354,18 +451,18 @@ const AddRequest = ({ navigation }) => {
         <SafeAreaView style={CommonStyle.container}>
             <Header
                 name={'Add Request'}
-                leftIcon={ImagePath.back}
+                leftIcon={ImagePath.home}
                 leftOnPress={onHeaderPress}
             />
             {/* <ScrollView> */}
             <View style={styles.headerContainer}>
                 <View style={styles.headerLeft}>
-                    <Text style={CommonStyle.normalText}>Plant ID : <Text style={CommonStyle.boldblacktext}>1234567890</Text></Text>
+                    <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>Plant Name : <Text style={[CommonStyle.boldblacktext, { fontSize: 12 }]}>{userProfile?.company_name}</Text></Text>
                 </View>
                 <View style={styles.headerRight}>
-                    <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>36 A CHANDI GHOSH ROAD KOLKATA 700002</Text>
-                    <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>WEST BENGAL</Text>
-                    <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>info@keylines.net</Text>
+                    <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>{userProfile?.full_address}</Text>
+                    {/* <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>WEST BENGAL</Text> */}
+                    <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>{userProfile?.email}</Text>
                 </View>
             </View>
             <View style={{ flex: 1, marginTop: '3%' }}>
@@ -440,6 +537,16 @@ const AddRequest = ({ navigation }) => {
                     mode={'date'}
                     onConfirm={onChangeCollectionDate}
                     minimumDate={new Date()}
+                />
+            )}
+            {(state.loading) && (
+                <LoaderTransparent loading={state.loading} />
+            )}
+            {(state.successModalVisible) && (
+                <SuccessModal
+                    isVisible={state.successModalVisible}
+                    onHideModal={() => console.log('close')}
+                    onFinish={onFinish}
                 />
             )}
             {/* </ScrollView> */}

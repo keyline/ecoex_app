@@ -7,13 +7,13 @@ import { Colors } from '../../Utils/Colors'
 
 const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDelete }) => {
 
-    const [show, setshow] = useState(false);
+    const [show, setshow] = useState(true);
 
-    useEffect(() => {
-        if (index == 0 || index == 1) {
-            setshow(true)
-        }
-    }, [])
+    // useEffect(() => {
+    //     if (index == 0 || index == 1) {
+    //         setshow(true)
+    //     }
+    // }, [])
 
     const onShow = useCallback(async () => {
         setshow(!show);
@@ -22,7 +22,7 @@ const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDel
     return (
         <View style={[styles.listContainer, { borderColor: headingColor ? headingColor : Colors.process, backgroundColor: backgroundColor ? backgroundColor : Colors.white }]}>
             <TouchableOpacity onPress={onShow} activeOpacity={0.5} style={[styles.headingContainer, { backgroundColor: headingColor ? headingColor : Colors.process }]}>
-                <Text style={CommonStyle.boldblacktext}>REQ ID : {item?.id}</Text>
+                <Text style={CommonStyle.boldblacktext}>REQ ID : {item?.enquiry_no}</Text>
                 <Image source={show ? ImagePath.arrow_up : ImagePath.arrow_down} style={styles.arrow} />
             </TouchableOpacity>
             {(show) && (
@@ -30,11 +30,11 @@ const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDel
                     <View style={{ width: '60%' }}>
                         <View style={{ borderBottomWidth: 0.8, borderColor: Colors.grey, marginBottom: 5, paddingBottom: 5 }}>
                             <Text style={CommonStyle.normalText}>Added :</Text>
-                            <Text style={CommonStyle.boldblacktext}> {item?.addtime}</Text>
+                            <Text style={CommonStyle.boldblacktext}> {item?.created_at}</Text>
                         </View>
                         <View>
                             <Text style={CommonStyle.normalText}>Modified :</Text>
-                            <Text style={CommonStyle.boldblacktext}> {item.modifytime ? item?.modifytime : '---'}</Text>
+                            <Text style={CommonStyle.boldblacktext}> {item.updated_at ? item?.updated_at : '---'}</Text>
                         </View>
                     </View>
                     <TouchableOpacity onPress={() => onDelete(item)} disabled={!onDelete} activeOpacity={0.5} style={styles.deleteContainer}>

@@ -102,10 +102,12 @@ const Login = ({ navigation }) => {
           await setUserData(userdata);
           await setAccessToken(token);
           // await context.onGetStoreData();
+          await context.onGetUserProfile();
           await context.setState(prevState => ({
             ...prevState,
             userdata: userdata,
             accesstoken: token,
+            userType:userdata?.type,
             isLogin: true
           }))
           hideLoading();

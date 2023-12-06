@@ -22,7 +22,7 @@ const List = ({ item, index,onEdit,onDelete }) => {
     return (
         <View style={styles.listContainer}>
             <TouchableOpacity onPress={onShow} activeOpacity={0.5} style={styles.headingContainer}>
-                <Text style={CommonStyle.boldblacktext}>REQ ID : {item?.id}</Text>
+                <Text style={CommonStyle.boldblacktext}>REQ ID : {item?.enquiry_no}</Text>
                 <Image source={show ? ImagePath.arrow_up : ImagePath.arrow_down} style={styles.arrow} />
             </TouchableOpacity>
             {(show) && (
@@ -30,11 +30,11 @@ const List = ({ item, index,onEdit,onDelete }) => {
                     <View style={{ width: '60%' }}>
                         <View style={{ borderBottomWidth: 0.8, borderColor: Colors.grey, marginBottom: 5, paddingBottom: 5 }}>
                             <Text style={CommonStyle.normalText}>Added :</Text>
-                            <Text style={CommonStyle.boldblacktext}> {item?.addtime}</Text>
+                            <Text style={CommonStyle.boldblacktext}> {item?.created_at}</Text>
                         </View>
                         <View>
                             <Text style={CommonStyle.normalText}>Modified :</Text>
-                            <Text style={CommonStyle.boldblacktext}> {item.modifytime ? item?.modifytime : '---'}</Text>
+                            <Text style={CommonStyle.boldblacktext}> {item.updated_at ? item?.updated_at : '---'}</Text>
                         </View>
                     </View>
                     <TouchableOpacity activeOpacity={0.5} style={styles.deleteContainer}>

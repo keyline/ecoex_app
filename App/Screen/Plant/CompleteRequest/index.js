@@ -9,12 +9,12 @@ import SortModal from '../../../Container/SortModal'
 import RequestList from '../../../Container/RequestList'
 
 const list = [
-    { id: 'RD001', addtime: '14/11/2023 - 05.25 PM', modifytime: '14/11/2023 - 10.25 PM', status: 'Processing' },
-    { id: 'RD002', addtime: '14/11/2023 - 05.25 PM', modifytime: '14/11/2023 - 10.25 PM', status: 'Processing' },
-    { id: 'AB123', addtime: '14/11/2023 - 05.25 PM', modifytime: '', status: 'Processing' },
-    { id: 'RD004', addtime: '14/11/2023 - 05.25 PM', modifytime: '14/11/2023 - 10.25 PM', status: 'Processing' },
-    { id: 'AB456', addtime: '14/11/2023 - 05.25 PM', modifytime: '14/11/2023 - 10.25 PM', status: 'Processing' },
-    { id: 'RD006', addtime: '14/11/2023 - 05.25 PM', modifytime: '14/11/2023 - 10.25 PM', status: 'Processing' },
+    { enquiry_no: 'RD001', created_at: '14/11/2023 - 05.25 PM', updated_at: '14/11/2023 - 10.25 PM', status: 'Processing' },
+    { enquiry_no: 'RD002', created_at: '14/11/2023 - 05.25 PM', updated_at: '14/11/2023 - 10.25 PM', status: 'Processing' },
+    { enquiry_no: 'AB123', created_at: '14/11/2023 - 05.25 PM', updated_at: '', status: 'Processing' },
+    { enquiry_no: 'RD004', created_at: '14/11/2023 - 05.25 PM', updated_at: '14/11/2023 - 10.25 PM', status: 'Processing' },
+    { enquiry_no: 'AB456', created_at: '14/11/2023 - 05.25 PM', updated_at: '14/11/2023 - 10.25 PM', status: 'Processing' },
+    { enquiry_no: 'RD006', created_at: '14/11/2023 - 05.25 PM', updated_at: '14/11/2023 - 10.25 PM', status: 'Processing' },
 
 ]
 
@@ -29,7 +29,7 @@ const CompleteRequest = ({ navigation }) => {
     })
 
     const onHeaderPress = useCallback(async () => {
-        navigation.goBack();
+        navigation.navigate('PlantDashBoard');
     })
 
     const onSearch = useCallback(async (text) => {
@@ -63,7 +63,7 @@ const CompleteRequest = ({ navigation }) => {
         <SafeAreaView style={CommonStyle.container}>
             <Header
                 name={'Complete Request'}
-                leftIcon={ImagePath.back}
+                leftIcon={ImagePath.home}
                 leftOnPress={onHeaderPress}
             />
             <View style={{ flex: 1 }}>
@@ -85,7 +85,7 @@ const CompleteRequest = ({ navigation }) => {
                 </View>
                 <View style={{ flex: 1 }}>
                     <FlatList
-                        data={state.searchtext ? list.filter(obj => { return obj.id.toUpperCase().includes(state.searchtext.toUpperCase()) }) : list}
+                        data={state.searchtext ? list.filter(obj => { return obj.enquiry_no.toUpperCase().includes(state.searchtext.toUpperCase()) }) : list}
                         keyExtractor={(item, index) => index}
                         renderItem={({ item, index }) => <RequestList item={item} index={index} headingColor={Colors.theme_color} backgroundColor={Colors.theme_morelight} />}
                         style={{ marginBottom: 10 }}

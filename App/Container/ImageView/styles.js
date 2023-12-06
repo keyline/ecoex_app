@@ -24,16 +24,16 @@ export const styles = StyleSheet.create({
         position: 'absolute',
         top: 30,
         right: 30,
-        backgroundColor: Colors.black,
-        width: 40,
-        height: 40,
-        borderRadius: 20,
+        backgroundColor: Colors.white,
+        width: 30,
+        height: 30,
+        borderRadius: 15,
         alignItems: 'center',
         justifyContent: 'center'
     },
     closeIcon: {
         width: 15,
         height: 15,
-        tintColor: Colors.white
+        tintColor: Colors.black
     }
 })

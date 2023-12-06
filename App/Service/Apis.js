@@ -86,4 +86,15 @@ export default class Apis {
         return Network('post', 'get-product')
     }
 
+    static plant_addrequest = (data) => {
+        return Network('post', 'process-request-add', data)
+    }
+
+    static process_request_list = (data) => {
+        return Network('post', 'process-request-list',data)
+    }
+
+    static plant_delete_request = (data) => {
+        return Network('post', 'process-request-delete', data)
+    }
 }

@@ -6,7 +6,7 @@ import { styles } from './styles'
 import Loader from '../../../Container/Loader'
 import InputField from '../../../Container/InputField'
 import Apis from '../../../Service/Apis'
-import { DocumentPickers, ToastError, ToastMessage, checkStoragePermission } from '../../../Service/CommonFunction'
+import { DocumentPickers, ToastError, ToastMessage } from '../../../Service/CommonFunction'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
 import { useFocusEffect } from '@react-navigation/native'
 import Header from '../../../Container/Header'
@@ -16,13 +16,12 @@ import Modal from 'react-native-modal';
 import OTPInputView from '@twotalltotems/react-native-otp-input'
 import { Colors } from '../../../Utils/Colors'
 import AuthContext from '../../../Service/Context'
-import DocumentPicker from 'react-native-document-picker';
-import RNFetchBlob from 'rn-fetch-blob'
+
 
 const PlantEditProfile = ({ navigation }) => {
 
     const context = useContext(AuthContext)
-    const { siteData } = context.allData
+    const { siteData, userProfile } = context.allData
 
     const [state, setState] = useState({
         loading: false,
@@ -59,6 +58,24 @@ const PlantEditProfile = ({ navigation }) => {
         modalVisible: false,
         mobileOTP: '',
         emailOTP: '',
+        personName: '',
+        personNameErr: '',
+        personDesignation: '',
+        personDesignationErr: '',
+        personDocument: '',
+        personDocumentErr: '',
+        bankName: '',
+        bankNameErr: '',
+        branchName: '',
+        branchNameErr: '',
+        ifscCode: '',
+        ifscCodeErr: '',
+        acntType: '',
+        acntTypeErr: '',
+        acntNo: '',
+        acntNoErr: '',
+        cancelCheque: '',
+        cancelChequeErr: '',
         pdfViewer: false,
         pdfViewFile: ''
     })
@@ -104,38 +121,49 @@ const PlantEditProfile = ({ navigation }) => {
         navigation.navigate('PlantDashBoard')
     })
 
-    // const onGetMemberType = useCallback(async () => {
-    //     try {
-    //         showLoading();
-    //         let res = await Apis.member_type();
-    //         if (__DEV__) {
-    //             console.log('MemberType', JSON.stringify(res))
-    //         }
-    //         if (res.success) {
-    //             let cate = res?.data;
-    //             if (cate.length > 0) {
-    //                 let catedatas = cate.map(item => {
-    //                     return { label: item?.name, value: item?.id }
-    //                 })
-    //                 setmemberList(catedatas);
-    //             }
-    //         } else {
-    //             ToastMessage(res?.message);
-    //         }
-    //         onGetProfile();
-    //         // hideLoading();
-    //     } catch (error) {
-    //         if (__DEV__) {
-    //             console.log(error)
-    //         }
-    //         hideLoading();
-    //         ToastError();
-    //     }
-    // })
-
     const onGetProfile = useCallback(async () => {
         try {
             showLoading();
+            if (userProfile) {
+                let data = userProfile;
+                setState(prev => ({
+                    ...prev,
+                    gstNo: data?.gst_no,
+                    companyName: data?.company_name,
+                    plantAddress: data?.full_address,
+                    holding_no: data?.holding_no,
+                    street: data?.street,
+                    district: data?.district,
+                    state: data?.state,
+                    pincode: data?.pincode,
+                    location: data?.location,
+                    email: data?.email,
+                    phnNo: data?.phone,
+                    memberType: data?.member_type,
+                    personName: data?.contact_person_name,
+                    personDesignation: data?.contact_person_designation,
+                    bankName: data?.bank_name,
+                    branchName: data?.branch_name,
+                    ifscCode: data?.ifsc_code,
+                    acntType: data?.account_type,
+                    acntNo: data?.account_number,
+                    data: data,
+                    loading: false
+                }))
+            } else {
+                onGetProfileApi();
+            }
+        } catch (error) {
+            if (__DEV__) {
+                console.log(error)
+            }
+            hideLoading();
+            ToastError();
+        }
+    })
+
+    const onGetProfileApi = useCallback(async () => {
+        try {
             let res = await Apis.get_profile();
             if (__DEV__) {
                 console.log('GetProfile', JSON.stringify(res));
@@ -156,6 +184,13 @@ const PlantEditProfile = ({ navigation }) => {
                     email: data?.email,
                     phnNo: data?.phone,
                     memberType: data?.member_type,
+                    personName: data?.contact_person_name,
+                    personDesignation: data?.contact_person_designation,
+                    bankName: data?.bank_name,
+                    branchName: data?.branch_name,
+                    ifscCode: data?.ifsc_code,
+                    acntType: data?.account_type,
+                    acntNo: data?.account_number,
                     data: data,
                     loading: false
                 }))
@@ -253,14 +288,6 @@ const PlantEditProfile = ({ navigation }) => {
         }))
     }, [state.plantAddress])
 
-    const onChangeHoldingno = useCallback(async (value) => {
-        setState(prev => ({
-            ...prev,
-            holding_no: value,
-            holding_noErr: ''
-        }))
-    }, [state.holding_no])
-
     const onChangeStreet = useCallback(async (value) => {
         setState(prev => ({
             ...prev,
@@ -268,14 +295,6 @@ const PlantEditProfile = ({ navigation }) => {
             streetErr: ''
         }))
     }, [state.street])
-
-    const onChangeLocation = useCallback(async (value) => {
-        setState(prev => ({
-            ...prev,
-            location: value,
-            locationErr: ''
-        }))
-    }, [state.location])
 
     const onChangeDistrict = useCallback(async (value) => {
         setState(prev => ({
@@ -325,6 +344,62 @@ const PlantEditProfile = ({ navigation }) => {
         }))
     }, [state.memberType])
 
+    const onChangePrsnName = useCallback(async (value) => {
+        setState(prev => ({
+            ...prev,
+            personName: value,
+            personNameErr: ''
+        }))
+    }, [state.personName])
+
+    const onChangePrsnDesig = useCallback(async (value) => {
+        setState(prev => ({
+            ...prev,
+            personDesignation: value,
+            personDesignationErr: ''
+        }))
+    }, [state.personDesignation])
+
+    const onChangeBankName = useCallback(async (value) => {
+        setState(prev => ({
+            ...prev,
+            bankName: value,
+            bankNameErr: ''
+        }))
+    }, [state.bankName])
+
+    const onChangeBranchName = useCallback(async (value) => {
+        setState(prev => ({
+            ...prev,
+            branchName: value,
+            branchNameErr: ''
+        }))
+    }, [state.branchName])
+
+    const onChangeIfsc = useCallback(async (value) => {
+        setState(prev => ({
+            ...prev,
+            ifscCode: value,
+            ifscCodeErr: ''
+        }))
+    }, [state.ifscCode])
+
+    const onChangeAcntType = useCallback(async (value) => {
+        setState(prev => ({
+            ...prev,
+            acntType: value,
+            acntTypeErr: ''
+        }))
+    }, [state.acntType])
+
+    const onChangeAcntNo = useCallback(async (value) => {
+        setState(prev => ({
+            ...prev,
+            acntNo: value,
+            acntNoErr: ''
+        }))
+    }, [state.acntNo])
+
     const showModal = useCallback(async () => {
         setState(prev => ({
             ...prev,
@@ -364,25 +439,29 @@ const PlantEditProfile = ({ navigation }) => {
                 plantAddressErr: 'Enter Plant Address'
             }));
             return;
-        } else if (state.holding_no.trim() == '') {
-            setState(prev => ({
-                ...prev,
-                holding_noErr: 'Enter Holding No'
-            }))
-            return;
-        } else if (state.street.trim() == '') {
+        }
+        // else if (state.holding_no.trim() == '') {
+        //     setState(prev => ({
+        //         ...prev,
+        //         holding_noErr: 'Enter Holding No'
+        //     }))
+        //     return;
+        // } 
+        else if (state.street.trim() == '') {
             setState(prev => ({
                 ...prev,
                 streetErr: 'Enter Street'
             }));
             return;
-        } else if (state.location.trim() == '') {
-            setState(prev => ({
-                ...prev,
-                locationErr: 'Enter Location'
-            }));
-            return;
-        } else if (state.district.trim() == '') {
+        }
+        // else if (state.location.trim() == '') {
+        //     setState(prev => ({
+        //         ...prev,
+        //         locationErr: 'Enter Location'
+        //     }));
+        //     return;
+        // } 
+        else if (state.district.trim() == '') {
             setState(prev => ({
                 ...prev,
                 districtErr: 'Enter District'
@@ -430,14 +509,57 @@ const PlantEditProfile = ({ navigation }) => {
                 phnNoErr: 'Enter Valid Mobile Number'
             }));
             return;
+        } else if (state.personName.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                personNameErr: 'Enter Designated Person Name'
+            }));
+            return;
+        } else if (state.personDesignation.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                personDesignationErr: 'Enter Designated Person Designation'
+            }));
+            return;
+        } else if (state.bankName.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                bankNameErr: 'Enter Bank Name'
+            }));
+            return;
+        } else if (state.branchName.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                branchNameErr: 'Enter Branch Name'
+            }));
+            return;
+        } else if (state.ifscCode.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                ifscCodeErr: 'Enter IFSC Code'
+            }));
+            return;
+        } else if (state.acntType.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                acntTypeErr: 'Enter Account Type'
+            }));
+            return;
+        } else if (state.acntNo.trim() == '') {
+            setState(prev => ({
+                ...prev,
+                acntNoErr: 'Enter Account No'
+            }));
+            return;
         } else {
-            if (state.data?.phone != state.phnNo) {
-                onSendOtp();
-            } else if (state.data?.email != state.email) {
-                onSendOtp();
-            } else {
-                onUpdate();
-            }
+            onUpdate();
+            // if (state.data?.phone != state.phnNo) {
+            //     onSendOtp();
+            // } else if (state.data?.email != state.email) {
+            //     onSendOtp();
+            // } else {
+            //     onUpdate();
+            // }
         }
     })
 
@@ -476,26 +598,49 @@ const PlantEditProfile = ({ navigation }) => {
                 btnLoading: true
             }))
             let datas = {
+                type: state.data?.type,
                 gst_no: state.gstNo,
+                gst_certificate: state.gstCertificate ? [state.gstCertificate] : [],
                 company_name: state.companyName,
                 full_address: state.plantAddress,
                 holding_no: state.holding_no,
                 street: state.street,
-                location: state.location,
                 district: state.district,
                 state: state.state,
                 pincode: state.pincode,
+                location: state.location,
                 email: state.email,
-                phone: state.phnNo
+                phone: state.phnNo,
+                contact_person_name: state.personName,
+                contact_person_designation: state.personDesignation,
+                contact_person_document: state.personDocument ? [state.personDocument] : [],
+                bank_name: state.bankName,
+                branch_name: state.branchName,
+                ifsc_code: state.ifscCode,
+                account_type: state.acntType,
+                account_number: state.acntNo,
+                cancelled_cheque: state.cancelCheque ? [state.cancelCheque] : []
             }
             let response = await Apis.update_profile(datas);
             if (__DEV__) {
                 console.log('UpdateProfile', JSON.stringify(response))
             }
-            setState(prev => ({
-                ...prev,
-                btnLoading: false
-            }))
+            if (response.success) {
+                await onGetProfileApi();
+                setState(prev => ({
+                    ...prev,
+                    gstCertificate: null,
+                    personDocument: null,
+                    cancelCheque: null,
+                    btnLoading: false
+                }))
+                await context.onGetUserProfile();
+            } else {
+                setState(prev => ({
+                    ...prev,
+                    btnLoading: false
+                }))
+            }
             ToastMessage(response?.message);
         } catch (error) {
             if (__DEV__) {
@@ -509,33 +654,48 @@ const PlantEditProfile = ({ navigation }) => {
         }
     })
 
-    const onPickGstCertificate = useCallback(async () => {
+    const onPickDocument = useCallback(async (val) => {
         try {
             let response = await DocumentPickers()
             if (__DEV__) {
                 console.log('pickerresponse', JSON.stringify(response))
             }
             if (response.length > 0) {
-                setState(prev => ({
-                    ...prev,
-                    gstCertificate: response[0]
-                }))
+                if (val == 'gst') {
+                    setState(prev => ({
+                        ...prev,
+                        gstCertificate: response[0],
+                        gstCertificateErr: ''
+                    }))
+                } else if (val == 'person_docs') {
+                    setState(prev => ({
+                        ...prev,
+                        personDocument: response[0],
+                        personDocumentErr: ''
+                    }))
+                } else if (val == 'cheque') {
+                    setState(prev => ({
+                        ...prev,
+                        cancelCheque: response[0],
+                        cancelChequeErr: ''
+                    }))
+                }
             }
-            // else {
-            //     ToastError();
-            // }
         } catch (error) {
-            if (__DEV__)
+            if (__DEV__) {
                 console.log('CertificstePickerError', error)
+            }
         }
     })
 
-    const viewPdf = useCallback(async (link) => {
-        let results = await checkStoragePermission();
-        console.log('permissionresult',results)
-        // navigation.navigate('PdfViewer', { source: link })
-        navigation.navigate('PdfViewer')
+    const ViewBotton = ({ onPress }) => (
+        <TouchableOpacity onPress={() => onPress()} activeOpacity={0.5} style={styles.viewdocContainer}>
+            <Text style={styles.viewdocText}>View Document</Text>
+        </TouchableOpacity>
+    )
 
+    const viewPdf = useCallback(async (link) => {
+        navigation.navigate('PdfViewer', { source: link })
     })
 
     return (
@@ -566,20 +726,18 @@ const PlantEditProfile = ({ navigation }) => {
                         />
                         <InputField
                             name={'GST Certificate'}
-                            // value={state.gstNo}
-                            onChangeText={onChangeGstNo}
+                            value={state.gstCertificate?.name}
+                            placeholder={'Upload GST Certificate (PDF)'}
                             editable={false}
-                            error={state.gstNoErr}
+                            error={state.gstCertificateErr}
                             rightIcon={ImagePath.camera}
-                            rightonPress={onPickGstCertificate}
-                        // maxLength={15}
+                            rightonPress={() => onPickDocument('gst')}
                         />
-                        {/* {(state.gstCertificate) && ( */}
-                            {/* <TouchableOpacity onPress={()=>viewPdf(state.gstCertificate.uri)} activeOpacity={0.5} style={styles.viewdocContainer}> */}
-                            <TouchableOpacity onPress={viewPdf} activeOpacity={0.5} style={styles.viewdocContainer}>
-                                <Text style={styles.viewdocText}>View Document</Text>
-                            </TouchableOpacity>
-                        {/* )} */}
+                        {(state.data?.gst_certificate) && (
+                            <ViewBotton
+                                onPress={() => viewPdf(state.data?.gst_certificate)}
+                            />
+                        )}
                         <InputField
                             name={'Company Name'}
                             value={state.companyName}
@@ -593,13 +751,13 @@ const PlantEditProfile = ({ navigation }) => {
                             error={state.plantAddressErr}
                             multiline={true}
                         />
-                        <InputField
+                        {/* <InputField
                             name={'Holding No.'}
                             value={state.holding_no}
                             onChangeText={onChangeHoldingno}
                             error={state.holding_noErr}
                             multiline={false}
-                        />
+                        /> */}
                         <InputField
                             name={'Street'}
                             value={state.street}
@@ -607,13 +765,13 @@ const PlantEditProfile = ({ navigation }) => {
                             error={state.streetErr}
                             multiline={true}
                         />
-                        <InputField
+                        {/* <InputField
                             name={'Location'}
                             value={state.location}
                             onChangeText={onChangeLocation}
                             error={state.locationErr}
                             multiline={true}
-                        />
+                        /> */}
                         <InputField
                             name={'District'}
                             value={state.district}
@@ -649,11 +807,83 @@ const PlantEditProfile = ({ navigation }) => {
                             error={state.phnNoErr}
                             keyboardType={'phone-pad'}
                         />
-                        <InputField
+                        {/* <InputField
                             name={'Member Type'}
                             value={state.memberType}
                             editable={false}
+                        /> */}
+                        <InputField
+                            name={'Designated Person Name'}
+                            value={state.personName}
+                            onChangeText={onChangePrsnName}
+                            error={state.personNameErr}
                         />
+                        <InputField
+                            name={'Designated Person Designation'}
+                            value={state.personDesignation}
+                            onChangeText={onChangePrsnDesig}
+                            error={state.personDesignationErr}
+                        />
+                        <InputField
+                            name={'Designated Person PAN Card / Company ID'}
+                            value={state.personDocument?.name}
+                            placeholder={'Upload PAN Card / Company ID (PDF)'}
+                            editable={false}
+                            error={state.personDocumentErr}
+                            rightIcon={ImagePath.camera}
+                            rightonPress={() => onPickDocument('person_docs')}
+                        />
+                        {(state.data?.contact_person_document) && (
+                            <ViewBotton
+                                onPress={() => viewPdf(state.data?.contact_person_document)}
+                            />
+                        )}
+                        <InputField
+                            name={'Bank Name'}
+                            value={state.bankName}
+                            onChangeText={onChangeBankName}
+                            error={state.bankNameErr}
+                        />
+                        <InputField
+                            name={'Branch Name'}
+                            value={state.branchName}
+                            onChangeText={onChangeBranchName}
+                            error={state.branchNameErr}
+                        />
+                        <InputField
+                            name={'IFSC Code'}
+                            value={state.ifscCode}
+                            onChangeText={onChangeIfsc}
+                            error={state.ifscCodeErr}
+                        // keyboardType={'number-pad'}
+                        />
+                        <InputField
+                            name={'Account Type'}
+                            value={state.acntType}
+                            onChangeText={onChangeAcntType}
+                            error={state.acntTypeErr}
+                        />
+                        <InputField
+                            name={'Account No'}
+                            value={state.acntNo}
+                            onChangeText={onChangeAcntNo}
+                            error={state.acntNoErr}
+                            keyboardType={'number-pad'}
+                        />
+                        <InputField
+                            name={'Cancelled Cheque'}
+                            value={state.cancelCheque?.name}
+                            placeholder={'Upload Cancelled Cheque (PDF)'}
+                            editable={false}
+                            error={state.cancelChequeErr}
+                            rightIcon={ImagePath.camera}
+                            rightonPress={() => onPickDocument('cheque')}
+                        />
+                        {(state.data?.cancelled_cheque) && (
+                            <ViewBotton
+                                onPress={() => viewPdf(state.data?.cancelled_cheque)}
+                            />
+                        )}
                         <View style={{ marginTop: '2%' }}>
                             <Button
                                 name={'UPDATE'}

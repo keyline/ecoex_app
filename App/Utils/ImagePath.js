@@ -29,5 +29,12 @@ export const ImagePath = {
     info:require('../Assets/Images/info.png'),
     truck:require('../Assets/Images/truck.png'),
     slip:require('../Assets/Images/slip.png'),
-    cloud_upload:require('../Assets/Images/cloud_upload.png')
+    cloud_upload:require('../Assets/Images/cloud_upload.png'),
+    edit_profile:require('../Assets/Images/edit_profile.png'),
+    lock:require('../Assets/Images/lock.png'),
+    request:require('../Assets/Images/request.png'),
+    pending:require('../Assets/Images/pending.png'),
+    complete:require('../Assets/Images/complete.png'),
+    reject:require('../Assets/Images/reject.png'),
+    success_animation:require('../Assets/Images/success_animation.json')
 }

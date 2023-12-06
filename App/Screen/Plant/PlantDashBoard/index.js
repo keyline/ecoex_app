@@ -102,41 +102,43 @@ const PlantDashBoard = ({ navigation }) => {
             />
             {(state.loading) ? <Loader loading={state.loading} /> :
                 <ScrollView>
-                    <View style={styles.bodyContent}>
-                        <View style={[styles.profileContainer, { width: '100%' }]}>
-                            <Image source={ImagePath.dp} style={styles.dp} />
-                            <View style={[styles.profileInfo, { width: '80%' }]}>
-                                <NameValue name={'Plant Id'} value={state.data?.plant_id} />
-                                <NameValue name={'Company Name'} value={state.data?.company_name} />
-                                <NameValue name={'GST No'} value={state.data?.gst_no} />
-                                <NameValue name={'Email ID'} value={state.data?.email} />
-                                <NameValue name={'Plant Address'} value={state.data?.full_address} />
-                                <NameValue name={'Plant Location'} value={state.data?.location} />
-                            </View>
-                        </View>
-                        <View style={styles.btnContent}>
-                            <Text style={styles.headingText}>Request Status Wise Count</Text>
-                            <View style={styles.statusContent}>
-                                <View style={{ width: '50%' }}>
-                                    <Bottom onPress={() => onRequest(state.data?.step1_percent, '#264CD4')} name={state.data?.step1_label} color={'#264CD4'} />
-                                    <Bottom onPress={() => onRequest(state.data?.step2_percent, '#E79D0CE8')} name={state.data?.step2_label} color={'#E79D0CE8'} />
-                                    <Bottom onPress={() => onRequest(state.data?.step3_percent, '#E70C0CC9')} name={state.data?.step3_label} color={'#E70C0CC9'} />
-                                    <Bottom onPress={() => onRequest(state.data?.step4_percent, '#2DA952')} name={state.data?.step4_label} color={'#2DA952'} />
-                                </View>
-                                <View style={{ width: '40%', alignItems: 'center' }}>
-                                    <CircularProgress
-                                        // maxValue={200}
-                                        value={state.progressValue}
-                                        activeStrokeWidth={10}
-                                        inActiveStrokeColor={Colors.grey}
-                                        inActiveStrokeOpacity={0.2}
-                                        activeStrokeColor={state.progressColor}
-                                        progressValueColor={state.progressColor}
-                                    />
+                    {(state.data) && (
+                        <View style={styles.bodyContent}>
+                            <View style={[styles.profileContainer, { width: '100%' }]}>
+                                <Image source={ImagePath.dp} style={styles.dp} />
+                                <View style={[styles.profileInfo, { width: '80%' }]}>
+                                    <NameValue name={'Plant Id'} value={state.data?.plant_id} />
+                                    <NameValue name={'Company Name'} value={state.data?.company_name} />
+                                    <NameValue name={'GST No'} value={state.data?.gst_no} />
+                                    <NameValue name={'Email ID'} value={state.data?.email} />
+                                    <NameValue name={'Plant Address'} value={state.data?.full_address} />
+                                    <NameValue name={'Plant Location'} value={state.data?.location} />
                                 </View>
                             </View>
+                            <View style={styles.btnContent}>
+                                <Text style={styles.headingText}>Request Status Wise Count</Text>
+                                <View style={styles.statusContent}>
+                                    <View style={{ width: '50%' }}>
+                                        <Bottom onPress={() => onRequest(state.data?.step1_percent, '#264CD4')} name={state.data?.step1_label} color={'#264CD4'} />
+                                        <Bottom onPress={() => onRequest(state.data?.step2_percent, '#E79D0CE8')} name={state.data?.step2_label} color={'#E79D0CE8'} />
+                                        <Bottom onPress={() => onRequest(state.data?.step3_percent, '#E70C0CC9')} name={state.data?.step3_label} color={'#E70C0CC9'} />
+                                        <Bottom onPress={() => onRequest(state.data?.step4_percent, '#2DA952')} name={state.data?.step4_label} color={'#2DA952'} />
+                                    </View>
+                                    <View style={{ width: '40%', alignItems: 'center' }}>
+                                        <CircularProgress
+                                            // maxValue={200}
+                                            value={state.progressValue}
+                                            activeStrokeWidth={10}
+                                            inActiveStrokeColor={Colors.grey}
+                                            inActiveStrokeOpacity={0.2}
+                                            activeStrokeColor={state.progressColor}
+                                            progressValueColor={state.progressColor}
+                                        />
+                                    </View>
+                                </View>
+                            </View>
                         </View>
-                    </View>
+                    )}
                 </ScrollView>
             }
         </SafeAreaView>

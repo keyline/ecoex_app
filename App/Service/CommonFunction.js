@@ -44,8 +44,8 @@ export const dateConvertYear = (value) => {
 export const LaunchImageLibary = async (base64) => {
     let options = {
         mediaType: 'photo',
-        maxHeight: 250,
-        maxWidth: 250,
+        // maxHeight: 1000,
+        // maxWidth: 500,
         quality: 1,
         includeBase64: base64 ? base64 : false,
     }
@@ -56,8 +56,8 @@ export const LaunchImageLibary = async (base64) => {
 export const LaunchCamera = async (base64) => {
     let options = {
         mediaType: 'photo',
-        maxHeight: 250,
-        maxWidth: 250,
+        // maxHeight: 1000,
+        // maxWidth: 500,
         quality: 1,
         includeBase64: base64 ? base64 : false,
     }
@@ -91,6 +91,22 @@ export const DocumentPickers = async (multiple) => {
     } catch (error) {
         // throw error
         return error
+    }
+}
+
+export const GetUniqueArray = (arrays, uniquekey) => {
+    try {
+        if (arrays.length > 0) {
+            const uniqueData = arrays.filter((item, index, array) => {
+                const key = item[uniquekey];
+                return index === array.findIndex((obj) => obj[uniquekey] === key);
+            })
+            return uniqueData;
+        } else {
+            return [];
+        }
+    } catch (error) {
+        return [];
     }
 }
 

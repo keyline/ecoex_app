@@ -3,13 +3,13 @@ import React, { useState, useCallback, useContext, useEffect } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import AuthStack from './App/Navigation/AuthStack'
 import { Colors } from './App/Utils/Colors'
-import DrawerStack from './App/Navigation/DrawerStack'
 import { clearUserData, getAccessToken, getUserData } from './App/Service/AsyncStorage'
 import AuthContext from './App/Service/Context'
 import PlantDrawerStack from './App/Navigation/Plant/PlantDrawerStack'
 import { ToastError, ToastMessage } from './App/Service/CommonFunction'
 import Apis from './App/Service/Apis'
 import SplashScreen from 'react-native-splash-screen'
+import VendorDrawerStack from './App/Navigation/Vendor/VendorDrawerStack'
 
 const App = () => {
 
@@ -20,7 +20,8 @@ const App = () => {
     accesstoken: null,
     appData: null,
     userProfile: null,
-    siteData: null
+    siteData: null,
+    userType: ''
   })
 
   useEffect(() => {
@@ -57,6 +58,30 @@ const App = () => {
     }
   })
 
+  const onGetUserProfile = useCallback(async () => {
+    let accesstoken = await getAccessToken();
+    if (accesstoken) {
+      try {
+        let res = await Apis.get_profile();
+        if (__DEV__) {
+          console.log('UserProfileAppjs', JSON.stringify(res))
+        }
+        if (res.success) {
+          setState(prev => ({
+            ...prev,
+            userProfile: res?.data,
+            userType: res?.data?.type
+          }))
+        }
+      } catch (error) {
+        if (__DEV__) {
+          console.log(error)
+        }
+        ToastError();
+      }
+    }
+  })
+
   const onGetStoreData = async () => {
     try {
       let userdata = await getUserData();
@@ -70,8 +95,10 @@ const App = () => {
           ...prevState,
           userdata: userdata,
           accesstoken: accesstoken,
+          userType: userdata?.type,
           isLogin: true
         }))
+        onGetUserProfile();
       } else {
         setState(prevState => ({
           ...prevState,
@@ -106,13 +133,18 @@ const App = () => {
 
   return (
     <NavigationContainer>
-      <AuthContext.Provider value={{ allData: state, setState, onGetStoreData, onClearStoreData }}>
+      <AuthContext.Provider value={{ allData: state, setState, onGetStoreData, onClearStoreData, onGetUserProfile }}>
         <StatusBar backgroundColor={Colors.theme_color} barStyle={'light-content'} />
         {(!state.loading) && (
           <>
             {(state.isLogin) ?
-              // <DrawerStack />
-              <PlantDrawerStack />
+              <>
+                {(state.userdata?.type == 'PLANT') ?
+                  <PlantDrawerStack />
+                  :
+                  <VendorDrawerStack />
+                }
+              </>
               :
               <AuthStack />
             }
