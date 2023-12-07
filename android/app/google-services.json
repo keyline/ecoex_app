@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "493591388467",
+    "project_id": "ecoex-d01c3",
+    "storage_bucket": "ecoex-d01c3.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:493591388467:android:80bf88f280e10f9e095e46",
+        "android_client_info": {
+          "package_name": "com.ecoex"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBaw0vLjWoFnbex9YJjRVu098tCIVXOyys"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

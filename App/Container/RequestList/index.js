@@ -23,7 +23,10 @@ const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDel
         <View style={[styles.listContainer, { borderColor: headingColor ? headingColor : Colors.process, backgroundColor: backgroundColor ? backgroundColor : Colors.white }]}>
             <TouchableOpacity onPress={onShow} activeOpacity={0.5} style={[styles.headingContainer, { backgroundColor: headingColor ? headingColor : Colors.process }]}>
                 <Text style={CommonStyle.boldblacktext}>REQ ID : {item?.enquiry_no}</Text>
-                <Image source={show ? ImagePath.arrow_up : ImagePath.arrow_down} style={styles.arrow} />
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    <Text style={[CommonStyle.boldblacktext, { fontSize: 12, marginRight: 10 }]}>Product: 1</Text>
+                    <Image source={show ? ImagePath.arrow_up : ImagePath.arrow_down} style={styles.arrow} />
+                </View>
             </TouchableOpacity>
             {(show) && (
                 <View style={styles.listContent}>
@@ -37,12 +40,16 @@ const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDel
                             <Text style={CommonStyle.boldblacktext}> {item.updated_at ? item?.updated_at : '---'}</Text>
                         </View>
                     </View>
-                    <TouchableOpacity onPress={() => onDelete(item)} disabled={!onDelete} activeOpacity={0.5} style={styles.deleteContainer}>
-                        <Image source={ImagePath.delete} style={styles.delete} />
-                    </TouchableOpacity>
-                    <TouchableOpacity onPress={() => onEdit(item)} disabled={!onEdit} activeOpacity={0.5} style={styles.editContainer}>
-                        <Image source={ImagePath.edit} style={styles.edit} />
-                    </TouchableOpacity>
+                    {(item?.status == "0") && (
+                        <>
+                            <TouchableOpacity onPress={() => onDelete(item)} disabled={!onDelete} activeOpacity={0.5} style={styles.deleteContainer}>
+                                <Image source={ImagePath.delete} style={styles.delete} />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => onEdit(item)} disabled={!onEdit} activeOpacity={0.5} style={styles.editContainer}>
+                                <Image source={ImagePath.edit} style={styles.edit} />
+                            </TouchableOpacity>
+                        </>
+                    )}
                 </View>
             )}
         </View>

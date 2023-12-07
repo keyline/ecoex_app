@@ -56,6 +56,34 @@ export const getAccessToken = async () => {
     }
 }
 
+export const setFcmToken = async (data) => {
+    try {
+        await AsyncStorage.setItem('fcmToken', data);
+        return true;
+    } catch (error) {
+        if (__DEV__) {
+            console.log(error)
+        }
+        return false;
+    }
+}
+
+export const getStoreFcmToken = async () => {
+    try {
+        const accessToken = await AsyncStorage.getItem('fcmToken');
+        if (accessToken) {
+            return accessToken;
+        } else {
+            return null;
+        }
+    } catch (error) {
+        if (__DEV__) {
+            console.log(error)
+        }
+        return null;
+    }
+}
+
 export const clearUserData = async () => {
     try {
         let key = ['accessToken', 'userdata', 'fcmToken']

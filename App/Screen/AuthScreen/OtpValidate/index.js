@@ -12,6 +12,7 @@ import Apis from '../../../Service/Apis'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
 import { setAccessToken, setUserData } from '../../../Service/AsyncStorage'
 import DeviceInfo from 'react-native-device-info'
+import { generateFcmToken, getFcmPermission } from '../../../Service/DeviceToken'
 
 const OtpValidate = ({ navigation, route }) => {
 
@@ -114,12 +115,14 @@ const OtpValidate = ({ navigation, route }) => {
                     btnLoading: true
                 }))
                 if (page == 'login') {
+                    let premission = await getFcmPermission();
+                    let token = await generateFcmToken();
                     let deviceId = DeviceInfo.getDeviceId();
                     let datas = {
                         phone: state.data?.phone,
                         otp: state.otp,
                         device_token: deviceId,
-                        fcm_token: '',
+                        fcm_token: token ? token : '',
                     }
                     var response = await Apis.signin_mobile_otpvalidate(datas)
                     if (__DEV__) {

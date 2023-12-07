@@ -11,6 +11,7 @@ import { ToastError, ToastMessage } from '../../../Service/CommonFunction'
 import AuthContext from '../../../Service/Context'
 import Apis from '../../../Service/Apis'
 import DeviceInfo from 'react-native-device-info'
+import { generateFcmToken, getFcmPermission } from '../../../Service/DeviceToken'
 
 const Login = ({ navigation }) => {
 
@@ -85,12 +86,14 @@ const Login = ({ navigation }) => {
     } else {
       try {
         showLoading();
+        let premission = await getFcmPermission();
+        let token = await generateFcmToken();
         let deviceId = DeviceInfo.getDeviceId();
         let datas = {
           email: state.email,
           password: state.password,
           device_token: deviceId,
-          fcm_token: ''
+          fcm_token: token ? token : ''
         }
         let response = await Apis.sign_in(datas);
         if (__DEV__) {
@@ -107,7 +110,7 @@ const Login = ({ navigation }) => {
             ...prevState,
             userdata: userdata,
             accesstoken: token,
-            userType:userdata?.type,
+            userType: userdata?.type,
             isLogin: true
           }))
           hideLoading();
