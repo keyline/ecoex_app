@@ -142,7 +142,7 @@ export const styles = StyleSheet.create({
     },
     bottomContainer: {
         backgroundColor: Colors.light_grey,
-        paddingVertical: '3%'
+        paddingVertical: '4%'
     },
     flexNew: {
         flexDirection: 'row',
@@ -155,7 +155,7 @@ export const styles = StyleSheet.create({
         justifyContent: 'space-between',
         marginTop: '4%',
         marginBottom: '2%',
-        width: '70%',
+        width: '80%',
         alignSelf: 'center'
     },
     gpsContainer: {

@@ -36,5 +36,6 @@ export const ImagePath = {
     pending:require('../Assets/Images/pending.png'),
     complete:require('../Assets/Images/complete.png'),
     reject:require('../Assets/Images/reject.png'),
-    success_animation:require('../Assets/Images/success_animation.json')
+    success_animation:require('../Assets/Images/success_animation.json'),
+    bell:require('../Assets/Images/bell.png')
 }

@@ -18,16 +18,17 @@ export const styles = StyleSheet.create({
         paddingHorizontal: '2%',
         paddingVertical: '4%',
         borderRadius: 15,
-        width: '85%',
+        // width: '85%',
+        width:screenWidth,
         alignSelf: 'center',
         justifyContent: 'center',
         alignItems: 'center',
-        maxHeight: screenHeight * 0.45,
+        maxHeight: screenHeight,
     },
     text: {
         fontFamily: Font_Family.NunitoSans_ExtraBold,
         fontSize: 17,
         color: Colors.theme_color,
-        marginTop: '10%'
+        marginBottom: '10%'
     }
 })

@@ -11,6 +11,8 @@ import ProcessesRequestDetails from '../../Screen/Plant/ProcessesRequestDetails'
 import PlantEditProfile from '../../Screen/Plant/PlantEditProfile';
 import PlantChangePassword from '../../Screen/Plant/PlantChangePassword';
 import PdfViewer from '../../Screen/PdfViewer';
+import EditRequest from '../../Screen/Plant/EditRequest';
+import PlantNotification from '../../Screen/Plant/PlantNotification';
 
 const PlantMainStack = () => {
 
@@ -31,6 +33,9 @@ const PlantMainStack = () => {
             <Stack.Screen name='PlantEditProfile' component={PlantEditProfile} />
             <Stack.Screen name='PlantChangePassword' component={PlantChangePassword} />
             <Stack.Screen name='PdfViewer' component={PdfViewer} />
+            <Stack.Screen name='EditRequest' component={EditRequest} />
+            <Stack.Screen name='PlantNotification' component={PlantNotification} />
+
 
         </Stack.Navigator>
     )

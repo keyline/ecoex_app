@@ -81,7 +81,7 @@ export const styles = StyleSheet.create({
     listText: {
         fontFamily: Font_Family.NunitoSans_Bold,
         color: Colors.white,
-
+        fontSize: 12
     },
     hsntext: {
         fontFamily: Font_Family.NunitoSans_Regular,

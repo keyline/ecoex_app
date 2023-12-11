@@ -12,48 +12,6 @@ import { CommonStyle } from '../../../Utils/CommonStyle'
 
 const ModalPop = ({ modalVisible, allData, onModalHide, category, onAdd, onChangeProduct, onChangeHsn, onChangeCheckBox, onSubmit, onAddImage, onViewImage }) => {
 
-    const [datas, setDatas] = useState({
-        cat_id: '',
-        catErr: '',
-        pr_name: '',
-        hsn: '',
-        checkValue: true,
-        pickerModal: true
-    })
-
-    const onChangeCategory = useCallback(async (item) => {
-        setDatas(prev => ({
-            ...prev,
-            cat_id: item?.value,
-            catErr: ''
-        }))
-    })
-
-
-
-    // const onSubmit = useCallback(async () => {
-    //     if (datas.cat_id == '') {
-    //         setDatas(prev => ({
-    //             ...prev,
-    //             catErr: 'error'
-    //         }))
-    //         ToastMessage('Select Category');
-    //         return;
-    //     } else if (datas.pr_name.trim() == '') {
-    //         ToastMessage('Enter Product Name');
-    //         return
-    //     } else {
-    //         let data = {
-    //             category_id: datas.cat_id,
-    //             product_name: datas.pr_name,
-    //             hsn: datas.hsn,
-    //             gps_image: '',
-    //             new_product: true
-    //         }
-    //         onAdd(data);
-    //     }
-    // })
-
     return (
         <Modal
             isVisible={modalVisible}

@@ -39,7 +39,7 @@ const App = () => {
       let data = remoteMessage.data
       Notification(title, body, data);
     })
-    return unsubscribe
+    return () => unsubscribe
   }, [])
 
   useEffect(() => {
@@ -52,12 +52,12 @@ const App = () => {
         navigate(remoteMessage.data)
       }
     });
-    return unsubscribes
+    return () => unsubscribes
   }, [])
 
   useEffect(() => {
     //for Quit state Notification
-    messaging()
+    const unsb = messaging()
       .getInitialNotification()
       .then(remoteMessage => {
         if (remoteMessage) {
@@ -67,11 +67,12 @@ const App = () => {
           navigate(remoteMessage.data)
         }
       });
+    return () => unsb
   }, []);
 
   useEffect(() => {
     //for Foreground State Notification
-    return notifee.onForegroundEvent(({ type, detail }) => {
+    const unsbs = notifee.onForegroundEvent(({ type, detail }) => {
       switch (type) {
         case EventType.DISMISSED:
           if (__DEV__) {
@@ -89,6 +90,7 @@ const App = () => {
           break;
       }
     });
+    return () => unsbs
   }, []);
 
   useEffect(() => {
@@ -111,6 +113,7 @@ const App = () => {
       }
     }
   }
+
   const onGetData = useCallback(async () => {
     try {
       setState(prev => ({

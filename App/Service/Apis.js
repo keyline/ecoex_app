@@ -86,15 +86,31 @@ export default class Apis {
         return Network('post', 'get-product')
     }
 
+    static get_units = () => {
+        return Network('post', 'get-units')
+    }
+
     static plant_addrequest = (data) => {
         return Network('post', 'process-request-add', data)
     }
 
     static process_request_list = (data) => {
-        return Network('post', 'process-request-list',data)
+        return Network('post', 'process-request-list', data)
     }
 
     static plant_delete_request = (data) => {
         return Network('post', 'process-request-delete', data)
+    }
+
+    static process_request_edit = (data) => {
+        return Network('post', 'process-request-edit', data)
+    }
+
+    static process_request_update = (data) => {
+        return Network('post', 'process-request-update', data)
+    }
+
+    static get_notification = (data) => {
+        return Network('post', 'get-notifications', data)
     }
 }

@@ -46,7 +46,7 @@ export const LaunchImageLibary = async (base64) => {
         mediaType: 'photo',
         // maxHeight: 1000,
         // maxWidth: 500,
-        quality: 1,
+        quality: 0.5,
         includeBase64: base64 ? base64 : false,
     }
     let response = await launchImageLibrary(options)
@@ -58,10 +58,11 @@ export const LaunchCamera = async (base64) => {
         mediaType: 'photo',
         // maxHeight: 1000,
         // maxWidth: 500,
-        quality: 1,
+        quality: 0.5,
         includeBase64: base64 ? base64 : false,
     }
     let response = await launchCamera(options)
+    // console.log('camera',JSON.stringify(response))
     return response;
 }
 
@@ -109,6 +110,28 @@ export const GetUniqueArray = (arrays, uniquekey) => {
         return [];
     }
 }
+
+export const GetUnitfromList = (list, value) => {
+    if (list && list.length > 0 && value) {
+        let filterarr = list.filter(obj => obj.value == value);
+        if (filterarr.length > 0) {
+            return filterarr[0].label
+        } else {
+            return '';
+        }
+    } else {
+        return '';
+    }
+}
+
+export const getRandomColor = () => {
+    const letters = '7B509D';
+    let color = '#';
+    for (let i = 0; i < 6; i++) {
+        color += letters[Math.floor(Math.random() * 6)];
+    }
+    return color;
+};
 
 export async function checkStoragePermission() {
     const result = await PermissionsAndroid.check(PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE);

@@ -27,17 +27,17 @@ const ProcessRequest = ({ navigation }) => {
     searchErr: '',
     modalVisible: false,
   })
-  const [orderField, setorderField] = useState('added_date');
-  const [orderType, setorderType] = useState('ASC');
+  const [orderField, setorderField] = useState('request_id');
+  const [orderType, setorderType] = useState('DESC');
   const [hasMore, sethasMore] = useState(false);
   const [page, setpage] = useState(1);
 
-  // useFocusEffect(
-  //   useCallback(() => {
-  //     const unsubscribe = onGetData();
-  //     return () => unsubscribe
-  //   }, [navigation])
-  // )
+  useFocusEffect(
+    useCallback(() => {
+      const unsubscribe = onGetData();
+      return () => unsubscribe
+    }, [navigation])
+  )
 
   useEffect(() => {
     onGetData();
@@ -57,9 +57,9 @@ const ProcessRequest = ({ navigation }) => {
         page_no: pages
       }
       let response = await Apis.process_request_list(datas);
-      if (__DEV__) {
-        console.log('ProcessesRequest', JSON.stringify(response))
-      }
+      // if (__DEV__) {
+      //   console.log('ProcessesRequest', JSON.stringify(response))
+      // }
       if (response.success) {
         let resdata = response?.data
         if (resdata.length > 0) {
@@ -206,7 +206,7 @@ const ProcessRequest = ({ navigation }) => {
   const onDeleteAlert = useCallback(async (item) => {
     Alert.alert(
       'Delete!',
-      'Do you really want to Delete Request?',
+      'Do you really want to delete this request?',
       [
         {
           text: 'No',
@@ -262,14 +262,24 @@ const ProcessRequest = ({ navigation }) => {
   })
 
   const onEdit = useCallback(async (item) => {
-    console.log('editItem', item)
-    navigation.navigate('ProcessesRequestDetails', { data: item })
+    // console.log('editItem', item)
+    // navigation.navigate('ProcessesRequestDetails', { item: item })
+    navigation.navigate('EditRequest', { id: item?.enq_id })
+  })
+
+  const onViewDetails = useCallback(async (item) => {
+    // console.log('editItem', item)
+    navigation.navigate('ProcessesRequestDetails', { id: item?.enq_id })
   })
 
   const onReload = useCallback(async () => {
-    setpage(1);
-    setorderField('added_date');
-    setorderType('ASC');
+    if (page == 1 && orderField == 'request_id' && orderType == 'DESC') {
+      onGetData('request_id', 'DESC', 1)
+    } else {
+      setpage(1);
+      setorderField('request_id');
+      setorderType('DESC');
+    }
   })
 
   return (
@@ -311,6 +321,7 @@ const ProcessRequest = ({ navigation }) => {
                   backgroundColor={Colors.process_morelight}
                   onEdit={onEdit}
                   onDelete={onDeleteAlert}
+                  onViewDetails={onViewDetails}
                 />}
               style={{ marginBottom: 10 }}
               showsVerticalScrollIndicator={false}

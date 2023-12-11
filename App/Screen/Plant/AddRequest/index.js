@@ -57,8 +57,9 @@ const AddRequest = ({ navigation }) => {
         successModalVisible: false
     })
     const [productList, setProductList] = useState([]);
+    const [unitList, setUnitList] = useState([]);
     const [reqList, setReqList] = useState([
-        { sl_no: generateRandomId(), product_id: '', hsn: '', productErr: '', new_product: false }
+        { sl_no: generateRandomId(), product_id: '', hsn: '', qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
     ])
 
     const initialState = () => {
@@ -68,7 +69,7 @@ const AddRequest = ({ navigation }) => {
             collectionDate: ''
         }))
         setReqList([
-            { sl_no: generateRandomId(), product_id: '', hsn: '', productErr: '', new_product: false }
+            { sl_no: generateRandomId(), product_id: '', hsn: '', qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
         ])
     }
 
@@ -99,10 +100,10 @@ const AddRequest = ({ navigation }) => {
                     setProductList(parray)
                     // return parray;
                 }
+                await onGetUnitList();
             }
             hideLoading();
             onGetLocation();
-            onGetDeviceId();
         } catch (error) {
             if (__DEV__) {
                 console.log(error)
@@ -112,16 +113,29 @@ const AddRequest = ({ navigation }) => {
         }
     })
 
-    const onGetDeviceId = useCallback(async () => {
-        let devicemodel = DeviceInfo.getModel();
-        let devicebrand = DeviceInfo.getBrand();
-        // console.log('deviceModel', devicemodel);
-        // console.log('deviceBrand',devicebrand)
-        setState(prev => ({
-            ...prev,
-            deviceModel: devicemodel,
-            deviceBrand: devicebrand
-        }))
+    const onGetUnitList = useCallback(async () => {
+        try {
+            let res = await Apis.get_units();
+            if (__DEV__) {
+                console.log('UnitList', JSON.stringify(res))
+            }
+            if (res.success) {
+                let data = res?.data
+                if (data.length > 0) {
+                    let parray = data.map(item => {
+                        return { ...item, label: item.name, value: item.id }
+                    })
+                    setUnitList(parray)
+                    // return parray;
+                }
+            }
+        } catch (error) {
+            if (__DEV__) {
+                console.log(error)
+            }
+            hideLoading();
+            ToastError();
+        }
     })
 
     const onGetLocation = useCallback(async () => {
@@ -171,9 +185,33 @@ const AddRequest = ({ navigation }) => {
         }
     })
 
+    const onChangeQty = useCallback(async (item, txt) => {
+        if (item) {
+            let updateArray = reqList.map(obj => {
+                if (obj.sl_no === item.sl_no) {
+                    return { ...obj, qty: txt, qtyErr: '' }
+                }
+                return obj;
+            });
+            setReqList(updateArray);
+        }
+    })
+
+    const onChangeUnit = useCallback(async (item, pr) => {
+        if (item && pr) {
+            let updateArray = reqList.map(obj => {
+                if (obj.sl_no === item.sl_no) {
+                    return { ...obj, unit: pr.value, unitErr: '' }
+                }
+                return obj;
+            });
+            setReqList(updateArray);
+        }
+    })
+
     const onAddMore = useCallback(async () => {
         let myArr = reqList
-        let obj = { sl_no: generateRandomId(), product_id: '', hsn: '', productErr: '', new_product: false }
+        let obj = { sl_no: generateRandomId(), product_id: '', hsn: '', qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
         myArr.push(obj);
         let tempData = [];
         myArr.map(item => {
@@ -321,6 +359,11 @@ const AddRequest = ({ navigation }) => {
                 product_name: state.pr_name,
                 hsn: state.hsn,
                 product_image: state.product_image,
+                qty: '',
+                unit: '',
+                productErr: '',
+                qtyErr: '',
+                unitErr: '',
                 new_product: true
             }
             // onAdd(data);
@@ -369,11 +412,31 @@ const AddRequest = ({ navigation }) => {
     }, [state.collectionDate])
 
     const onSubmit = useCallback(async () => {
-        let findEmptyindex = reqList.findIndex(obj => (obj.new_product == false && obj.product_id == ''));
-        if (findEmptyindex != -1) {
+        let findProductEmptyindex = reqList.findIndex(obj => (obj.new_product == false && obj.product_id == ''));
+        let findQtyEmptyindex = reqList.findIndex(obj => (obj.qty.trim() == ''))
+        let findUnitEmptyindex = reqList.findIndex(obj => obj.unit == '')
+        if (findProductEmptyindex != -1) {
             let updateArray = reqList.map(item => {
                 if (item.new_product == false && item.product_id == '') {
                     return { ...item, productErr: 'Select Product' }
+                }
+                return item
+            })
+            setReqList(updateArray);
+            return;
+        } else if (findQtyEmptyindex != -1) {
+            let updateArray = reqList.map(item => {
+                if (item.qty.trim() == '') {
+                    return { ...item, qtyErr: 'Enter Qty' }
+                }
+                return item
+            })
+            setReqList(updateArray);
+            return;
+        } else if (findUnitEmptyindex != -1) {
+            let updateArray = reqList.map(item => {
+                if (item.unit == '') {
+                    return { ...item, unitErr: 'Select Unit' }
                 }
                 return item
             })
@@ -386,6 +449,8 @@ const AddRequest = ({ navigation }) => {
             ToastMessage('Upload GPS Track Image');
             return;
         } else {
+            // console.log('reqlist', JSON.stringify(reqList))
+            // return
             try {
                 showLoading();
                 let datas = {
@@ -394,8 +459,8 @@ const AddRequest = ({ navigation }) => {
                     collection_date: dateConvertNew(state.collectionDate),
                     latitude: state.latitude,
                     longitude: state.longitude,
-                    device_model: state.deviceModel,
-                    device_brand: state.deviceBrand
+                    device_model: DeviceInfo.getModel(),
+                    device_brand: DeviceInfo.getBrand()
                 }
                 let response = await Apis.plant_addrequest(datas);
                 if (__DEV__) {
@@ -474,6 +539,9 @@ const AddRequest = ({ navigation }) => {
                             item={item}
                             products={productList}
                             onChangeProduct={onChangeProduct}
+                            onChangeQty={onChangeQty}
+                            onChangeUnit={onChangeUnit}
+                            units={unitList}
                             onDelete={onDelete}
                             arrLength={reqList.length}
                             onViewImage={onViewImage}
