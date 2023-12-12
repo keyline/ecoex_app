@@ -101,24 +101,31 @@ const Login = ({ navigation }) => {
         }
         if (response.success) {
           let userdata = response?.data;
-          let token = response?.data?.app_access_token
-          await setUserData(userdata);
-          await setAccessToken(token);
-          // await context.onGetStoreData();
-          await context.onGetUserProfile();
-          await context.setState(prevState => ({
-            ...prevState,
-            userdata: userdata,
-            accesstoken: token,
-            userType: userdata?.type,
-            isLogin: true
-          }))
-          hideLoading();
+          if (userdata?.type == 'PLANT') {
+            let token = response?.data?.app_access_token
+            await setUserData(userdata);
+            await setAccessToken(token);
+            // await context.onGetStoreData();
+            await context.onGetUserProfile();
+            await context.setState(prevState => ({
+              ...prevState,
+              userdata: userdata,
+              accesstoken: token,
+              userType: userdata?.type,
+              isLogin: true
+            }))
+            hideLoading();
+            ToastMessage(response?.message);
+          } else {
+            ToastMessage(`${userdata?.type} Pannel Comming Soon`);
+            hideLoading();
+          }
         } else {
           hideLoading();
+          ToastMessage(response?.message);
         }
         hideLoading();
-        ToastMessage(response?.message);
+        // ToastMessage(response?.message);
       } catch (error) {
         if (__DEV__) {
           console.log(error)

@@ -4,8 +4,12 @@ import { Font_Family } from "../../../Utils/Fonts";
 
 
 export const styles = StyleSheet.create({
-    headerContainer: {
+    headerContent:{
         backgroundColor: Colors.light_grey,
+paddingTop:'2%'
+    },
+    headerContainer: {
+        // backgroundColor: Colors.light_grey,
         paddingVertical: '2%',
         flexDirection: 'row',
         alignItems: 'center',

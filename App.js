@@ -14,7 +14,7 @@ import { generateFcmToken, getFcmPermission } from './App/Service/DeviceToken'
 import messaging from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
 import { Notification } from './App/Service/Notification'
-import { navigate } from './App/Service/NavigationRef'
+import { navigate, navigationRef } from './App/Service/NavigationRef'
 
 const App = () => {
 
@@ -217,8 +217,8 @@ const App = () => {
   }
 
   return (
-    <NavigationContainer>
-      <AuthContext.Provider value={{ allData: state, setState, onGetStoreData, onClearStoreData, onGetUserProfile }}>
+    <AuthContext.Provider value={{ allData: state, setState, onGetStoreData, onClearStoreData, onGetUserProfile }}>
+      <NavigationContainer ref={navigationRef}>
         <StatusBar backgroundColor={Colors.theme_color} barStyle={'light-content'} />
         {(!state.loading) && (
           <>
@@ -235,8 +235,8 @@ const App = () => {
             }
           </>
         )}
-      </AuthContext.Provider>
-    </NavigationContainer>
+      </NavigationContainer>
+    </AuthContext.Provider>
   )
 }
 

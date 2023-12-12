@@ -130,16 +130,24 @@ const OtpValidate = ({ navigation, route }) => {
                     }
                     if (response.success) {
                         let userdata = response?.data;
-                        let token = response?.data?.app_access_token
-                        await setUserData(userdata);
-                        await setAccessToken(token);
-                        // await context.onGetStoreData();
-                        await context.setState(prevState => ({
-                            ...prevState,
-                            userdata: userdata,
-                            accesstoken: token,
-                            isLogin: true
-                        }))
+                        if (userdata?.type == 'PLANT') {
+                            let token = response?.data?.app_access_token
+                            await setUserData(userdata);
+                            await setAccessToken(token);
+                            // await context.onGetStoreData();
+                            await context.setState(prevState => ({
+                                ...prevState,
+                                userdata: userdata,
+                                accesstoken: token,
+                                isLogin: true
+                            }))
+                        } else {
+                            ToastMessage(`${userdata?.type} Pannel Comming Soon`);
+                            hideLoading();
+                        }
+                    } else {
+                        hideLoading();
+                        ToastMessage(response?.message);
                     }
                 } else {
                     let datas = {

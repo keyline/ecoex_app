@@ -37,5 +37,6 @@ export const ImagePath = {
     complete:require('../Assets/Images/complete.png'),
     reject:require('../Assets/Images/reject.png'),
     success_animation:require('../Assets/Images/success_animation.json'),
-    bell:require('../Assets/Images/bell.png')
+    bell:require('../Assets/Images/bell.png'),
+    pdf_upload:require('../Assets/Images/pdf_upload.png')
 }

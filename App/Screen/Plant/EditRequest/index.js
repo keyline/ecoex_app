@@ -1,4 +1,4 @@
-import { View, Text, SafeAreaView, FlatList, TouchableOpacity, Image, Keyboard, TextInput, KeyboardAvoidingView } from 'react-native'
+import { View, Text, SafeAreaView, FlatList, TouchableOpacity, Image, Keyboard, TextInput, KeyboardAvoidingView, Alert } from 'react-native'
 import React, { useCallback, useContext, useState } from 'react'
 import Header from '../../../Container/Header'
 import { CommonStyle } from '../../../Utils/CommonStyle'
@@ -214,6 +214,24 @@ const EditRequest = ({ navigation, route }) => {
         });
         setRequestList(tempData);
         // console.log('arr', JSON.stringify(myArr))
+    })
+
+    const onDeleteAlert = useCallback(async (items) => {
+        Alert.alert(
+            'Delete!',
+            'Do you really want to delete this product?',
+            [
+                {
+                    text: 'No',
+                    onPress: () => null
+                },
+                {
+                    text: 'Yes',
+                    onPress: () => onDelete(items)
+                }
+            ],
+            { cancelable: true }
+        )
     })
 
     const onDelete = useCallback(async (items) => {
@@ -616,6 +634,8 @@ const EditRequest = ({ navigation, route }) => {
             />
             {(state.loading) ? <Loader loading={state.loading} /> :
                 <View style={{ flex: 1 }}>
+                    <View style={styles.headerContent}>
+                    <Text style={[CommonStyle.boldblacktext,{textAlign:'center'}]}>REQ ID : {state.data?.enquiry_no}</Text>
                     <View style={styles.headerContainer}>
                         <View style={styles.headerLeft}>
                             <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>Plant Name : <Text style={[CommonStyle.boldblacktext, { fontSize: 12 }]}>{userProfile?.company_name}</Text></Text>
@@ -625,6 +645,7 @@ const EditRequest = ({ navigation, route }) => {
                             {/* <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>WEST BENGAL</Text> */}
                             <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>{userProfile?.email}</Text>
                         </View>
+                    </View>
                     </View>
                     <View style={{ flex: 1, marginTop: '3%' }}>
                         <FlatList
@@ -638,7 +659,7 @@ const EditRequest = ({ navigation, route }) => {
                                     onChangeQty={onChangeQty}
                                     onChangeUnit={onChangeUnit}
                                     units={unitList}
-                                    onDelete={onDelete}
+                                    onDelete={onDeleteAlert}
                                     arrLength={requestList.length}
                                     onViewImage={onViewImage}
                                     onChangeHsn={onChangeHsn}

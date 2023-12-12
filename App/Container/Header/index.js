@@ -20,6 +20,7 @@ const Header = ({ name, leftIcon, leftOnPress }) => {
                 </TouchableOpacity>
             )}
             <Text style={styles.headingText}>{name}</Text>
+            {/* <View></View> */}
             <TouchableOpacity activeOpacity={0.5} onPress={onRightPress}>
                 <Image source={ImagePath.menu} style={styles.leftImg} />
             </TouchableOpacity>

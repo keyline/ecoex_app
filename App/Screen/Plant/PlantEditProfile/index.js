@@ -730,7 +730,7 @@ const PlantEditProfile = ({ navigation }) => {
                             placeholder={'Upload GST Certificate (PDF)'}
                             editable={false}
                             error={state.gstCertificateErr}
-                            rightIcon={ImagePath.camera}
+                            rightIcon={ImagePath.pdf_upload}
                             rightonPress={() => onPickDocument('gst')}
                         />
                         {(state.data?.gst_certificate) && (
@@ -830,7 +830,7 @@ const PlantEditProfile = ({ navigation }) => {
                             placeholder={'Upload PAN Card / Company ID (PDF)'}
                             editable={false}
                             error={state.personDocumentErr}
-                            rightIcon={ImagePath.camera}
+                            rightIcon={ImagePath.pdf_upload}
                             rightonPress={() => onPickDocument('person_docs')}
                         />
                         {(state.data?.contact_person_document) && (
@@ -876,7 +876,7 @@ const PlantEditProfile = ({ navigation }) => {
                             placeholder={'Upload Cancelled Cheque (PDF)'}
                             editable={false}
                             error={state.cancelChequeErr}
-                            rightIcon={ImagePath.camera}
+                            rightIcon={ImagePath.pdf_upload}
                             rightonPress={() => onPickDocument('cheque')}
                         />
                         {(state.data?.cancelled_cheque) && (

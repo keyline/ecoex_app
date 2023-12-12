@@ -113,4 +113,12 @@ export default class Apis {
     static get_notification = (data) => {
         return Network('post', 'get-notifications', data)
     }
+
+    static complete_request_list = (data) => {
+        return Network('post', 'completed-request-list', data)
+    }
+
+    static reject_request_list = (data) => {
+        return Network('post', 'rejected-request-list', data)
+    }
 }
