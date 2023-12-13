@@ -130,7 +130,9 @@ const ProcessRequest = ({ navigation }) => {
     if (text.trim() == '') {
       onResetSearch();
     } else {
-      handleSearch(text);
+      if (state.data.length > 0) {
+        handleSearch(text);
+      }
     }
   }, [state.searchtext])
 
@@ -311,7 +313,7 @@ const ProcessRequest = ({ navigation }) => {
           <View style={{ flex: 1 }}>
             <FlatList
               // data={state.searchtext ? state.data.filter(obj => { return obj.enquiry_no.toUpperCase().includes(state.searchtext.toUpperCase()) }) : state.data}
-              data={state.filterData.length > 0 ? state.filterData : state.data}
+              data={state.searchtext ? state.filterData : state.data}
               keyExtractor={(item, index) => index}
               renderItem={({ item, index }) =>
                 <RequestList

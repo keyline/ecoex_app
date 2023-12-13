@@ -54,26 +54,33 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        overflow: 'hidden'
+        overflow: 'hidden',
+        // borderWidth:1,
+        height: '46%'
     },
     slContent: {
         backgroundColor: Colors.theme_color,
         width: '12%',
         alignItems: 'center',
-        paddingVertical: '2%',
+        justifyContent: 'center',
+        // paddingVertical: '2%',
+        height: '100%',
         borderTopLeftRadius: 5,
         borderBottomLeftRadius: 5
     },
     productContent: {
-        paddingVertical: '2%',
+        // paddingVertical: '2%',
         width: '64%',
+        // height:'100%',
         paddingLeft: 10
     },
     weightContent: {
         backgroundColor: Colors.purple,
         width: '24%',
         alignItems: 'center',
-        paddingVertical: '2%',
+        justifyContent: 'center',
+        // paddingVertical: '2%',
+        height: '100%',
         borderTopRightRadius: 5,
         borderBottomRightRadius: 5
 

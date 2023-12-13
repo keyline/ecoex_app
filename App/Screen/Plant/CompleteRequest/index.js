@@ -65,7 +65,7 @@ const CompleteRequest = ({ navigation }) => {
             }
             let response = await Apis.complete_request_list(datas);
             if (__DEV__) {
-                console.log('CompleteRequest', JSON.stringify(response))
+                console.log('RejectRequest', JSON.stringify(response))
             }
             if (response.success) {
                 let resdata = response?.data
@@ -147,6 +147,7 @@ const CompleteRequest = ({ navigation }) => {
             ...prev,
             filterData: filtered
         }))
+        console.log(filtered)
     }
 
     const onResetSearch = useCallback(async () => {
@@ -241,9 +242,16 @@ const CompleteRequest = ({ navigation }) => {
                 <View style={{ flex: 1 }}>
                     <FlatList
                         // data={state.searchtext ? list.filter(obj => { return obj.enquiry_no.toUpperCase().includes(state.searchtext.toUpperCase()) }) : list}
-                        data={state.filterData.length > 0 ? state.filterData : state.data}
+                        data={state.searchtext ? state.filterData : state.data}
                         keyExtractor={(item, index) => index}
-                        renderItem={({ item, index }) => <RequestList item={item} index={index} headingColor={Colors.theme_color} backgroundColor={Colors.theme_morelight} />}
+                        renderItem={({ item, index }) =>
+                            <RequestList
+                                item={item}
+                                index={index}
+                                headingColor={Colors.theme_color}
+                                backgroundColor={Colors.theme_morelight}
+                                onViewDetails={onViewDetails}
+                            />}
                         style={{ marginBottom: 10 }}
                         showsVerticalScrollIndicator={false}
                         onEndReached={handleLoadMore}

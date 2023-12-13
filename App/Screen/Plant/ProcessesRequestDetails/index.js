@@ -214,7 +214,7 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                         <View style={styles.bodyContent}>
                             <View style={[styles.flex, { paddingHorizontal: '4%' }]}>
                                 <Text style={CommonStyle.normalText}>STATUS ({state.data?.current_step_no}/{state.data?.total_step}) : </Text>
-                                <Text style={styles.statusText}>{(state.data?.current_step_name).toUpperCase()}</Text>
+                                <Text style={[styles.statusText, state.data?.current_step_no == "9" && { backgroundColor: 'red' }, state.data?.current_step_no == "8" && { backgroundColor: 'green' }]}>{(state.data?.current_step_name).toUpperCase()}</Text>
                             </View>
 
                             <View style={styles.midContent}>
@@ -268,7 +268,7 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                                                             <Text style={styles.listText}>{index + 1}</Text>
                                                         </View>
                                                         <View style={styles.productContent}>
-                                                            <Text style={CommonStyle.boldblacktext}>{item?.product_name}</Text>
+                                                            <Text numberOfLines={2} style={CommonStyle.boldblacktext}>{item?.product_name}</Text>
                                                         </View>
                                                         <View style={styles.weightContent}>
                                                             <Text style={styles.listText}>{item?.qty} {GetUnitfromList(unitList, item?.unit)}</Text>
