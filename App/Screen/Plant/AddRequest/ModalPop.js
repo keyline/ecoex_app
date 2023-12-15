@@ -2,57 +2,13 @@ import { View, Text, TextInput, TouchableOpacity, Image } from 'react-native'
 import React, { useCallback, useState } from 'react'
 import Modal from 'react-native-modal'
 import { styles } from './styles'
-import ElementDropDown from '../../../Container/ElementDropDown'
-import InputField from '../../../Container/InputField'
 import { Colors } from '../../../Utils/Colors'
-import { ToastMessage } from '../../../Service/CommonFunction'
 import CheckBox from '@react-native-community/checkbox'
 import { CommonStyle } from '../../../Utils/CommonStyle'
+import { ImagePath } from '../../../Utils/ImagePath'
 
 
-const ModalPop = ({ modalVisible, allData, onModalHide, category, onAdd, onChangeProduct, onChangeHsn, onChangeCheckBox, onSubmit, onAddImage, onViewImage }) => {
-
-    const [datas, setDatas] = useState({
-        cat_id: '',
-        catErr: '',
-        pr_name: '',
-        hsn: '',
-        checkValue: true,
-        pickerModal: true
-    })
-
-    const onChangeCategory = useCallback(async (item) => {
-        setDatas(prev => ({
-            ...prev,
-            cat_id: item?.value,
-            catErr: ''
-        }))
-    })
-
-
-
-    // const onSubmit = useCallback(async () => {
-    //     if (datas.cat_id == '') {
-    //         setDatas(prev => ({
-    //             ...prev,
-    //             catErr: 'error'
-    //         }))
-    //         ToastMessage('Select Category');
-    //         return;
-    //     } else if (datas.pr_name.trim() == '') {
-    //         ToastMessage('Enter Product Name');
-    //         return
-    //     } else {
-    //         let data = {
-    //             category_id: datas.cat_id,
-    //             product_name: datas.pr_name,
-    //             hsn: datas.hsn,
-    //             gps_image: '',
-    //             new_product: true
-    //         }
-    //         onAdd(data);
-    //     }
-    // })
+const ModalPop = ({ modalVisible, allData, onModalHide, onDeleteImage, onChangeProduct, onChangeHsn, onChangeCheckBox, onSubmit, onAddImage, onViewImage }) => {
 
     return (
         <Modal
@@ -69,16 +25,6 @@ const ModalPop = ({ modalVisible, allData, onModalHide, category, onAdd, onChang
                     <Text style={styles.modalHeadingText}>Add New Product</Text>
                 </View>
                 <View style={styles.modalContent}>
-                    {/* <Text style={styles.modalText}>Select Category :</Text>
-                    <ElementDropDown
-                        // name={'Category'}
-                        data={category}
-                        placeholder={'Select Category'}
-                        width={'100%'}
-                        value={datas.cat_id}
-                        setValue={(item) => onChangeCategory(item)}
-                        error={datas.catErr}
-                    /> */}
                     <Text style={[styles.modalText, { marginTop: 5 }]}>Product Name :</Text>
                     <TextInput
                         style={styles.input}
@@ -96,12 +42,26 @@ const ModalPop = ({ modalVisible, allData, onModalHide, category, onAdd, onChang
                         placeholderTextColor={Colors.grey}
                         keyboardType='number-pad'
                     />
-                    {(allData.product_image) ?
-                        <TouchableOpacity onPress={() => onViewImage(allData.product_image?.uri)} style={[styles.gpsContainer, { alignSelf: 'center', marginTop: '4%' }]}>
-                            <Image source={allData.product_image} style={styles.gpsImage} />
-                        </TouchableOpacity>
+                    {(allData.product_image && allData.product_image.length > 0) ?
+                        <View style={[styles.productimgContainer, { width: '100%', marginTop: 10 }]}>
+                            {allData.product_image.map((item, key) => (
+                                <View key={key} style={{ marginRight: 15 }}>
+                                    <TouchableOpacity onPress={() => onViewImage(item?.uri)} style={styles.addmoreContainer}>
+                                        <Image source={item} style={[styles.addmoreImg, { opacity: 0.8 }]} />
+                                    </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => onDeleteImage('newproduct', allData.product_image, item)} style={styles.imgCloseContainer}>
+                                        <Image source={ImagePath.close_round} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                                    </TouchableOpacity>
+                                </View>
+                            ))}
+                            {(allData.product_image && allData.product_image.length < 4) && (
+                                <TouchableOpacity onPress={() => onAddImage('newproduct')} activeOpacity={0.5} style={[styles.addmoreContainer, { borderWidth: 0, borderRadius: 0, backgroundColor: Colors.white }]}>
+                                    <Image source={ImagePath.camera} style={{ width: 25, height: 25, resizeMode: 'contain' }} />
+                                </TouchableOpacity>
+                            )}
+                        </View>
                         :
-                        <TouchableOpacity onPress={() => onAddImage('product')} activeOpacity={0.5} style={[styles.submitBtn, { marginTop: 20 }]}>
+                        <TouchableOpacity onPress={() => onAddImage('newproduct')} activeOpacity={0.5} style={[styles.submitBtn, { marginTop: 20 }]}>
                             <Text style={styles.uploadText}>Add Image</Text>
                         </TouchableOpacity>
                     }

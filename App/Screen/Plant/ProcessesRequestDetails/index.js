@@ -308,10 +308,10 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                                     <Buttons name={'Weighing slip'} />
                                     <Buttons name={'Vehicle'} />
                                 </View> */}
+                                {/* // <View style={[styles.flexNew, { alignSelf: 'center' }]}> */}
                             </View>
                             {(state.data?.current_step_no == '0') && (
                                 <View style={[styles.flexNew, { width: '65%', alignSelf: 'center' }]}>
-                                    {/* // <View style={[styles.flexNew, { alignSelf: 'center' }]}> */}
                                     <TouchableOpacity onPress={onDeleteAlert} style={styles.aprvBtn}>
                                         <Text style={CommonStyle.boldblacktext}>Delete</Text>
                                     </TouchableOpacity>

@@ -50,7 +50,7 @@ const ProcessRequest = ({ navigation }) => {
         ...prev,
         loadingNew: true
       }))
-      onResetSearch();
+      // onResetSearch();
       let datas = {
         order_field: field,
         order_type: type,
@@ -197,6 +197,7 @@ const ProcessRequest = ({ navigation }) => {
       setorderType('DESC');
     }
     onHideModal();
+    onResetSearch();
   })
 
   const handleLoadMore = useCallback(() => {
@@ -282,6 +283,7 @@ const ProcessRequest = ({ navigation }) => {
       setorderField('request_id');
       setorderType('DESC');
     }
+    onResetSearch();
   })
 
   return (
@@ -331,6 +333,7 @@ const ProcessRequest = ({ navigation }) => {
               onEndReachedThreshold={0.5}
               refreshControl={<RefreshControl refreshing={false} onRefresh={onReload} />}
               ListEmptyComponent={<EmptyContent word={'No Request Found'} />}
+            // StickyHeaderComponent={renderHeader}
             />
           </View>
         </View>

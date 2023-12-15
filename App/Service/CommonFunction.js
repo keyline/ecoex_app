@@ -4,6 +4,7 @@ import DocumentPicker from 'react-native-document-picker';
 import RNFetchBlob from 'rn-fetch-blob'
 import { PermissionsAndroid } from 'react-native';
 import moment from 'moment';
+import { CameraPermission, GalleryPermission } from './Permission';
 
 export const ToastMessage = (message) => {
     Toast.show(message, Toast.LONG);
@@ -41,29 +42,52 @@ export const dateConvertYear = (value) => {
     }
 }
 
-export const LaunchImageLibary = async (base64) => {
-    let options = {
-        mediaType: 'photo',
-        // maxHeight: 1000,
-        // maxWidth: 500,
-        quality: 0.5,
-        includeBase64: base64 ? base64 : false,
+export const LaunchImageLibary = async (base64, selectionLimit) => {
+    try {
+        let result = await GalleryPermission();
+        // if (result == false) {
+        //     ToastMessage('Gallery Permission Required')
+        // }
+        let options = {
+            mediaType: 'photo',
+            maxHeight: 700,
+            maxWidth: 600,
+            quality: 1,
+            includeBase64: base64 ? base64 : false,
+            selectionLimit: selectionLimit ? selectionLimit : 1
+        }
+        let response = await launchImageLibrary(options)
+        return response;
+    } catch (error) {
+        if (__DEV__) {
+            console.log(error)
+        }
+        return error;
     }
-    let response = await launchImageLibrary(options)
-    return response;
 }
 
 export const LaunchCamera = async (base64) => {
-    let options = {
-        mediaType: 'photo',
-        // maxHeight: 1000,
-        // maxWidth: 500,
-        quality: 0.5,
-        includeBase64: base64 ? base64 : false,
+    try {
+        let result = await CameraPermission();
+        if (result == false) {
+            ToastMessage('Camera Permission Required');
+        }
+        let options = {
+            mediaType: 'photo',
+            maxHeight: 700,
+            maxWidth: 600,
+            quality: 1,
+            includeBase64: base64 ? base64 : false,
+        }
+        let response = await launchCamera(options)
+        // console.log('camera',JSON.stringify(response))
+        return response;
+    } catch (error) {
+        if (__DEV__) {
+            console.log(error)
+        }
+        return error;
     }
-    let response = await launchCamera(options)
-    // console.log('camera',JSON.stringify(response))
-    return response;
 }
 
 export const GetFileExtention = (url) => {

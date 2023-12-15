@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, Image } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { memo, useCallback, useEffect, useState } from 'react'
 import { styles } from './styles'
 import { CommonStyle } from '../../Utils/CommonStyle'
 import { ImagePath } from '../../Utils/ImagePath'
@@ -56,4 +56,4 @@ const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDel
     )
 }
 
-export default RequestList
+export default memo(RequestList)

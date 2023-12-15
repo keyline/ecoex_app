@@ -29,6 +29,62 @@ export const LocationPermission = async () => {
     }
 }
 
+export const Permissions = async (permission) => {
+    try {
+        let result = await check(permission)
+        if (result == RESULTS.GRANTED) {
+            return true
+        } else if (result == RESULTS.DENIED) {
+            let res = await request(permission);
+            if (res == RESULTS.GRANTED) {
+                return true;
+            } else {
+                return false;
+            }
+        } else if (result == RESULTS.UNAVAILABLE) {
+            return false;
+        } else {
+            let res = await request(permission);
+            if (res == RESULTS.GRANTED) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    } catch (error) {
+        if (__DEV__) {
+            console.log(error)
+        }
+        return false
+    }
+}
+
+export const CameraPermission = async () => {
+    let result;
+    if (Platform.OS == 'android') {
+        result = await Permissions(PERMISSIONS.ANDROID.CAMERA)
+        return result
+    } else if (Platform.OS == 'ios') {
+        result = await Permissions(PERMISSIONS.IOS.CAMERA)
+        return result
+    } else {
+        return false
+    }
+}
+
+export const GalleryPermission = async () => {
+    let result;
+    if (Platform.OS == 'android') {
+        result = await Permissions(PERMISSIONS.ANDROID.READ_MEDIA_IMAGES)
+        return result
+    } else if (Platform.OS == 'ios') {
+        result = await Permissions(PERMISSIONS.IOS.PHOTO_LIBRARY)
+        return result
+    } else {
+        return false
+    }
+}
+
 export const RequestLocation = async () => {
     try {
         let requests;

@@ -1,7 +1,8 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import { Colors } from "../../../Utils/Colors";
 import { Font_Family } from "../../../Utils/Fonts";
-
+const screenHeight = Dimensions.get('window').height;
+const screenWidth = Dimensions.get('window').width;
 
 export const styles = StyleSheet.create({
     bodyContent: {
@@ -45,7 +46,7 @@ export const styles = StyleSheet.create({
         resizeMode: 'contain'
     },
     listContainer: {
-        marginBottom: '4%',
+        marginBottom: '2%',
         // backgroundColor:'red'
     },
     listContent: {
@@ -56,7 +57,7 @@ export const styles = StyleSheet.create({
         justifyContent: 'space-between',
         overflow: 'hidden',
         // borderWidth:1,
-        height: '46%'
+        height: screenHeight * 0.06
     },
     slContent: {
         backgroundColor: Colors.theme_color,
@@ -64,15 +65,17 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         // paddingVertical: '2%',
-        height: '100%',
+        height: screenHeight * 0.06,
         borderTopLeftRadius: 5,
         borderBottomLeftRadius: 5
     },
     productContent: {
         // paddingVertical: '2%',
         width: '64%',
-        // height:'100%',
-        paddingLeft: 10
+        height: screenHeight * 0.06,
+        paddingLeft: 10,
+        // alignItems: 'center',
+        justifyContent: 'center'
     },
     weightContent: {
         backgroundColor: Colors.purple,
@@ -80,7 +83,7 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'center',
         // paddingVertical: '2%',
-        height: '100%',
+        height: screenHeight * 0.06,
         borderTopRightRadius: 5,
         borderBottomRightRadius: 5
 

@@ -6,7 +6,7 @@ import { CommonStyle } from '../../../Utils/CommonStyle'
 import { ImagePath } from '../../../Utils/ImagePath'
 import { Colors } from '../../../Utils/Colors'
 
-const List = ({ item, products, units, onChangeProduct, onChangeQty, onChangeUnit, onDelete, arrLength, onViewImage }) => {
+const List = ({ item, products, units, onChangeProduct, onDeleteImage, onAddImage, onChangeQty, onChangeUnit, onDelete, arrLength, onViewImage }) => {
     return (
         <View style={styles.itemContainer}>
             {(arrLength > 1) && (
@@ -68,14 +68,41 @@ const List = ({ item, products, units, onChangeProduct, onChangeQty, onChangeUni
                     error={item?.unitErr}
                 />
             </View>
-            {(item?.new_product && item?.product_image) && (
+            <View style={{ width: '80%', alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: '5%' }}>
+                <Text style={[styles.modalText, { marginTop: 10 }]}>Image :</Text>
+                <View style={styles.productimgContainer}>
+                    {(item.product_image && item.product_image.length > 0) && (
+                        <>
+                            {item.product_image.map((items, key) => (
+                                <View key={key} style={{ marginRight: 15 }}>
+                                    <TouchableOpacity onPress={() => onViewImage(items?.uri)} activeOpacity={0.5} style={styles.addmoreContainer}>
+                                        <Image source={items} style={[styles.addmoreImg, { opacity: 0.8 }]} />
+                                    </TouchableOpacity>
+                                    {(!item.new_product || item.new_product && item.product_image.length > 1) && (
+                                        <TouchableOpacity onPress={() => onDeleteImage('product', item, items)} style={styles.imgCloseContainer}>
+                                            <Image source={ImagePath.close_round} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                                        </TouchableOpacity>
+                                    )}
+                                </View>
+                            ))}
+                        </>
+                    )}
+                    {(item.product_image && item.product_image.length < 4) && (
+                        <TouchableOpacity onPress={() => onAddImage('oldproduct', item)} activeOpacity={0.5} style={[styles.addmoreContainer, { borderWidth: 0, borderRadius: 0 }]}>
+                            <Image source={ImagePath.camera} style={{ width: 25, height: 25, resizeMode: 'contain' }} />
+                        </TouchableOpacity>
+                    )}
+                </View>
+            </View>
+
+            {/* {(item?.new_product && item?.product_image) && (
                 <View style={{ width: '80%', alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: '3%' }}>
                     <Text style={[styles.modalText, { marginTop: 10 }]}>Image :</Text>
                     <TouchableOpacity onPress={() => onViewImage(item?.product_image?.uri)} activeOpacity={0.5} style={styles.gpsContainer}>
                         <Image source={item?.product_image} style={styles.gpsImage} />
                     </TouchableOpacity>
                 </View>
-            )}
+            )} */}
             {/* <View style={styles.uploadContainer}>
                 <Text style={CommonStyle.boldblacktext}>Upload GPS Track Image :</Text>
                 <TouchableOpacity activeOpacity={0.5} style={styles.uploadBtn}>

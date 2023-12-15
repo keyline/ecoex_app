@@ -20,15 +20,6 @@ import LoaderTransparent from '../../../Container/LoaderTransparent'
 import AuthContext from '../../../Service/Context'
 import SuccessModal from '../../../Container/SuccessModal'
 
-
-
-const category = [
-    { label: 'Category 1', value: '1' },
-    { label: 'Category 2', value: '2' },
-    { label: 'Category 3', value: '3' },
-    { label: 'Category 4', value: '4' },
-]
-
 const AddRequest = ({ navigation }) => {
 
     const context = useContext(AuthContext);
@@ -44,8 +35,9 @@ const AddRequest = ({ navigation }) => {
         hsn: '',
         checkValue: false,
         pickerModal: false,
-        product_image: null,
+        product_image: [],
         pickerModalType: '',
+        pickerModalItem: '',
         collectionDate: '',
         collectionDatePicker: false,
         gps_img: null,
@@ -59,7 +51,7 @@ const AddRequest = ({ navigation }) => {
     const [productList, setProductList] = useState([]);
     const [unitList, setUnitList] = useState([]);
     const [reqList, setReqList] = useState([
-        { sl_no: generateRandomId(), product_id: '', hsn: '', qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
+        { sl_no: generateRandomId(), product_id: '', hsn: '', product_image: [], qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
     ])
 
     const initialState = () => {
@@ -69,7 +61,7 @@ const AddRequest = ({ navigation }) => {
             collectionDate: ''
         }))
         setReqList([
-            { sl_no: generateRandomId(), product_id: '', hsn: '', qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
+            { sl_no: generateRandomId(), product_id: '', hsn: '', product_image: [], qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
         ])
     }
 
@@ -211,7 +203,7 @@ const AddRequest = ({ navigation }) => {
 
     const onAddMore = useCallback(async () => {
         let myArr = reqList
-        let obj = { sl_no: generateRandomId(), product_id: '', hsn: '', qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
+        let obj = { sl_no: generateRandomId(), product_id: '', hsn: '', product_image: [], qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
         myArr.push(obj);
         let tempData = [];
         myArr.map(item => {
@@ -238,7 +230,7 @@ const AddRequest = ({ navigation }) => {
             ...prev,
             pr_name: '',
             hsn: '',
-            product_image: null,
+            product_image: [],
             checkValue: false,
             modalVisible: false
         }))
@@ -265,27 +257,35 @@ const AddRequest = ({ navigation }) => {
         }))
     }, [state.checkValue])
 
-    const onShowPicker = useCallback(async (type) => {
+    const onShowPicker = useCallback(async (type, items) => {
         Keyboard.dismiss();
         setState(prev => ({
             ...prev,
             pickerModalType: type,
+            pickerModalItem: items ? items : '',
             pickerModal: true
         }))
-    }, [state.pickerModal, state.pickerModalType])
+    }, [state.pickerModal, state.pickerModalType, state.pickerModalItem])
 
     const onHidePicker = useCallback(async () => {
         setState(prev => ({
             ...prev,
             pickerModalType: '',
+            pickerModalItem: '',
             pickerModal: false
         }))
-    }, [state.pickerModal, state.pickerModalType])
+    }, [state.pickerModal, state.pickerModalType, state.pickerModalItem])
 
     const onSelectImageOption = useCallback(async (value) => {
         try {
             if (value == 1) {
-                let libaryImageRes = await LaunchImageLibary(true);
+                let selectlimit = 1;
+                if (state.pickerModalType == 'oldproduct') {
+                    selectlimit = (4 - state.pickerModalItem.product_image.length)
+                } else if (state.pickerModalType == 'newproduct') {
+                    selectlimit = (4 - state.product_image.length)
+                }
+                let libaryImageRes = await LaunchImageLibary(false, selectlimit);
                 // if (__DEV__) {
                 //     console.log('LibaryImage', libaryImageRes)
                 // }
@@ -296,27 +296,31 @@ const AddRequest = ({ navigation }) => {
                             gps_img: libaryImageRes.assets[0]
                         }))
                         onHidePicker();
-                        // let markerres = await ImageMarker(libaryImageRes.assets[0].uri, state.latitude, state.longitude);
-                        // console.log('imagemarker',JSON.stringify(markerres))
-                        // setState(prev => ({
-                        //     ...prev,
-                        //     gps_img: {
-                        //         uri:`file://${markerres}`,
-                        //         fileName:libaryImageRes.assets[0].fileName
-                        //     }
-                        // }))
-                    } else {
+                    } else if (state.pickerModalType == 'oldproduct') {
+                        if (state.pickerModalItem) {
+                            let updateArray = reqList.map(obj => {
+                                if (obj.sl_no === state.pickerModalItem.sl_no) {
+                                    return { ...obj, product_image: [...obj.product_image, ...libaryImageRes.assets] }
+                                }
+                                return obj;
+                            });
+                            setReqList(updateArray);
+                        }
+                        onHidePicker();
+                    } else if (state.pickerModalType == 'newproduct') {
                         setState(prev => ({
                             ...prev,
-                            product_image: libaryImageRes.assets[0]
+                            product_image: [...state.product_image, ...libaryImageRes.assets]
                         }))
+                        onHidePicker();
+                    } else {
                         onHidePicker();
                     }
                 } else {
                     onHidePicker();
                 }
             } else {
-                let cameraImageRes = await LaunchCamera(true);
+                let cameraImageRes = await LaunchCamera(false);
                 // if (__DEV__) {
                 //     console.log('CameraImage', cameraImageRes)
                 // }
@@ -327,11 +331,24 @@ const AddRequest = ({ navigation }) => {
                             gps_img: cameraImageRes.assets[0]
                         }))
                         onHidePicker();
-                    } else {
+                    } else if (state.pickerModalType == 'oldproduct') {
+                        if (state.pickerModalItem) {
+                            let updateArray = reqList.map(obj => {
+                                if (obj.sl_no === state.pickerModalItem.sl_no) {
+                                    return { ...obj, product_image: [...obj.product_image, ...cameraImageRes.assets] }
+                                }
+                                return obj;
+                            });
+                            setReqList(updateArray);
+                        }
+                        onHidePicker();
+                    } else if (state.pickerModalType == 'newproduct') {
                         setState(prev => ({
                             ...prev,
-                            product_image: cameraImageRes.assets[0]
+                            product_image: [...state.product_image, ...cameraImageRes.assets]
                         }))
+                        onHidePicker();
+                    } else {
                         onHidePicker();
                     }
                 } else {
@@ -339,7 +356,30 @@ const AddRequest = ({ navigation }) => {
                 }
             }
         } catch (error) {
+            if (__DEV__) {
+                console.log(error)
+            }
+            onHidePicker();
+        }
+    })
 
+    const onDeleteImage = useCallback(async (type, item, img) => {
+        if (type == 'product') {
+            let updatearray = reqList.map(obj => {
+                if (obj.sl_no == item.sl_no) {
+                    let filterobj = obj.product_image.filter(ob => ob != img)
+                    return { ...obj, product_image: filterobj }
+                }
+                return obj;
+            });
+            console.log('deleteimg', JSON.stringify(updatearray))
+            setReqList(updatearray)
+        } else if (type == 'newproduct') {
+            let filterarr = state.product_image.filter(obj => obj != img)
+            setState(prev => ({
+                ...prev,
+                product_image: filterarr
+            }))
         }
     })
 
@@ -347,7 +387,7 @@ const AddRequest = ({ navigation }) => {
         if (state.pr_name.trim() == '') {
             ToastMessage('Enter Product Name');
             return
-        } else if (!state.product_image) {
+        } else if (state.product_image.length < 1) {
             ToastMessage('Choose Product Image');
             return;
         } else if (state.checkValue == false) {
@@ -496,7 +536,7 @@ const AddRequest = ({ navigation }) => {
     })
 
     const renderFooter = () => (
-        <View style={{ marginBottom: '2%' }}>
+        <View style={{ marginBottom: 0 }}>
             <View style={[styles.flex, { marginBottom: '4%' }]}>
                 <TouchableOpacity onPress={onModalShow} activeOpacity={0.5} style={styles.uploadBtn}>
                     <Text style={styles.uploadText}>Item not in list</Text>
@@ -509,6 +549,31 @@ const AddRequest = ({ navigation }) => {
             {/* <TouchableOpacity activeOpacity={0.5} style={styles.submitBtn}>
                 <Text style={styles.uploadText}>SUBMIT</Text>
             </TouchableOpacity> */}
+            <View style={[styles.bottomContainer, { marginTop: '4%' }]}>
+                <View style={styles.flexNew}>
+                    <Text style={CommonStyle.boldblacktext}>Tentative collection request date:  </Text>
+                    <TouchableOpacity onPress={onOpenDatePicker} activeOpacity={0.5} style={{ width: '30%' }}>
+                        <TextInput value={dateConvertNew(state.collectionDate)} editable={false} placeholder='Select Date' style={[styles.productInput, { width: '100%' }]} />
+                        {/* <Image source={ImagePath.date} style={{ width: 20, height: 20 }} /> */}
+                    </TouchableOpacity>
+                </View>
+                <View style={styles.uploadContainer}>
+                    <Text style={CommonStyle.boldblacktext}>Upload GPS Track Image :</Text>
+                    {(state.gps_img) ?
+                        <TouchableOpacity onPress={() => onViewImage(state.gps_img?.uri)} activeOpacity={0.5} style={styles.gpsContainer}>
+                            <Image source={state.gps_img} style={styles.gpsImage} />
+                        </TouchableOpacity>
+                        :
+                        <TouchableOpacity onPress={() => onShowPicker('gps')} activeOpacity={0.5} style={styles.uploadBtn}>
+                            <Text style={styles.uploadText}>Upload  </Text>
+                            <Image source={ImagePath.upload_image} style={styles.uploadicon} />
+                        </TouchableOpacity>
+                    }
+                </View>
+                <TouchableOpacity onPress={onSubmit} activeOpacity={0.5} style={styles.submitBtn}>
+                    <Text style={styles.uploadText}>SUBMIT</Text>
+                </TouchableOpacity>
+            </View>
         </View>
     )
 
@@ -544,38 +609,16 @@ const AddRequest = ({ navigation }) => {
                             units={unitList}
                             onDelete={onDelete}
                             arrLength={reqList.length}
+                            onAddImage={onShowPicker}
                             onViewImage={onViewImage}
+                            onDeleteImage={onDeleteImage}
                         />}
                     showsVerticalScrollIndicator={false}
                     ListFooterComponent={renderFooter}
-                    style={{ marginBottom: '1%' }}
+                // style={{ marginBottom: '1%' }}
                 />
             </View>
-            <View style={styles.bottomContainer}>
-                <View style={styles.flexNew}>
-                    <Text style={CommonStyle.boldblacktext}>Tentative collection request date:  </Text>
-                    <TouchableOpacity onPress={onOpenDatePicker} activeOpacity={0.5} style={{ width: '30%' }}>
-                        <TextInput value={dateConvertNew(state.collectionDate)} editable={false} placeholder='Select Date' style={[styles.productInput, { width: '100%' }]} />
-                        {/* <Image source={ImagePath.date} style={{ width: 20, height: 20 }} /> */}
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.uploadContainer}>
-                    <Text style={CommonStyle.boldblacktext}>Upload GPS Track Image :</Text>
-                    {(state.gps_img) ?
-                        <TouchableOpacity onPress={() => onViewImage(state.gps_img?.uri)} activeOpacity={0.5} style={styles.gpsContainer}>
-                            <Image source={state.gps_img} style={styles.gpsImage} />
-                        </TouchableOpacity>
-                        :
-                        <TouchableOpacity onPress={() => onShowPicker('gps')} activeOpacity={0.5} style={styles.uploadBtn}>
-                            <Text style={styles.uploadText}>Upload  </Text>
-                            <Image source={ImagePath.upload_image} style={styles.uploadicon} />
-                        </TouchableOpacity>
-                    }
-                </View>
-                <TouchableOpacity onPress={onSubmit} activeOpacity={0.5} style={styles.submitBtn}>
-                    <Text style={styles.uploadText}>SUBMIT</Text>
-                </TouchableOpacity>
-            </View>
+
             <ModalPop
                 modalVisible={state.modalVisible}
                 onModalHide={onModalHide}
@@ -583,10 +626,10 @@ const AddRequest = ({ navigation }) => {
                 onChangeHsn={onChangeHsn}
                 onChangeCheckBox={onChangeCheckBox}
                 allData={state}
-                category={category}
                 onSubmit={onAddProduct}
                 onAddImage={onShowPicker}
                 onViewImage={onViewImage}
+                onDeleteImage={onDeleteImage}
             />
             <ImageOptions
                 modalVisible={state.pickerModal}

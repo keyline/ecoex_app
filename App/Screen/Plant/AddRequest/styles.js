@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
         width: '55%',
         paddingLeft: 10,
         borderLeftWidth: 2,
-        overflow:'hidden'
+        overflow: 'hidden'
     },
     itemContainer: {
         backgroundColor: Colors.light_grey,
@@ -118,7 +118,7 @@ export const styles = StyleSheet.create({
         height: 38,
         borderColor: Colors.grey,
         paddingHorizontal: 10,
-        color:Colors.black
+        color: Colors.black
         // backgroundColor: Colors.light_grey
     },
     productInput: {
@@ -170,5 +170,40 @@ export const styles = StyleSheet.create({
         width: 68,
         height: 39,
         resizeMode: 'cover'
+    },
+    addmoreContainer: {
+        backgroundColor: Colors.light_grey,
+        // width: 40,
+        // height: 40,
+        alignItems: 'center',
+        borderRadius: 5,
+        overflow: 'hidden',
+        marginBottom: 10,
+        // marginRight: 10,
+        borderWidth: 1,
+        borderColor: Colors.light_grey
+    },
+    addmoreImg: {
+        width: 45,
+        height: 50,
+        resizeMode: 'cover'
+    },
+    productimgContainer: {
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        width: '60%',
+        // overflow: 'hidden',
+        alignItems: 'center',
+        // justifyContent: 'space-between'
+    },
+    productimg: {
+
+    },
+    imgCloseContainer: {
+        position: 'absolute',
+        right: -8,
+        top: -3,
+        zIndex: 99
+
     }
 })
