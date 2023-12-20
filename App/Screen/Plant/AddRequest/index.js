@@ -51,7 +51,7 @@ const AddRequest = ({ navigation }) => {
     const [productList, setProductList] = useState([]);
     const [unitList, setUnitList] = useState([]);
     const [reqList, setReqList] = useState([
-        { sl_no: generateRandomId(), product_id: '', hsn: '', product_image: [], qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
+        { sl_no: generateRandomId(), product_id: '', hsn: '', product_image: [], product_imageErr: '', qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
     ])
 
     const initialState = () => {
@@ -61,7 +61,7 @@ const AddRequest = ({ navigation }) => {
             collectionDate: ''
         }))
         setReqList([
-            { sl_no: generateRandomId(), product_id: '', hsn: '', product_image: [], qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
+            { sl_no: generateRandomId(), product_id: '', hsn: '', product_image: [], product_imageErr: '', qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
         ])
     }
 
@@ -169,7 +169,7 @@ const AddRequest = ({ navigation }) => {
         if (item && pr) {
             let updateArray = reqList.map(obj => {
                 if (obj.sl_no === item.sl_no) {
-                    return { ...obj, product_id: pr.value, hsn: pr.hsn_code, productErr: '' }
+                    return { ...obj, product_id: pr.value, hsn: pr?.hsn, unit: pr?.unit_name, productErr: '' }
                 }
                 return obj;
             });
@@ -203,7 +203,7 @@ const AddRequest = ({ navigation }) => {
 
     const onAddMore = useCallback(async () => {
         let myArr = reqList
-        let obj = { sl_no: generateRandomId(), product_id: '', hsn: '', product_image: [], qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
+        let obj = { sl_no: generateRandomId(), product_id: '', hsn: '', product_image: [], product_imageErr: '', qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
         myArr.push(obj);
         let tempData = [];
         myArr.map(item => {
@@ -285,10 +285,10 @@ const AddRequest = ({ navigation }) => {
                 } else if (state.pickerModalType == 'newproduct') {
                     selectlimit = (4 - state.product_image.length)
                 }
-                let libaryImageRes = await LaunchImageLibary(false, selectlimit);
-                // if (__DEV__) {
-                //     console.log('LibaryImage', libaryImageRes)
-                // }
+                let libaryImageRes = await LaunchImageLibary(true, selectlimit);
+                if (__DEV__) {
+                    console.log('LibaryImage', libaryImageRes)
+                }
                 if (libaryImageRes.assets && libaryImageRes.assets.length > 0) {
                     if (state.pickerModalType == 'gps') {
                         setState(prev => ({
@@ -300,7 +300,7 @@ const AddRequest = ({ navigation }) => {
                         if (state.pickerModalItem) {
                             let updateArray = reqList.map(obj => {
                                 if (obj.sl_no === state.pickerModalItem.sl_no) {
-                                    return { ...obj, product_image: [...obj.product_image, ...libaryImageRes.assets] }
+                                    return { ...obj, product_image: [...obj.product_image, ...libaryImageRes.assets], product_imageErr: '' }
                                 }
                                 return obj;
                             });
@@ -320,10 +320,10 @@ const AddRequest = ({ navigation }) => {
                     onHidePicker();
                 }
             } else {
-                let cameraImageRes = await LaunchCamera(false);
-                // if (__DEV__) {
-                //     console.log('CameraImage', cameraImageRes)
-                // }
+                let cameraImageRes = await LaunchCamera(true);
+                if (__DEV__) {
+                    console.log('CameraImage', cameraImageRes)
+                }
                 if (cameraImageRes.assets && cameraImageRes.assets.length > 0) {
                     if (state.pickerModalType == 'gps') {
                         setState(prev => ({
@@ -335,7 +335,7 @@ const AddRequest = ({ navigation }) => {
                         if (state.pickerModalItem) {
                             let updateArray = reqList.map(obj => {
                                 if (obj.sl_no === state.pickerModalItem.sl_no) {
-                                    return { ...obj, product_image: [...obj.product_image, ...cameraImageRes.assets] }
+                                    return { ...obj, product_image: [...obj.product_image, ...cameraImageRes.assets], product_imageErr: '' }
                                 }
                                 return obj;
                             });
@@ -372,7 +372,7 @@ const AddRequest = ({ navigation }) => {
                 }
                 return obj;
             });
-            console.log('deleteimg', JSON.stringify(updatearray))
+            // console.log('deleteimg', JSON.stringify(updatearray))
             setReqList(updatearray)
         } else if (type == 'newproduct') {
             let filterarr = state.product_image.filter(obj => obj != img)
@@ -399,6 +399,7 @@ const AddRequest = ({ navigation }) => {
                 product_name: state.pr_name,
                 hsn: state.hsn,
                 product_image: state.product_image,
+                product_imageErr: '',
                 qty: '',
                 unit: '',
                 productErr: '',
@@ -453,8 +454,9 @@ const AddRequest = ({ navigation }) => {
 
     const onSubmit = useCallback(async () => {
         let findProductEmptyindex = reqList.findIndex(obj => (obj.new_product == false && obj.product_id == ''));
-        let findQtyEmptyindex = reqList.findIndex(obj => (obj.qty.trim() == ''))
-        let findUnitEmptyindex = reqList.findIndex(obj => obj.unit == '')
+        let findQtyEmptyindex = reqList.findIndex(obj => (obj.new_product == false && obj.qty.trim() == ''))
+        // let findUnitEmptyindex = reqList.findIndex(obj => obj.new_product == true && obj.unit == '')
+        let findImgEmptyindex = reqList.findIndex(obj => (obj.product_image.length <= 0))
         if (findProductEmptyindex != -1) {
             let updateArray = reqList.map(item => {
                 if (item.new_product == false && item.product_id == '') {
@@ -466,17 +468,28 @@ const AddRequest = ({ navigation }) => {
             return;
         } else if (findQtyEmptyindex != -1) {
             let updateArray = reqList.map(item => {
-                if (item.qty.trim() == '') {
+                if (item.new_product == false && item.qty.trim() == '') {
                     return { ...item, qtyErr: 'Enter Qty' }
                 }
                 return item
             })
             setReqList(updateArray);
             return;
-        } else if (findUnitEmptyindex != -1) {
+        }
+        // else if (findUnitEmptyindex != -1) {
+        //     let updateArray = reqList.map(item => {
+        //         if (item.unit == '') {
+        //             return { ...item, unitErr: 'Select Unit' }
+        //         }
+        //         return item
+        //     })
+        //     setReqList(updateArray);
+        //     return;
+        // } 
+        else if (findImgEmptyindex != -1) {
             let updateArray = reqList.map(item => {
-                if (item.unit == '') {
-                    return { ...item, unitErr: 'Select Unit' }
+                if (item.product_image.length <= 0) {
+                    return { ...item, product_imageErr: 'Upload Image' }
                 }
                 return item
             })
@@ -502,6 +515,8 @@ const AddRequest = ({ navigation }) => {
                     device_model: DeviceInfo.getModel(),
                     device_brand: DeviceInfo.getBrand()
                 }
+                // console.log('addPostbody', JSON.stringify(datas))
+                // return
                 let response = await Apis.plant_addrequest(datas);
                 if (__DEV__) {
                     console.log('AddRequest', JSON.stringify(response))

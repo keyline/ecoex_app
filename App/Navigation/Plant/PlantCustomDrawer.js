@@ -11,19 +11,21 @@ import Apis from '../../Service/Apis';
 
 const PlantCustomDrawer = (props) => {
 
-    const context = useContext(AuthContext)
+    const context = useContext(AuthContext);
+    const { siteData, userProfile } = context.allData
     const navigation = useNavigation();
 
     const menuList = [
-        { id: 1, name: 'Home', screen: 'PlantDashBoard', icon: ImagePath.home, logiReq: true },
+        { id: 1, name: 'Home', screen: 'PlantDashBoard', icon: ImagePath.home, logiReq: false },
         { id: 2, name: 'Add Request', screen: 'AddRequest', icon: ImagePath.request, logiReq: true },
-        { id: 3, name: 'Process Request', screen: 'ProcessRequest', icon: ImagePath.pending, logiReq: true },
-        { id: 4, name: 'Complete Request', screen: 'CompleteRequest', icon: ImagePath.complete, logiReq: true },
-        { id: 5, name: 'Reject Request', screen: 'RejectRequest', icon: ImagePath.reject, logiReq: true },
-        { id: 6, name: 'Notification', screen: 'PlantNotification', icon: ImagePath.bell, logiReq: true },
-        { id: 7, name: 'Edit Profile', screen: 'PlantEditProfile', icon: ImagePath.edit_profile, logiReq: true },
-        { id: 8, name: 'Change Password', screen: 'PlantChangePassword', icon: ImagePath.lock, logiReq: true },
-        { id: 9, name: 'Sign Out', screen: 'LogOut', icon: ImagePath.logout, logiReq: true },
+        { id: 3, name: 'Process Request', screen: 'ProcessRequest', icon: ImagePath.pending, logiReq: false },
+        { id: 4, name: 'Complete Request', screen: 'CompleteRequest', icon: ImagePath.complete, logiReq: false },
+        { id: 5, name: 'Reject Request', screen: 'RejectRequest', icon: ImagePath.reject, logiReq: false },
+        { id: 6, name: 'Notification', screen: 'PlantNotification', icon: ImagePath.bell, logiReq: false },
+        { id: 7, name: 'Edit Profile', screen: 'PlantEditProfile', icon: ImagePath.edit_profile, logiReq: false },
+        { id: 8, name: 'Change Password', screen: 'PlantChangePassword', icon: ImagePath.lock, logiReq: false },
+        { id: 9, name: 'Sign Out', screen: 'LogOut', icon: ImagePath.logout, logiReq: false },
+        // { id: 10, name: 'Delete Account', screen: 'Delete_account', icon: ImagePath.delete_acnt, logiReq: false },
     ]
 
     const Icon = ({ props, source }) => (
@@ -34,6 +36,8 @@ const PlantCustomDrawer = (props) => {
         if (item) {
             if (item.screen && item.screen == 'LogOut') {
                 SignOutAlert();
+            } else if (item?.screen == 'Delete_account') {
+                DeleteAcntAlert();
             } else if (item?.screen) {
                 navigation.navigate(item.screen)
             }
@@ -78,11 +82,47 @@ const PlantCustomDrawer = (props) => {
         }
     })
 
+    const DeleteAcntAlert = useCallback(async () => {
+        Alert.alert(
+            'Delete Account',
+            'Do you really want to Delete your account?',
+            [
+                {
+                    text: 'Yes',
+                    onPress: () => onDeleteAccount()
+                },
+                {
+                    text: 'No',
+                    onPress: () => null
+                }
+            ],
+            { cancelable: true }
+        )
+    })
+
+    const onDeleteAccount = useCallback(async () => {
+        try {
+            let res = await Apis.delete_acnt();
+            if (__DEV__) {
+                console.log('DeleteAccount', JSON.stringify(res))
+            }
+            if (res.success) {
+                await context.onClearStoreData();
+            }
+            ToastMessage(res?.message);
+        } catch (error) {
+            if (__DEV__) {
+                console.log(error)
+            }
+            ToastError();
+        }
+    })
+
     return (
         <View style={{ flex: 1 }}>
             <DrawerContentScrollView {...props} showsVerticalScrollIndicator={false}>
                 {/* <DrawerItemList {...props} /> */}
-                {menuList.map((item, key) => (
+                {((userProfile?.is_contract_expire == 0) ? menuList.filter(obj => obj.logiReq == false) : menuList).map((item, key) => (
                     <DrawerItem
                         key={key}
                         label={item.name}

@@ -35,7 +35,7 @@ const EditRequest = ({ navigation, route }) => {
         hsn: '',
         checkValue: false,
         pickerModal: false,
-        product_image: null,
+        product_image: [],
         pickerModalType: '',
         latitude: '',
         longitude: '',
@@ -65,14 +65,16 @@ const EditRequest = ({ navigation, route }) => {
                 enq_id: route?.params?.id
             }
             let response = await Apis.process_request_edit(datas);
-            if (__DEV__) {
-                console.log('EditRequest', JSON.stringify(response))
-            } if (response.success) {
+            // if (__DEV__) {
+            //     console.log('EditRequest', JSON.stringify(response))
+            // } 
+            if (response.success) {
                 let data = response?.data
                 let reqlist = data.requestList.map((item) => {
-                    return { ...item, productErr: '', qtyErr: '', unitErr: '', sl_no: generateRandomId() }
+                    return { ...item, product_imageErr: '', productErr: '', qtyErr: '', unitErr: '', sl_no: generateRandomId() }
                 })
                 setRequestList(reqlist)
+                console.log('reqlist', JSON.stringify(reqlist))
                 await onGetUnits();
                 setState(prev => ({
                     ...prev,
@@ -198,7 +200,7 @@ const EditRequest = ({ navigation, route }) => {
             ...prev,
             pr_name: '',
             hsn: '',
-            product_image: null,
+            product_image: [],
             checkValue: false,
             modalVisible: false
         }))
@@ -206,7 +208,7 @@ const EditRequest = ({ navigation, route }) => {
 
     const onAddMore = useCallback(async () => {
         let myArr = requestList
-        let obj = { sl_no: generateRandomId(), product_id: '', hsn: '', qty: '', unit: '', productErr: '', qtyErr: '', unitErr: '', new_product: false }
+        let obj = { sl_no: generateRandomId(), product_id: '', hsn: '', qty: '', unit: '', product_image: [], product_imageErr: '', productErr: '', qtyErr: '', unit_name: '', unitErr: '', new_product: false }
         myArr.push(obj);
         let tempData = [];
         myArr.map(item => {
@@ -243,7 +245,7 @@ const EditRequest = ({ navigation, route }) => {
         if (item && pr) {
             let updateArray = requestList.map(obj => {
                 if (obj.sl_no === item.sl_no) {
-                    return { ...obj, product_id: pr.value, hsn: pr.hsn_code, productErr: '' }
+                    return { ...obj, product_id: pr.value, unit_name: pr?.unit_name, hsn: pr?.hsn, productErr: '' }
                 }
                 return obj;
             });
@@ -336,7 +338,7 @@ const EditRequest = ({ navigation, route }) => {
         setState(prev => ({
             ...prev,
             pickerModalType: '',
-            pickerModal: false
+            pickerModal: false,
         }))
     }, [state.pickerModal, state.pickerModalType])
 
@@ -344,8 +346,8 @@ const EditRequest = ({ navigation, route }) => {
         if (state.pr_name.trim() == '') {
             ToastMessage('Enter Product Name');
             return
-        } else if (!state.product_image) {
-            ToastMessage('Choose Product Image');
+        } else if (state.product_image.length <= 0) {
+            ToastMessage('Add Product Image');
             return;
         } else if (state.checkValue == false) {
             ToastMessage('Select Checkbox');
@@ -356,6 +358,7 @@ const EditRequest = ({ navigation, route }) => {
                 product_name: state.pr_name,
                 hsn: state.hsn,
                 product_image: state.product_image,
+                product_imagenErr: '',
                 qty: '',
                 unit: '',
                 productErr: '',
@@ -374,7 +377,13 @@ const EditRequest = ({ navigation, route }) => {
     const onSelectImageOption = useCallback(async (value) => {
         try {
             if (value == 1) {
-                let libaryImageRes = await LaunchImageLibary(true);
+                let selectlimit = 1;
+                if (state.pickerModalType.type == 'oldproduct') {
+                    selectlimit = (4 - state.pickerModalType.item.product_image.length)
+                } else if (state.pickerModalType.type == 'newproduct') {
+                    selectlimit = (4 - state.product_image.length)
+                }
+                let libaryImageRes = await LaunchImageLibary(true, selectlimit);
                 // if (__DEV__) {
                 //     console.log('LibaryImage', libaryImageRes)
                 // }
@@ -385,17 +394,30 @@ const EditRequest = ({ navigation, route }) => {
                             gps_img: libaryImageRes.assets[0]
                         }))
                         onHidePicker();
+                    } else if (state.pickerModalType.type == 'oldproduct') {
+                        if (state.pickerModalType.item) {
+                            let updateArray = requestList.map(obj => {
+                                if (obj.sl_no === state.pickerModalType.item.sl_no) {
+                                    return { ...obj, product_image: [...obj.product_image, ...libaryImageRes.assets], product_imageErr: '' }
+                                }
+                                return obj;
+                            });
+                            setRequestList(updateArray);
+                        }
+                        onHidePicker();
                     } else if (state.pickerModalType.type == 'updateProduct' && state.pickerModalType.item) {
                         let findindex = requestList.findIndex(obj => obj.sl_no == state.pickerModalType.item.sl_no)
                         if (findindex != -1) {
                             requestList[findindex].product_image = libaryImageRes.assets[0]
                         }
                         onHidePicker();
-                    } else {
+                    } else if (state.pickerModalType.type == 'newproduct') {
                         setState(prev => ({
                             ...prev,
-                            product_image: libaryImageRes.assets[0]
+                            product_image: [...state.product_image, ...libaryImageRes.assets]
                         }))
+                        onHidePicker();
+                    } else {
                         onHidePicker();
                     }
                 } else {
@@ -413,17 +435,30 @@ const EditRequest = ({ navigation, route }) => {
                             gps_img: cameraImageRes.assets[0]
                         }))
                         onHidePicker();
+                    } else if (state.pickerModalType.type == 'oldproduct') {
+                        if (state.pickerModalType.item) {
+                            let updateArray = requestList.map(obj => {
+                                if (obj.sl_no === state.pickerModalType.item.sl_no) {
+                                    return { ...obj, product_image: [...obj.product_image, ...cameraImageRes.assets], product_imageErr: '' }
+                                }
+                                return obj;
+                            });
+                            setRequestList(updateArray);
+                        }
+                        onHidePicker();
                     } else if (state.pickerModalType.type == 'updateProduct' && state.pickerModalType.item) {
                         let findindex = requestList.findIndex(obj => obj.sl_no == state.pickerModalType.item.sl_no)
                         if (findindex != -1) {
                             requestList[findindex].product_image = cameraImageRes.assets[0]
                         }
                         onHidePicker();
-                    } else {
+                    } else if (state.pickerModalType.type == 'newproduct') {
                         setState(prev => ({
                             ...prev,
-                            product_image: cameraImageRes.assets[0]
+                            product_image: [...state.product_image, ...cameraImageRes.assets]
                         }))
+                        onHidePicker();
+                    } else {
                         onHidePicker();
                     }
                 } else {
@@ -487,8 +522,9 @@ const EditRequest = ({ navigation, route }) => {
         // return
         let findProductEmptyindex = requestList.findIndex(obj => (obj.new_product == false && obj.product_id == ''));
         let findProductNameEmptyIndex = requestList.findIndex(obj => (obj.new_product == true && obj.product_name.trim() == ''))
-        let findQtyEmptyindex = requestList.findIndex(obj => (obj.qty.trim() == ''))
-        let findUnitEmptyindex = requestList.findIndex(obj => obj.unit == '')
+        let findQtyEmptyindex = requestList.findIndex(obj => (obj.new_product == false && obj.qty.trim() == ''))
+        // let findUnitEmptyindex = requestList.findIndex(obj => obj.unit == '')
+        let findImgEmptyindex = requestList.findIndex(obj => (obj.product_image.length <= 0))
         if (findProductEmptyindex != -1) {
             let updateArray = requestList.map(item => {
                 if (item.new_product == false && item.product_id == '') {
@@ -516,10 +552,21 @@ const EditRequest = ({ navigation, route }) => {
             })
             setRequestList(updateArray);
             return;
-        } else if (findUnitEmptyindex != -1) {
+        }
+        // else if (findUnitEmptyindex != -1) {
+        //     let updateArray = requestList.map(item => {
+        //         if (item.unit == '') {
+        //             return { ...item, unitErr: 'Select Unit' }
+        //         }
+        //         return item
+        //     })
+        //     setRequestList(updateArray);
+        //     return;
+        // } 
+        else if (findImgEmptyindex != -1) {
             let updateArray = requestList.map(item => {
-                if (item.unit == '') {
-                    return { ...item, unitErr: 'Select Unit' }
+                if (item.product_image.length <= 0) {
+                    return { ...item, product_imageErr: 'Upload Image' }
                 }
                 return item
             })
@@ -537,15 +584,15 @@ const EditRequest = ({ navigation, route }) => {
                     ...prev,
                     loadingNew: true
                 }))
-                let updatearr = requestList.map(item => {
-                    if (!item.product_image?.uri) {
-                        return { ...item, product_image: '' }
-                    }
-                    return item
-                })
+                // let updatearr = requestList.map(item => {
+                //     if (!item.product_image?.uri) {
+                //         return { ...item, product_image: '' }
+                //     }
+                //     return item
+                // })
                 let datas = {
                     enq_id: state.data?.enq_id,
-                    requestList: updatearr,
+                    requestList: requestList,
                     gps_image: state.gps_img?.uri ? state.gps_img : '',
                     collection_date: dateConvertNew(state.collectionDate),
                     latitude: state.latitude ? state.latitude : state.data?.latitude,
@@ -575,6 +622,26 @@ const EditRequest = ({ navigation, route }) => {
                 ToastError();
             }
 
+        }
+    })
+
+    const onDeleteImage = useCallback(async (type, item, img) => {
+        if (type == 'oldproduct') {
+            let updatearray = requestList.map(obj => {
+                if (obj.sl_no == item.sl_no) {
+                    let filterobj = obj.product_image.filter(ob => ob != img)
+                    return { ...obj, product_image: filterobj }
+                }
+                return obj;
+            });
+            // console.log('deleteimg', JSON.stringify(updatearray))
+            setRequestList(updatearray)
+        } else if (type == 'newproduct') {
+            let updatearray = state.product_image.filter(obj => obj != img)
+            setState(prev => ({
+                ...prev,
+                product_image: updatearray
+            }))
         }
     })
 
@@ -635,17 +702,17 @@ const EditRequest = ({ navigation, route }) => {
             {(state.loading) ? <Loader loading={state.loading} /> :
                 <View style={{ flex: 1 }}>
                     <View style={styles.headerContent}>
-                    <Text style={[CommonStyle.boldblacktext,{textAlign:'center'}]}>REQ ID : {state.data?.enquiry_no}</Text>
-                    <View style={styles.headerContainer}>
-                        <View style={styles.headerLeft}>
-                            <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>Plant Name : <Text style={[CommonStyle.boldblacktext, { fontSize: 12 }]}>{userProfile?.company_name}</Text></Text>
+                        <Text style={[CommonStyle.boldblacktext, { textAlign: 'center' }]}>REQ ID : {state.data?.enquiry_no}</Text>
+                        <View style={styles.headerContainer}>
+                            <View style={styles.headerLeft}>
+                                <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>Plant Name : <Text style={[CommonStyle.boldblacktext, { fontSize: 12 }]}>{userProfile?.company_name}</Text></Text>
+                            </View>
+                            <View style={styles.headerRight}>
+                                <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>{userProfile?.full_address}</Text>
+                                {/* <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>WEST BENGAL</Text> */}
+                                <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>{userProfile?.email}</Text>
+                            </View>
                         </View>
-                        <View style={styles.headerRight}>
-                            <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>{userProfile?.full_address}</Text>
-                            {/* <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>WEST BENGAL</Text> */}
-                            <Text style={[CommonStyle.normalText, { fontSize: 12 }]}>{userProfile?.email}</Text>
-                        </View>
-                    </View>
                     </View>
                     <View style={{ flex: 1, marginTop: '3%' }}>
                         <FlatList
@@ -665,6 +732,7 @@ const EditRequest = ({ navigation, route }) => {
                                     onChangeHsn={onChangeHsn}
                                     onChangeProductName={onChangeProductName}
                                     onChangeImage={onShowPicker}
+                                    onDeleteImage={onDeleteImage}
                                 />}
                             showsVerticalScrollIndicator={false}
                             ListFooterComponent={renderFooter}
@@ -683,6 +751,7 @@ const EditRequest = ({ navigation, route }) => {
                 onSubmit={onAddProduct}
                 onAddImage={onShowPicker}
                 onViewImage={onViewImage}
+                onDeleteImage={onDeleteImage}
             />
             <ImageOptions
                 modalVisible={state.pickerModal}

@@ -66,6 +66,10 @@ export default class Apis {
         return Network('post', 'signout')
     }
 
+    static delete_acnt = () => {
+        return Network('post', 'delete-account')
+    }
+
     static change_password = (data) => {
         return Network('post', 'change-password', data)
     }

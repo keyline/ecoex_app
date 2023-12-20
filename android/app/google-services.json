@@ -7,9 +7,9 @@
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:493591388467:android:80bf88f280e10f9e095e46",
+        "mobilesdk_app_id": "1:493591388467:android:44a1569a608e831f095e46",
         "android_client_info": {
-          "package_name": "com.ecoex"
+          "package_name": "com.ecoex.keyline"
         }
       },
       "oauth_client": [],

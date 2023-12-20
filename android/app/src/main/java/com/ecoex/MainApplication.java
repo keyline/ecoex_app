@@ -1,4 +1,4 @@
-package com.ecoex;
+package com.ecoex.keyline;
 
 import android.app.Application;
 import com.facebook.react.PackageList;

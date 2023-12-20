@@ -1,4 +1,4 @@
-package com.ecoex;
+package com.ecoex.keyline;
 import androidx.appcompat.app.AppCompatDelegate;
 import android.os.Bundle;
 import com.facebook.react.ReactActivity;

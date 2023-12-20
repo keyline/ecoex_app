@@ -42,34 +42,41 @@ const List = ({ item, products, units, onChangeProduct, onDeleteImage, onAddImag
                 <Text style={styles.hsntext}>HSN Code : {item?.hsn}</Text>
             )}
             <View style={{ width: '80%', alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: '3%' }}>
-                <Text style={[styles.modalText, { marginTop: 10 }]}>Qty/Wt. :</Text>
+                <Text style={[styles.modalText, { marginTop: 10 }]}>Appx Qty :</Text>
                 <View style={{ width: '60%' }}>
-                    <TextInput
-                        style={[styles.productInput, item?.qtyErr && { borderColor: 'red', borderWidth: 1.5 }]}
-                        value={item?.qty}
-                        placeholder='Qty/Wt.'
-                        editable={true}
-                        textAlignVertical='center'
-                        keyboardType='number-pad'
-                        onChangeText={txt => onChangeQty(item, txt)}
-                        placeholderTextColor={Colors.grey}
-                    />
+                    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                        <TextInput
+                            style={[styles.productInput, { width: !item.new_product ? '80%' : '100%' }, item?.qtyErr && { borderColor: 'red', borderWidth: 1.5 }]}
+                            value={item?.qty}
+                            placeholder='Enter Approx Qty'
+                            editable={true}
+                            textAlignVertical='center'
+                            keyboardType='number-pad'
+                            onChangeText={txt => onChangeQty(item, txt)}
+                            placeholderTextColor={Colors.grey}
+                        />
+                        {(!item.new_product && item?.unit) && (
+                            <Text style={CommonStyle.boldblacktext}> {item?.unit}</Text>
+                        )}
+                    </View>
                     {(item.qtyErr) && (
                         <Text style={CommonStyle.errortxt}> {item?.qtyErr}</Text>
                     )}
                 </View>
             </View>
-            <View style={{ width: '80%', alignSelf: 'center', marginTop: '3%' }}>
-                <ElementDropDown
-                    name={'Unit'}
-                    data={units}
-                    value={item?.unit}
-                    setValue={(pr) => onChangeUnit(item, pr)}
-                    error={item?.unitErr}
-                />
-            </View>
+            {(item?.new_product) && (
+                <View style={{ width: '80%', alignSelf: 'center', marginTop: '3%' }}>
+                    <ElementDropDown
+                        name={'Unit'}
+                        data={units}
+                        value={item?.unit}
+                        setValue={(pr) => onChangeUnit(item, pr)}
+                        error={item?.unitErr}
+                    />
+                </View>
+            )}
             <View style={{ width: '80%', alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: '5%' }}>
-                <Text style={[styles.modalText, { marginTop: 10 }]}>Image :</Text>
+                <Text style={[styles.modalText, { marginTop: 10 }]}>Add Image :</Text>
                 <View style={styles.productimgContainer}>
                     {(item.product_image && item.product_image.length > 0) && (
                         <>
@@ -78,11 +85,11 @@ const List = ({ item, products, units, onChangeProduct, onDeleteImage, onAddImag
                                     <TouchableOpacity onPress={() => onViewImage(items?.uri)} activeOpacity={0.5} style={styles.addmoreContainer}>
                                         <Image source={items} style={[styles.addmoreImg, { opacity: 0.8 }]} />
                                     </TouchableOpacity>
-                                    {(!item.new_product || item.new_product && item.product_image.length > 1) && (
+                                    {/* {(item.product_image.length > 1) && ( */}
                                         <TouchableOpacity onPress={() => onDeleteImage('product', item, items)} style={styles.imgCloseContainer}>
                                             <Image source={ImagePath.close_round} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
                                         </TouchableOpacity>
-                                    )}
+                                    {/* )} */}
                                 </View>
                             ))}
                         </>
@@ -94,7 +101,9 @@ const List = ({ item, products, units, onChangeProduct, onDeleteImage, onAddImag
                     )}
                 </View>
             </View>
-
+            {(item?.product_imageErr) && (
+                <Text style={[CommonStyle.errortxt, { width: '60%', alignSelf: 'flex-end' }]}>{item.product_imageErr}</Text>
+            )}
             {/* {(item?.new_product && item?.product_image) && (
                 <View style={{ width: '80%', alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: '3%' }}>
                     <Text style={[styles.modalText, { marginTop: 10 }]}>Image :</Text>

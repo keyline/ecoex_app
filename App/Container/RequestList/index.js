@@ -1,12 +1,15 @@
 import { View, Text, TouchableOpacity, Image } from 'react-native'
-import React, { memo, useCallback, useEffect, useState } from 'react'
+import React, { memo, useCallback, useContext, useEffect, useState } from 'react'
 import { styles } from './styles'
 import { CommonStyle } from '../../Utils/CommonStyle'
 import { ImagePath } from '../../Utils/ImagePath'
 import { Colors } from '../../Utils/Colors'
+import AuthContext from '../../Service/Context'
 
 const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDelete, onViewDetails }) => {
 
+    const context = useContext(AuthContext)
+    const { siteData, userProfile } = context.allData
     const [show, setshow] = useState(true);
 
     // useEffect(() => {
@@ -40,7 +43,7 @@ const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDel
                             <Text style={CommonStyle.boldblacktext}> {item.updated_at ? item?.updated_at : '---'}</Text>
                         </View>
                     </View>
-                    {(item?.status == "0") && (
+                    {(item?.status == "0" && userProfile.is_contract_expire == 1) && (
                         <>
                             <TouchableOpacity onPress={() => onDelete(item)} disabled={!onDelete} activeOpacity={0.5} style={styles.deleteContainer}>
                                 <Image source={ImagePath.delete} style={styles.delete} />

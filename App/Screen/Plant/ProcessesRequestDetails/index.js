@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, ScrollView, Image, TouchableOpacity, Dimensions, Alert } from 'react-native'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import { CommonStyle } from '../../../Utils/CommonStyle'
 import Header from '../../../Container/Header'
 import { ImagePath } from '../../../Utils/ImagePath'
@@ -14,6 +14,7 @@ import Popover from 'react-native-popover-view';
 import { Font_Family } from '../../../Utils/Fonts'
 import { Colors } from '../../../Utils/Colors'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
+import AuthContext from '../../../Service/Context'
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
@@ -26,6 +27,9 @@ const list = [
 ]
 
 const ProcessesRequestDetails = ({ navigation, route }) => {
+
+    const context = useContext(AuthContext)
+    const { siteData, userProfile } = context.allData
 
     const [state, setState] = useState({
         loading: false,
@@ -310,7 +314,7 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                                 </View> */}
                                 {/* // <View style={[styles.flexNew, { alignSelf: 'center' }]}> */}
                             </View>
-                            {(state.data?.current_step_no == '0') && (
+                            {(state.data?.current_step_no == '0' && userProfile.is_contract_expire == 1) && (
                                 <View style={[styles.flexNew, { width: '65%', alignSelf: 'center' }]}>
                                     <TouchableOpacity onPress={onDeleteAlert} style={styles.aprvBtn}>
                                         <Text style={CommonStyle.boldblacktext}>Delete</Text>

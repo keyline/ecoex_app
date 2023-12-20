@@ -2,7 +2,7 @@ import { launchImageLibrary, launchCamera } from 'react-native-image-picker';
 import Toast from 'react-native-simple-toast';
 import DocumentPicker from 'react-native-document-picker';
 import RNFetchBlob from 'rn-fetch-blob'
-import { PermissionsAndroid } from 'react-native';
+import { PermissionsAndroid, Platform } from 'react-native';
 import moment from 'moment';
 import { CameraPermission, GalleryPermission } from './Permission';
 
@@ -48,13 +48,23 @@ export const LaunchImageLibary = async (base64, selectionLimit) => {
         // if (result == false) {
         //     ToastMessage('Gallery Permission Required')
         // }
+        let limit = 1
+        if (selectionLimit) {
+            if (Platform.OS == 'android' && Platform.Version >= 33) {
+                limit = selectionLimit
+            } else if (Platform.OS == 'ios' && Platform.Version >= 14) {
+                limit = selectionLimit
+            } else {
+                limit = 1
+            }
+        }
         let options = {
             mediaType: 'photo',
-            maxHeight: 700,
-            maxWidth: 600,
+            maxHeight: 800,
+            maxWidth: 800,
             quality: 1,
             includeBase64: base64 ? base64 : false,
-            selectionLimit: selectionLimit ? selectionLimit : 1
+            selectionLimit: limit ? limit : 1
         }
         let response = await launchImageLibrary(options)
         return response;
@@ -74,8 +84,8 @@ export const LaunchCamera = async (base64) => {
         }
         let options = {
             mediaType: 'photo',
-            maxHeight: 700,
-            maxWidth: 600,
+            maxHeight: 800,
+            maxWidth: 800,
             quality: 1,
             includeBase64: base64 ? base64 : false,
         }
