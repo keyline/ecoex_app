@@ -84,6 +84,12 @@ const PlantDashBoard = ({ navigation }) => {
         </TouchableOpacity>
     )
 
+    const BottonNew = ({ name, onPress, color }) => (
+        <TouchableOpacity activeOpacity={0.5} onPress={onPress} disabled={!onPress} style={[styles.fullbtn, { backgroundColor: color ? color : Colors.theme_color }]}>
+            <Text style={styles.btmtext}>{name}</Text>
+        </TouchableOpacity>
+    )
+
     const onRequest = useCallback(async (val, color) => {
         setState(prev => ({
             ...prev,
@@ -91,6 +97,12 @@ const PlantDashBoard = ({ navigation }) => {
             progressValue: val
         }))
     }, [state.progressValue, state.progressColor])
+
+    const onBtnPress = useCallback(async (screen) => {
+        if (screen) {
+            navigation.navigate(screen);
+        }
+    })
 
     return (
         <SafeAreaView style={CommonStyle.container}>
@@ -117,7 +129,13 @@ const PlantDashBoard = ({ navigation }) => {
                             </View>
                             <View style={styles.btnContent}>
                                 <Text style={styles.headingText}>Request Status Wise Count</Text>
-                                <View style={styles.statusContent}>
+                                <View style={styles.btnContainer}>
+                                    <BottonNew onPress={(()=>onBtnPress('AddRequest'))} name={'Add New Request'} color={'#264CD4'} />
+                                    <BottonNew onPress={(()=>onBtnPress('ProcessRequest'))} name={state.data?.step2_label + ' (' + state.data?.step2_count + ')'} color={'#E79D0CE8'} />
+                                    <BottonNew onPress={(()=>onBtnPress('RejectRequest'))} name={state.data?.step3_label + ' (' + state.data?.step3_count + ')'} color={'#E70C0CC9'} />
+                                    <BottonNew onPress={(()=>onBtnPress('CompleteRequest'))} name={state.data?.step4_label + ' (' + state.data?.step4_count + ')'} color={'#2DA952'} />
+                                </View>
+                                {/* <View style={styles.statusContent}>
                                     <View style={{ width: '50%' }}>
                                         <Bottom onPress={() => onRequest(state.data?.step1_percent, '#264CD4')} name={state.data?.step1_label} color={'#264CD4'} />
                                         <Bottom onPress={() => onRequest(state.data?.step2_percent, '#E79D0CE8')} name={state.data?.step2_label} color={'#E79D0CE8'} />
@@ -135,7 +153,7 @@ const PlantDashBoard = ({ navigation }) => {
                                             progressValueColor={state.progressColor}
                                         />
                                     </View>
-                                </View>
+                                </View> */}
                             </View>
                         </View>
                     )}

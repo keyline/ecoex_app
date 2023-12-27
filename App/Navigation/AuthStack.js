@@ -7,6 +7,7 @@ import ForgotPassword from '../Screen/AuthScreen/ForgotPassword';
 import OtpValidate from '../Screen/AuthScreen/OtpValidate';
 import ResetPassword from '../Screen/AuthScreen/ResetPassword';
 import LoginWithMobile from '../Screen/AuthScreen/LoginWithMobile';
+import WebView from '../Screen/WebView';
 
 const AuthStack = () => {
 
@@ -25,6 +26,7 @@ const AuthStack = () => {
             <Stack.Screen name='OtpValidate' component={OtpValidate} />
             <Stack.Screen name='ResetPassword' component={ResetPassword} />
             <Stack.Screen name='LoginWithMobile' component={LoginWithMobile} />
+            <Stack.Screen name='WebView' component={WebView}/>
         </Stack.Navigator>
     )
 }

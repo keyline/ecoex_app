@@ -13,6 +13,7 @@ import PlantChangePassword from '../../Screen/Plant/PlantChangePassword';
 import PdfViewer from '../../Screen/PdfViewer';
 import EditRequest from '../../Screen/Plant/EditRequest';
 import PlantNotification from '../../Screen/Plant/PlantNotification';
+import WebView from '../../Screen/WebView';
 
 const PlantMainStack = () => {
 
@@ -35,7 +36,7 @@ const PlantMainStack = () => {
             <Stack.Screen name='PdfViewer' component={PdfViewer} />
             <Stack.Screen name='EditRequest' component={EditRequest} />
             <Stack.Screen name='PlantNotification' component={PlantNotification} />
-
+            <Stack.Screen name='WebView' component={WebView} />
 
         </Stack.Navigator>
     )

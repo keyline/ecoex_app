@@ -205,5 +205,10 @@ export const styles = StyleSheet.create({
         top: -3,
         zIndex: 99
 
+    },
+    hintText: {
+        fontFamily: Font_Family.NunitoSans_Italic,
+        fontSize: 10,
+        color: Colors.grey
     }
 })

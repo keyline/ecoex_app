@@ -289,6 +289,9 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                                         </View>
                                     </>
                                 )}
+                                {(state.data?.enquiry_remarks) && (
+                                    <Text style={[styles.hsntext, { marginVertical: 4, textAlign: 'center', marginLeft: 0,fontSize:14 }]}><Text style={{ fontFamily: Font_Family.NunitoSans_Bold }}>Enquiry Remarks :</Text> {state.data?.enquiry_remarks}</Text>
+                                )}
                                 {(state.data?.weighing_slip || state.data?.vehicle_image) && (
                                     <>
                                         <Text style={[CommonStyle.boldblacktext, { textAlign: 'center', marginVertical: '2%' }]}>Uploaded by Vendor</Text>

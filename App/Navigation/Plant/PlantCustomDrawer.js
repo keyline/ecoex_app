@@ -25,7 +25,7 @@ const PlantCustomDrawer = (props) => {
         { id: 7, name: 'Edit Profile', screen: 'PlantEditProfile', icon: ImagePath.edit_profile, logiReq: false },
         { id: 8, name: 'Change Password', screen: 'PlantChangePassword', icon: ImagePath.lock, logiReq: false },
         { id: 9, name: 'Sign Out', screen: 'LogOut', icon: ImagePath.logout, logiReq: false },
-        // { id: 10, name: 'Delete Account', screen: 'Delete_account', icon: ImagePath.delete_acnt, logiReq: false },
+        { id: 10, name: 'Delete Account', screen: 'Delete_account', icon: ImagePath.delete_acnt, logiReq: false },
     ]
 
     const Icon = ({ props, source }) => (

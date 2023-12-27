@@ -39,6 +39,7 @@ const AddRequest = ({ navigation }) => {
         pickerModalType: '',
         pickerModalItem: '',
         collectionDate: '',
+        collectionDateErr: '',
         collectionDatePicker: false,
         gps_img: null,
         viewImgeUri: null,
@@ -442,7 +443,8 @@ const AddRequest = ({ navigation }) => {
             setState(prev => ({
                 ...prev,
                 collectionDate: time,
-                collectionDatePicker: false
+                collectionDatePicker: false,
+                collectionDateErr: ''
             }))
         } else {
             setState(prev => ({
@@ -454,7 +456,7 @@ const AddRequest = ({ navigation }) => {
 
     const onSubmit = useCallback(async () => {
         let findProductEmptyindex = reqList.findIndex(obj => (obj.new_product == false && obj.product_id == ''));
-        let findQtyEmptyindex = reqList.findIndex(obj => (obj.new_product == false && obj.qty.trim() == ''))
+        // let findQtyEmptyindex = reqList.findIndex(obj => (obj.new_product == false && obj.qty.trim() == ''))
         // let findUnitEmptyindex = reqList.findIndex(obj => obj.new_product == true && obj.unit == '')
         let findImgEmptyindex = reqList.findIndex(obj => (obj.product_image.length <= 0))
         if (findProductEmptyindex != -1) {
@@ -466,16 +468,17 @@ const AddRequest = ({ navigation }) => {
             })
             setReqList(updateArray);
             return;
-        } else if (findQtyEmptyindex != -1) {
-            let updateArray = reqList.map(item => {
-                if (item.new_product == false && item.qty.trim() == '') {
-                    return { ...item, qtyErr: 'Enter Qty' }
-                }
-                return item
-            })
-            setReqList(updateArray);
-            return;
         }
+        // else if (findQtyEmptyindex != -1) {
+        //     let updateArray = reqList.map(item => {
+        //         if (item.new_product == false && item.qty.trim() == '') {
+        //             return { ...item, qtyErr: 'Enter Qty' }
+        //         }
+        //         return item
+        //     })
+        //     setReqList(updateArray);
+        //     return;
+        // }
         // else if (findUnitEmptyindex != -1) {
         //     let updateArray = reqList.map(item => {
         //         if (item.unit == '') {
@@ -496,6 +499,10 @@ const AddRequest = ({ navigation }) => {
             setReqList(updateArray);
             return;
         } else if (state.collectionDate == '') {
+            setState(prev =>({
+                ...prev,
+                collectionDateErr:'Select Date'
+            }))
             ToastMessage('Select Collection Request Date');
             return;
         } else if (!state.gps_img) {
@@ -566,9 +573,9 @@ const AddRequest = ({ navigation }) => {
             </TouchableOpacity> */}
             <View style={[styles.bottomContainer, { marginTop: '4%' }]}>
                 <View style={styles.flexNew}>
-                    <Text style={CommonStyle.boldblacktext}>Tentative collection request date:  </Text>
+                    <Text style={[CommonStyle.boldblacktext, { width: '60%' }]}>Tentative collection request date:  </Text>
                     <TouchableOpacity onPress={onOpenDatePicker} activeOpacity={0.5} style={{ width: '30%' }}>
-                        <TextInput value={dateConvertNew(state.collectionDate)} editable={false} placeholder='Select Date' style={[styles.productInput, { width: '100%' }]} />
+                        <TextInput value={dateConvertNew(state.collectionDate)} editable={false} placeholder='Select Date' style={[styles.productInput, { width: '100%' }, state.collectionDateErr && { borderColor: 'red',borderWidth:2 }]} />
                         {/* <Image source={ImagePath.date} style={{ width: 20, height: 20 }} /> */}
                     </TouchableOpacity>
                 </View>

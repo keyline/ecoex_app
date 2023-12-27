@@ -1,5 +1,5 @@
 import { StatusBar } from 'react-native'
-import React, { useState, useCallback, useContext, useEffect } from 'react'
+import React, { useState, useCallback, useEffect } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import AuthStack from './App/Navigation/AuthStack'
 import { Colors } from './App/Utils/Colors'
@@ -10,14 +10,13 @@ import { ToastError, ToastMessage } from './App/Service/CommonFunction'
 import Apis from './App/Service/Apis'
 import SplashScreen from 'react-native-splash-screen'
 import VendorDrawerStack from './App/Navigation/Vendor/VendorDrawerStack'
-import { generateFcmToken, getFcmPermission } from './App/Service/DeviceToken'
+import { getFcmPermission } from './App/Service/DeviceToken'
 import messaging from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
 import { Notification } from './App/Service/Notification'
 import { navigate, navigationRef } from './App/Service/NavigationRef'
 
 const App = () => {
-
   const [state, setState] = useState({
     loading: true,
     isLogin: false,

@@ -76,7 +76,10 @@ const List = ({ item, products, units, onChangeProduct, onDeleteImage, onAddImag
                 </View>
             )}
             <View style={{ width: '80%', alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: '5%' }}>
-                <Text style={[styles.modalText, { marginTop: 10 }]}>Add Image :</Text>
+                <View>
+                    <Text style={[styles.modalText, { marginTop: 10, marginBottom: 0 }]}>Add Image :</Text>
+                    <Text style={styles.hintText}>(Max upto 4)</Text>
+                </View>
                 <View style={styles.productimgContainer}>
                     {(item.product_image && item.product_image.length > 0) && (
                         <>
@@ -86,9 +89,9 @@ const List = ({ item, products, units, onChangeProduct, onDeleteImage, onAddImag
                                         <Image source={items} style={[styles.addmoreImg, { opacity: 0.8 }]} />
                                     </TouchableOpacity>
                                     {/* {(item.product_image.length > 1) && ( */}
-                                        <TouchableOpacity onPress={() => onDeleteImage('product', item, items)} style={styles.imgCloseContainer}>
-                                            <Image source={ImagePath.close_round} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
-                                        </TouchableOpacity>
+                                    <TouchableOpacity onPress={() => onDeleteImage('product', item, items)} style={styles.imgCloseContainer}>
+                                        <Image source={ImagePath.close_round} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                                    </TouchableOpacity>
                                     {/* )} */}
                                 </View>
                             ))}

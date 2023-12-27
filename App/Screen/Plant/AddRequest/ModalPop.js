@@ -43,22 +43,25 @@ const ModalPop = ({ modalVisible, allData, onModalHide, onDeleteImage, onChangeP
                         keyboardType='number-pad'
                     />
                     {(allData.product_image && allData.product_image.length > 0) ?
-                        <View style={[styles.productimgContainer, { width: '100%', marginTop: 10 }]}>
-                            {allData.product_image.map((item, key) => (
-                                <View key={key} style={{ marginRight: 15 }}>
-                                    <TouchableOpacity onPress={() => onViewImage(item?.uri)} style={styles.addmoreContainer}>
-                                        <Image source={item} style={[styles.addmoreImg, { opacity: 0.8 }]} />
+                        <View>
+                            <View style={[styles.productimgContainer, { width: '100%', marginTop: 10 }]}>
+                                {allData.product_image.map((item, key) => (
+                                    <View key={key} style={{ marginRight: 15 }}>
+                                        <TouchableOpacity onPress={() => onViewImage(item?.uri)} style={styles.addmoreContainer}>
+                                            <Image source={item} style={[styles.addmoreImg, { opacity: 0.8 }]} />
+                                        </TouchableOpacity>
+                                        <TouchableOpacity onPress={() => onDeleteImage('newproduct', allData.product_image, item)} style={styles.imgCloseContainer}>
+                                            <Image source={ImagePath.close_round} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
+                                        </TouchableOpacity>
+                                    </View>
+                                ))}
+                                {(allData.product_image && allData.product_image.length < 4) && (
+                                    <TouchableOpacity onPress={() => onAddImage('newproduct')} activeOpacity={0.5} style={[styles.addmoreContainer, { borderWidth: 0, borderRadius: 0, backgroundColor: Colors.white }]}>
+                                        <Image source={ImagePath.camera} style={{ width: 25, height: 25, resizeMode: 'contain' }} />
                                     </TouchableOpacity>
-                                    <TouchableOpacity onPress={() => onDeleteImage('newproduct', allData.product_image, item)} style={styles.imgCloseContainer}>
-                                        <Image source={ImagePath.close_round} style={{ width: 20, height: 20, resizeMode: 'contain' }} />
-                                    </TouchableOpacity>
-                                </View>
-                            ))}
-                            {(allData.product_image && allData.product_image.length < 4) && (
-                                <TouchableOpacity onPress={() => onAddImage('newproduct')} activeOpacity={0.5} style={[styles.addmoreContainer, { borderWidth: 0, borderRadius: 0, backgroundColor: Colors.white }]}>
-                                    <Image source={ImagePath.camera} style={{ width: 25, height: 25, resizeMode: 'contain' }} />
-                                </TouchableOpacity>
-                            )}
+                                )}
+                            </View>
+                            <Text style={[styles.hintText, { textAlign: 'center' }]}>(Max upto 4)</Text>
                         </View>
                         :
                         <TouchableOpacity onPress={() => onAddImage('newproduct')} activeOpacity={0.5} style={[styles.submitBtn, { marginTop: 20 }]}>

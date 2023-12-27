@@ -113,7 +113,10 @@ const List = ({ item, products, units, onDeleteImage, onChangeProductName, onCha
             )} */}
 
             <View style={{ width: '80%', alignSelf: 'center', flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginTop: '5%' }}>
-                <Text style={[styles.modalText, { marginTop: 10 }]}>Add Image :</Text>
+                <View>
+                    <Text style={[styles.modalText, { marginTop: 10, marginBottom: 0 }]}>Add Image :</Text>
+                    <Text style={styles.hintText}>(Max upto 4)</Text>
+                </View>
                 <View style={styles.productimgContainer}>
                     {(item.product_image && item.product_image.length > 0) && (
                         <>

@@ -512,17 +512,9 @@ const EditRequest = ({ navigation, route }) => {
     }, [state.collectionDate])
 
     const onUpdate = useCallback(async () => {
-        // let updatearr = requestList.map(item => {
-        //     if (!item.product_image?.uri) {
-        //         return { ...item, product_image: '' }
-        //     }
-        //     return item
-        // })
-        // console.log('reqlist',JSON.stringify(updatearr))
-        // return
         let findProductEmptyindex = requestList.findIndex(obj => (obj.new_product == false && obj.product_id == ''));
         let findProductNameEmptyIndex = requestList.findIndex(obj => (obj.new_product == true && obj.product_name.trim() == ''))
-        let findQtyEmptyindex = requestList.findIndex(obj => (obj.new_product == false && obj.qty.trim() == ''))
+        // let findQtyEmptyindex = requestList.findIndex(obj => (obj.new_product == false && obj.qty.trim() == ''))
         // let findUnitEmptyindex = requestList.findIndex(obj => obj.unit == '')
         let findImgEmptyindex = requestList.findIndex(obj => (obj.product_image.length <= 0))
         if (findProductEmptyindex != -1) {
@@ -543,16 +535,17 @@ const EditRequest = ({ navigation, route }) => {
             })
             setRequestList(updateArray);
             return;
-        } else if (findQtyEmptyindex != -1) {
-            let updateArray = requestList.map(item => {
-                if (item.qty.trim() == '') {
-                    return { ...item, qtyErr: 'Enter Qty' }
-                }
-                return item
-            })
-            setRequestList(updateArray);
-            return;
-        }
+        } 
+        // else if (findQtyEmptyindex != -1) {
+        //     let updateArray = requestList.map(item => {
+        //         if (item.qty.trim() == '') {
+        //             return { ...item, qtyErr: 'Enter Qty' }
+        //         }
+        //         return item
+        //     })
+        //     setRequestList(updateArray);
+        //     return;
+        // }
         // else if (findUnitEmptyindex != -1) {
         //     let updateArray = requestList.map(item => {
         //         if (item.unit == '') {

@@ -44,7 +44,7 @@ export const styles = StyleSheet.create({
         color: Colors.theme_color,
         fontSize: 12,
         // backgroundColor:'red',
-        width:'100%'
+        width: '100%'
     },
     valuetxt: {
         fontFamily: Font_Family.NunitoSans_SemiBold,
@@ -65,7 +65,7 @@ export const styles = StyleSheet.create({
         paddingHorizontal: '4%',
         paddingVertical: '4%',
         borderWidth: 2,
-        borderColor:Colors.light_grey,
+        borderColor: Colors.light_grey,
         borderRadius: 5,
         ...Platform.select({
             ios: {
@@ -86,7 +86,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        marginVertical:'6%'
+        marginVertical: '6%'
     },
     btmcontainer: {
         backgroundColor: Colors.theme_color,
@@ -99,9 +99,18 @@ export const styles = StyleSheet.create({
     },
     btmtext: {
         fontFamily: Font_Family.NunitoSans_ExtraBold,
-        color:Colors.white,
-        width:'100%',
-        textAlign:'center',
-        fontSize:12
+        color: Colors.white,
+        width: '100%',
+        textAlign: 'center',
+        fontSize: 12
+    },
+    btnContainer: {
+        marginTop: '4%',
+        marginHorizontal: '4%'
+    },
+    fullbtn: {
+        paddingVertical: '2.5%',
+        borderRadius: 5,
+        marginBottom: '4%'
     }
 })
