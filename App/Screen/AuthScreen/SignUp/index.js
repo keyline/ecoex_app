@@ -262,7 +262,7 @@ const SignUp = ({ navigation }) => {
     }, [state.mobileOTP])
 
     const onTermsCondition = useCallback(async () => {
-
+        navigation.navigate('StaticPage', { page: 'terms-conditions' })
     })
 
     const onLogin = useCallback(async () => {

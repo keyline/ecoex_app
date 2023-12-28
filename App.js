@@ -1,5 +1,5 @@
-import { StatusBar } from 'react-native'
-import React, { useState, useCallback, useEffect } from 'react'
+import { Alert, AppState, Linking, StatusBar } from 'react-native'
+import React, { useState, useCallback, useEffect, useRef } from 'react'
 import { NavigationContainer } from '@react-navigation/native'
 import AuthStack from './App/Navigation/AuthStack'
 import { Colors } from './App/Utils/Colors'
@@ -15,6 +15,8 @@ import messaging from '@react-native-firebase/messaging';
 import notifee, { EventType } from '@notifee/react-native';
 import { Notification } from './App/Service/Notification'
 import { navigate, navigationRef } from './App/Service/NavigationRef'
+import VersionCheck from 'react-native-version-check';
+import { fetch as fetchPolyfill } from 'whatwg-fetch'
 
 const App = () => {
   const [state, setState] = useState({
@@ -27,6 +29,55 @@ const App = () => {
     siteData: null,
     userType: ''
   })
+  const appState = useRef(AppState.currentState);
+
+  useEffect(() => {
+    const subscription = AppState.addEventListener('change', nextAppState => {
+      if (
+        appState.current.match(/inactive|background/) &&
+        nextAppState === 'active'
+      ) {
+        // console.log('App has come to the foreground!');
+        onAppUpdate();
+      }
+      appState.current = nextAppState;
+    });
+
+    return () => subscription.remove();
+  }, []);
+
+  const onAppUpdate = async () => {
+    global.fetch = fetchPolyfill
+    VersionCheck.needUpdate()
+      .then(async res => {
+        if (__DEV__) {
+          console.log('UpdateChecker', JSON.stringify(res))
+        }
+        if (res?.isNeeded && res?.storeUrl) {
+          Alert.alert(
+            'Update Available',
+            'A new version of the app is available. Please update for the best experience.',
+            [
+              {
+                text: 'Update Now',
+                onPress: () => Linking.openURL(res?.storeUrl)
+              }
+            ],
+            { cancelable: false }
+          )
+        } else {
+          // No update is required
+          if (__DEV__) {
+            console.log('You are using the latest version.');
+          }
+        }
+      })
+      .catch(err => {
+        if (__DEV__) {
+          console.error('Error checking for updates:', err)
+        }
+      });
+  }
 
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
@@ -95,6 +146,7 @@ const App = () => {
   useEffect(() => {
     onGetDeviceToken();
     onGetData();
+    onAppUpdate();
   }, [])
 
   const onGetDeviceToken = async () => {

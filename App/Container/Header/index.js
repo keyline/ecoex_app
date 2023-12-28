@@ -1,15 +1,21 @@
 import { View, Text, Image, TouchableOpacity } from 'react-native'
-import React, { useCallback } from 'react'
+import React, { useCallback, useContext } from 'react'
 import { styles } from './styles'
 import { ImagePath } from '../../Utils/ImagePath'
 import { useNavigation } from '@react-navigation/native'
+import AuthContext from '../../Service/Context'
+import { Colors } from '../../Utils/Colors'
 
 const Header = ({ name, leftIcon, leftOnPress }) => {
 
+    const context = useContext(AuthContext);
+    const { isLogin } = context.allData
     const navigation = useNavigation();
 
     const onRightPress = useCallback(async () => {
-        navigation.openDrawer();
+        if (isLogin) {
+            navigation.openDrawer();
+        }
     })
 
     return (
@@ -21,8 +27,8 @@ const Header = ({ name, leftIcon, leftOnPress }) => {
             )}
             <Text style={styles.headingText}>{name}</Text>
             {/* <View></View> */}
-            <TouchableOpacity activeOpacity={0.5} onPress={onRightPress}>
-                <Image source={ImagePath.menu} style={styles.leftImg} />
+            <TouchableOpacity activeOpacity={0.5} disabled={!isLogin} onPress={onRightPress}>
+                <Image source={ImagePath.menu} style={[styles.leftImg, !isLogin && { tintColor: Colors.theme_color }]} />
             </TouchableOpacity>
         </View>
     )

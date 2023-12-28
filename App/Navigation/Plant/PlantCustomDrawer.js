@@ -24,8 +24,10 @@ const PlantCustomDrawer = (props) => {
         { id: 6, name: 'Notification', screen: 'PlantNotification', icon: ImagePath.bell, logiReq: false },
         { id: 7, name: 'Edit Profile', screen: 'PlantEditProfile', icon: ImagePath.edit_profile, logiReq: false },
         { id: 8, name: 'Change Password', screen: 'PlantChangePassword', icon: ImagePath.lock, logiReq: false },
-        { id: 9, name: 'Sign Out', screen: 'LogOut', icon: ImagePath.logout, logiReq: false },
-        { id: 10, name: 'Delete Account', screen: 'Delete_account', icon: ImagePath.delete_acnt, logiReq: false },
+        { id: 9, name: 'Privacy Policy', screen: 'StaticPage', slung: 'privacy-policy', icon: ImagePath.privacy_policy, logiReq: false },
+        { id: 10, name: 'Terms and Conditions', screen: 'StaticPage', slung: 'terms-conditions', icon: ImagePath.terms_condition, logiReq: false },
+        { id: 11, name: 'Sign Out', screen: 'LogOut', icon: ImagePath.logout, logiReq: false },
+        { id: 12, name: 'Delete Account', screen: 'Delete_account', icon: ImagePath.delete_acnt, logiReq: false },
     ]
 
     const Icon = ({ props, source }) => (
@@ -38,6 +40,8 @@ const PlantCustomDrawer = (props) => {
                 SignOutAlert();
             } else if (item?.screen == 'Delete_account') {
                 DeleteAcntAlert();
+            } else if (item.screen && item.screen == 'StaticPage') {
+                navigation.navigate(item.screen, { page: item?.slung })
             } else if (item?.screen) {
                 navigation.navigate(item.screen)
             }

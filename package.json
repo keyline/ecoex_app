@@ -49,6 +49,7 @@
     "react-native-simple-toast": "^3.0.2",
     "react-native-splash-screen": "^3.3.0",
     "react-native-svg": "^14.0.0",
+    "react-native-version-check": "^3.4.7",
     "react-native-webview": "^13.6.3",
     "rn-fetch-blob": "^0.13.0-beta.2"
   },
@@ -61,6 +62,7 @@
     "@tsconfig/react-native": "^3.0.0",
     "@types/react": "^18.0.24",
     "@types/react-test-renderer": "^18.0.0",
+    "@types/whatwg-fetch": "^0.0.33",
     "babel-jest": "^29.2.1",
     "eslint": "^8.19.0",
     "jest": "^29.2.1",

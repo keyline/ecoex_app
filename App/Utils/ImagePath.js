@@ -40,5 +40,7 @@ export const ImagePath = {
     bell: require('../Assets/Images/bell.png'),
     pdf_upload: require('../Assets/Images/pdf_upload.png'),
     close_round: require('../Assets/Images/close_round.png'),
-    delete_acnt: require('../Assets/Images/delete_acnt.png')
+    delete_acnt: require('../Assets/Images/delete_acnt.png'),
+    terms_condition:require('../Assets/Images/terms_condition.png'),
+    privacy_policy:require('../Assets/Images/privacy_policy.png')
 }

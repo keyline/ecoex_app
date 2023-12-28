@@ -14,6 +14,7 @@ import PdfViewer from '../../Screen/PdfViewer';
 import EditRequest from '../../Screen/Plant/EditRequest';
 import PlantNotification from '../../Screen/Plant/PlantNotification';
 import WebView from '../../Screen/WebView';
+import StaticPage from '../../Screen/StaticPage';
 
 const PlantMainStack = () => {
 
@@ -37,7 +38,7 @@ const PlantMainStack = () => {
             <Stack.Screen name='EditRequest' component={EditRequest} />
             <Stack.Screen name='PlantNotification' component={PlantNotification} />
             <Stack.Screen name='WebView' component={WebView} />
-
+            <Stack.Screen name='StaticPage' component={StaticPage} />
         </Stack.Navigator>
     )
 }

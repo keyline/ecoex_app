@@ -43,7 +43,7 @@ export const CommonStyle = StyleSheet.create({
     errortxt: {
         color: 'red',
         fontFamily: Font_Family.NunitoSans_Italic,
-        fontSize:12,
+        fontSize: 12,
         paddingLeft: 4
     },
 })
@@ -56,7 +56,7 @@ export const tagsStyles = {
     h5: { color: Colors.black },
     h4: { color: Colors.black },
     h6: { color: Colors.black },
-    p: { color: Colors.grey },
+    p: { color: Colors.grey, textAlign: 'justify' },
     li: { color: Colors.grey },
     span: { color: Colors.grey }
 }
