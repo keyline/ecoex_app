@@ -90,6 +90,7 @@ const Login = ({ navigation }) => {
         let token = await generateFcmToken();
         let deviceId = DeviceInfo.getDeviceId();
         let datas = {
+          type: 'PLANT',
           email: state.email,
           password: state.password,
           device_token: deviceId,
@@ -188,7 +189,7 @@ const Login = ({ navigation }) => {
             loading={false}
             width={'80%'}
           />
-          <Text style={styles.btmText}>Not yet registered ? <Text onPress={onSignUp} style={CommonStyle.boldtext}>Create an account</Text></Text>
+          {/* <Text style={styles.btmText}>Not yet registered ? <Text onPress={onSignUp} style={CommonStyle.boldtext}>Create an account</Text></Text> */}
         </View>
       </ScrollView>
     </SafeAreaView>

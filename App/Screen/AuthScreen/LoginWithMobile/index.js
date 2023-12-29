@@ -63,6 +63,7 @@ const LoginWithMobile = ({ navigation }) => {
             try {
                 showLoading();
                 let datas = {
+                    type: 'PLANT',
                     phone: state.mobile
                 }
                 let response = await Apis.signin_mobile(datas);
@@ -117,7 +118,7 @@ const LoginWithMobile = ({ navigation }) => {
                         loading={false}
                         width={'80%'}
                     />
-                    <Text style={styles.btmText}>Not yet registered ? <Text onPress={onSignUp} style={CommonStyle.boldtext}>Create an account</Text></Text>
+                    {/* <Text style={styles.btmText}>Not yet registered ? <Text onPress={onSignUp} style={CommonStyle.boldtext}>Create an account</Text></Text> */}
                 </View>
             </ScrollView>
         </SafeAreaView>
