@@ -485,19 +485,21 @@ const PlantEditProfile = ({ navigation }) => {
                 pincodeErr: 'Enter Valid Pincode'
             }));
             return;
-        } else if (state.email.trim() == '') {
-            setState(prev => ({
-                ...prev,
-                emailErr: 'Enter Email'
-            }));
-            return;
-        } else if (!isValidEmail(state.email)) {
-            setState(prev => ({
-                ...prev,
-                emailErr: 'Enter Valid Email'
-            }));
-            return;
-        } else if (state.phnNo.trim() == '') {
+        } 
+        // else if (state.email.trim() == '') {
+        //     setState(prev => ({
+        //         ...prev,
+        //         emailErr: 'Enter Email'
+        //     }));
+        //     return;
+        // } else if (!isValidEmail(state.email)) {
+        //     setState(prev => ({
+        //         ...prev,
+        //         emailErr: 'Enter Valid Email'
+        //     }));
+        //     return;
+        // }
+         else if (state.phnNo.trim() == '') {
             setState(prev => ({
                 ...prev,
                 phnNoErr: 'Enter Phone No'
@@ -611,6 +613,7 @@ const PlantEditProfile = ({ navigation }) => {
                 location: state.location,
                 email: state.email,
                 phone: state.phnNo,
+                member_type_id: '',
                 contact_person_name: state.personName,
                 contact_person_designation: state.personDesignation,
                 contact_person_document: state.personDocument ? [state.personDocument] : [],
@@ -795,7 +798,8 @@ const PlantEditProfile = ({ navigation }) => {
                         <InputField
                             name={'Email'}
                             value={state.email}
-                            onChangeText={onChangeEmail}
+                            // onChangeText={onChangeEmail}
+                            editable={false}
                             error={state.emailErr}
                             keyboardType={'email-address'}
                         />

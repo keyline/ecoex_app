@@ -1,5 +1,4 @@
 import messaging from '@react-native-firebase/messaging';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Platform, PermissionsAndroid } from 'react-native'
 import { setFcmToken } from './AsyncStorage';
 

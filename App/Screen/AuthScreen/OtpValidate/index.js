@@ -67,6 +67,7 @@ const OtpValidate = ({ navigation, route }) => {
             showLoading();
             if (state.page == 'login') {
                 let datas = {
+                    type: 'PLANT',
                     phone: state.data?.phone
                 }
                 var res = await Apis.signin_mobile(datas);

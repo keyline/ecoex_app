@@ -62,6 +62,7 @@ const ForgotPassword = ({ navigation }) => {
             try {
                 showLoading();
                 let datas = {
+                    type: 'PLANT',
                     email: state.email
                 }
                 let response = await Apis.forgot_password(datas);
