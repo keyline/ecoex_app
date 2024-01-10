@@ -26,7 +26,7 @@ const SuccessModal = ({ isVisible, onHideModal, onFinish, wording }) => {
                     style={{ height: screenHeight * 0.60, width: screenWidth * 0.6 }}
                     autoPlay
                     loop={false}
-                    speed={0.5}
+                    speed={0.6}
                     onAnimationFailure={(error) => console.log(error)}
                     onAnimationFinish={() => onFinish()}
                 />

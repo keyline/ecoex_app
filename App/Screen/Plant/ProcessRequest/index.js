@@ -15,6 +15,7 @@ import Apis from '../../../Service/Apis'
 import Loader from '../../../Container/Loader'
 import EmptyContent from '../../../Container/EmptyContent'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
+import CheckBox from '@react-native-community/checkbox'
 
 const ProcessRequest = ({ navigation }) => {
 
@@ -26,6 +27,7 @@ const ProcessRequest = ({ navigation }) => {
     searchtext: '',
     searchErr: '',
     modalVisible: false,
+    isAllChecked: false
   })
   const [orderField, setorderField] = useState('request_id');
   const [orderType, setorderType] = useState('DESC');
@@ -57,17 +59,21 @@ const ProcessRequest = ({ navigation }) => {
         page_no: pages
       }
       let response = await Apis.process_request_list(datas);
-      // if (__DEV__) {
-      //   console.log('ProcessesRequest', JSON.stringify(response))
-      // }
+      if (__DEV__) {
+        console.log('ProcessesRequest', JSON.stringify(response))
+      }
       if (response.success) {
         let resdata = response?.data
         if (resdata.length > 0) {
           let array = pages == 1 ? resdata : [...state.data, ...resdata]
           let uniqueArray = await GetUniqueArray(array, 'enq_id');
+          let updateArray = uniqueArray.map(obj => {
+            return { ...obj, isChecked: false }
+          })
+          // console.log('list', JSON.stringify(updateArray))
           setState(prev => ({
             ...prev,
-            data: uniqueArray,
+            data: updateArray,
             loading: false,
             loadingNew: false
           }))
@@ -142,7 +148,7 @@ const ProcessRequest = ({ navigation }) => {
       for (const key in item) {
         // Check if the key is a string and if the value includes the search query
         if (
-          typeof item[key] === 'string' &&
+          typeof item[key] == 'string' &&
           item[key].toLowerCase().includes(query.toLowerCase())
         ) {
           return true;
@@ -311,7 +317,25 @@ const ProcessRequest = ({ navigation }) => {
               <Image source={ImagePath.sort} style={styles.sortIcon} />
             </TouchableOpacity>
           </View>
-
+          {/* <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%', marginHorizontal: '2%', justifyContent: 'space-between' }}>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <CheckBox
+                value={state.isAllChecked}
+                onValueChange={val => onSelectAll(val)}
+                tintColors={{ true: Colors.theme_color, false: Colors.black }}
+                tintColor={Colors.black}
+                onCheckColor={Colors.theme_color}
+              />
+              {(state.isAllChecked) ?
+                <Text style={styles.selectText}>Deselect All</Text>
+                :
+                <Text style={styles.selectText}>Select All</Text>
+              }
+            </View>
+            <TouchableOpacity activeOpacity={0.5}>
+              <Text style={styles.resubmitText}>Resubmit</Text>
+            </TouchableOpacity>
+          </View> */}
           <View style={{ flex: 1 }}>
             <FlatList
               // data={state.searchtext ? state.data.filter(obj => { return obj.enquiry_no.toUpperCase().includes(state.searchtext.toUpperCase()) }) : state.data}
@@ -326,6 +350,7 @@ const ProcessRequest = ({ navigation }) => {
                   onEdit={onEdit}
                   onDelete={onDeleteAlert}
                   onViewDetails={onViewDetails}
+                // onSelect={onSelect}
                 />}
               style={{ marginBottom: 10 }}
               showsVerticalScrollIndicator={false}

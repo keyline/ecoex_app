@@ -93,7 +93,7 @@ const StaticPage = ({ navigation, route }) => {
                 <ScrollView showsVerticalScrollIndicator={false}>
                     <View style={{ marginHorizontal: '4%', alignItems: 'center' }}>
                         <RenderHTML
-                            contentWidth={width * 0.5}
+                            contentWidth={width * 0.1}
                             source={{ html: state.data?.long_description }}
                             tagsStyles={tagsStyles}
                         />

@@ -1,11 +1,11 @@
-import { View, Text, SafeAreaView, ScrollView, Image, TouchableOpacity, Dimensions, Alert } from 'react-native'
+import { View, Text, SafeAreaView, ScrollView, Image, TouchableOpacity, Dimensions, Alert, RefreshControl } from 'react-native'
 import React, { useCallback, useContext, useState } from 'react'
 import { CommonStyle } from '../../../Utils/CommonStyle'
 import Header from '../../../Container/Header'
 import { ImagePath } from '../../../Utils/ImagePath'
 import { styles } from './styles'
 import ImageView from '../../../Container/ImageView'
-import { GetUnitfromList, ToastError, ToastMessage } from '../../../Service/CommonFunction'
+import { GetUnitfromList, ToastError, ToastMessage, dateConvert } from '../../../Service/CommonFunction'
 import Apis from '../../../Service/Apis'
 import { useFocusEffect } from '@react-navigation/native'
 import Loader from '../../../Container/Loader'
@@ -205,6 +205,57 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
         </View>
     )
 
+    const onShowImage = useCallback(async (item) => {
+        if (item.length > 0) {
+            let updateArrray = item.map(obj => {
+                return { uri: obj?.link }
+            })
+            // console.log('img', JSON.stringify(updateArrray))
+            navigation.navigate('ImageSlider', { images: updateArrray })
+        }
+    })
+
+    const onShowGpsImage = useCallback(async (img) => {
+        if (img) {
+            let imgs = [{ uri: img }]
+            navigation.navigate('ImageSlider', { images: imgs })
+        }
+    })
+
+    const onResubmit = useCallback(async () => {
+        try {
+            setState(prev => ({
+                ...prev,
+                loadingNew: true
+            }))
+            let datas = {
+                enq_ids: [state.data?.enq_id]
+            }
+            let res = await Apis.reject_resubmit(datas)
+            if (__DEV__) {
+                console.log('RejectResubmit', JSON.stringify(res))
+            }
+            if (res.success) {
+                state.data.current_step_no = '0'
+                state.data.current_step_name = 'Pending';
+            }
+            setState(prev => ({
+                ...prev,
+                loadingNew: false
+            }))
+            ToastMessage(res?.message);
+        } catch (error) {
+            if (__DEV__) {
+                console.log(error)
+            }
+            setState(prev => ({
+                ...prev,
+                loadingNew: false
+            }))
+            ToastError();
+        }
+    })
+
     return (
         <SafeAreaView style={CommonStyle.container}>
             <Header
@@ -213,7 +264,7 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                 leftOnPress={onHeaderPress}
             />
             {(state.loading) ? <Loader /> :
-                <ScrollView showsVerticalScrollIndicator={false}>
+                <ScrollView refreshControl={<RefreshControl onRefresh={onGetData} refreshing={false} />} showsVerticalScrollIndicator={false}>
                     {(state.data) && (
                         <View style={styles.bodyContent}>
                             <View style={[styles.flex, { paddingHorizontal: '4%' }]}>
@@ -222,14 +273,14 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                             </View>
 
                             <View style={styles.midContent}>
-                                <View style={styles.flexNew}>
-                                    <View style={styles.flex}>
+                                <View>
+                                    <View style={[styles.flex, { marginBottom: '4%' }]}>
                                         <Image source={ImagePath.req_id} style={styles.icon} />
-                                        <Text style={CommonStyle.boldblacktext}>  {state.data?.enquiry_no}</Text>
+                                        <Text style={CommonStyle.boldblacktext}>  Enquiry No. :  {state.data?.enquiry_no}</Text>
                                     </View>
                                     <View style={styles.flex}>
                                         <Image source={ImagePath.location} style={styles.icon} />
-                                        <Text style={CommonStyle.boldblacktext}>  {state.data?.plant_location} </Text>
+                                        <Text style={CommonStyle.boldblacktext}>  Location : {state.data?.plant_location} </Text>
                                         <Popover
                                             from={(
                                                 < TouchableOpacity activeOpacity={0.5}>
@@ -247,18 +298,18 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                                 <View style={[styles.flexNew, { marginTop: '4%' }]}>
                                     <View style={styles.flex}>
                                         <Image source={ImagePath.date} style={styles.icon} />
-                                        <Text style={CommonStyle.boldblacktext}>  {state.data?.booking_date}</Text>
+                                        <Text style={CommonStyle.boldblacktext}>  Submitted : {dateConvert(state.data?.booking_date)}</Text>
                                     </View>
-                                    <View style={styles.flex}>
+                                    {/* <View style={styles.flex}>
                                         <Image source={ImagePath.factory} style={styles.icon} />
                                         <Text style={CommonStyle.boldblacktext}>  {state.data?.plant_id} </Text>
-                                    </View>
+                                    </View> */}
                                 </View>
 
                                 <View style={[styles.flexNew, { marginTop: '4%' }]}>
                                     <View style={styles.flex}>
                                         <Image source={ImagePath.car} style={styles.icon} />
-                                        <Text style={CommonStyle.boldblacktext}>  {state.data?.collection_date}</Text>
+                                        <Text style={CommonStyle.boldblacktext}>  Tentative Collection : {dateConvert(state.data?.collection_date)}</Text>
                                     </View>
                                 </View>
                                 {(state.productList.length > 0) && (
@@ -281,6 +332,9 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                                                     {(item?.hsn) && (
                                                         <Text style={styles.hsntext}>HSN : {item?.hsn}</Text>
                                                     )}
+                                                    <TouchableOpacity onPress={() => onShowImage(item?.product_image)} activeOpacity={0.5} style={styles.imgBtn}>
+                                                        <Text style={styles.imgBtnText}>Show Images</Text>
+                                                    </TouchableOpacity>
                                                     {(item?.remarks) && (
                                                         <Text style={[styles.hsntext, { marginTop: 2, textAlign: 'center', marginLeft: 0 }]}><Text style={{ fontFamily: Font_Family.NunitoSans_Bold }}>Remarks :</Text> {item?.remarks}</Text>
                                                     )}
@@ -289,8 +343,13 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                                         </View>
                                     </>
                                 )}
+                                {(state.data?.gps_image) && (
+                                    <TouchableOpacity onPress={() => onShowGpsImage(state.data?.gps_image)} activeOpacity={0.5} style={styles.imgBtn}>
+                                        <Text style={styles.imgBtnText}>Show Gps Image</Text>
+                                    </TouchableOpacity>
+                                )}
                                 {(state.data?.enquiry_remarks) && (
-                                    <Text style={[styles.hsntext, { marginVertical: 4, textAlign: 'center', marginLeft: 0,fontSize:14 }]}><Text style={{ fontFamily: Font_Family.NunitoSans_Bold }}>Enquiry Remarks :</Text> {state.data?.enquiry_remarks}</Text>
+                                    <Text style={[styles.hsntext, { marginVertical: 4, textAlign: 'center', marginLeft: 0, fontSize: 14 }]}><Text style={{ fontFamily: Font_Family.NunitoSans_Bold }}>Enquiry Remarks :</Text> {state.data?.enquiry_remarks}</Text>
                                 )}
                                 {(state.data?.weighing_slip || state.data?.vehicle_image) && (
                                     <>
@@ -327,12 +386,17 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                                     </TouchableOpacity>
                                 </View>
                             )}
+                            {(state.data?.current_step_no == '9') && (
+                                <TouchableOpacity onPress={onResubmit} style={[styles.aprvBtn, { paddingVertical: '3%', alignSelf: 'center' }]}>
+                                    <Text style={CommonStyle.boldblacktext}>ReSubmit</Text>
+                                </TouchableOpacity>
+                            )}
                             {/* {(state.data?.current_step_no == '0') && (
                                 <Button
-                                    name={'Edit'}
+                                    name={'ReSubmit'}
                                     width={'60%'}
                                     loading={state.btnLoading}
-                                    onPress={onEdit}
+                                    onPress={onResubmit}
                                 />
                             )} */}
                         </View>

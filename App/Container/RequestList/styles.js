@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { Colors } from "../../Utils/Colors";
+import { Font_Family } from "../../Utils/Fonts";
 
 
 export const styles = StyleSheet.create({
@@ -16,7 +17,7 @@ export const styles = StyleSheet.create({
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: 10,
+        paddingHorizontal: 5,
         paddingVertical: 5
     },
     arrow: {
@@ -30,7 +31,7 @@ export const styles = StyleSheet.create({
     },
     deleteContainer: {
         position: 'absolute',
-        top: 10,
+        top: 15,
         right: 15
     },
     delete: {
@@ -40,7 +41,7 @@ export const styles = StyleSheet.create({
     },
     editContainer: {
         position: 'absolute',
-        bottom: 15,
+        bottom: 65,
         right: 18
     },
     edit: {
@@ -48,4 +49,17 @@ export const styles = StyleSheet.create({
         height: 20,
         tintColor: 'green'
     },
+    statusContainer: {
+        alignItems: 'flex-end',
+
+    },
+    statusText: {
+        fontFamily: Font_Family.NunitoSans_Bold,
+        backgroundColor: Colors.blue,
+        color: Colors.white,
+        paddingHorizontal: 8,
+        paddingVertical: '0.4%',
+        borderRadius: 5,
+        fontSize:12
+    }
 })

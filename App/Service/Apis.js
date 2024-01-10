@@ -125,4 +125,8 @@ export default class Apis {
     static reject_request_list = (data) => {
         return Network('post', 'rejected-request-list', data)
     }
+
+    static reject_resubmit = (data) => {
+        return Network('post', 'convert-rejected-to-pending', data)
+    }
 }

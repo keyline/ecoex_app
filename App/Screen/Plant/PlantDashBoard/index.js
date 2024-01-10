@@ -119,8 +119,8 @@ const PlantDashBoard = ({ navigation }) => {
                             <View style={[styles.profileContainer, { width: '100%' }]}>
                                 <Image source={ImagePath.dp} style={styles.dp} />
                                 <View style={[styles.profileInfo, { width: '80%' }]}>
-                                    <NameValue name={'Plant Id'} value={state.data?.plant_id} />
                                     <NameValue name={'Company Name'} value={state.data?.company_name} />
+                                    <NameValue name={'Plant Name'} value={state.data?.plant_name} />
                                     <NameValue name={'GST No'} value={state.data?.gst_no} />
                                     <NameValue name={'Email ID'} value={state.data?.email} />
                                     <NameValue name={'Plant Address'} value={state.data?.full_address} />

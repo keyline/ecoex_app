@@ -46,7 +46,7 @@ export const styles = StyleSheet.create({
         resizeMode: 'contain'
     },
     listContainer: {
-        marginBottom: '2%',
+        marginBottom: '4%',
         // backgroundColor:'red'
     },
     listContent: {
@@ -148,5 +148,17 @@ export const styles = StyleSheet.create({
         paddingVertical: '4%',
         marginVertical: '6%',
         borderRadius: 5
+    },
+    imgBtn: {
+        alignSelf: 'center',
+        backgroundColor: Colors.theme_color,
+        paddingHorizontal: '2%',
+        paddingVertical: '1%',
+        borderRadius: 5,
+        marginVertical: '1%'
+    },
+    imgBtnText: {
+        color: Colors.white,
+        fontFamily: Font_Family.NunitoSans_Regular
     }
 })

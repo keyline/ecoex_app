@@ -1,5 +1,6 @@
 import { StyleSheet } from "react-native";
 import { Colors } from "../../../Utils/Colors";
+import { Font_Family } from "../../../Utils/Fonts";
 
 
 export const styles = StyleSheet.create({
@@ -8,7 +9,7 @@ export const styles = StyleSheet.create({
         alignItems: 'center',
         justifyContent: 'space-between',
         marginHorizontal: '5%',
-        marginVertical: '6%',
+        marginVertical: '4%',
     },
     searchContainer: {
         borderWidth: 1,
@@ -91,5 +92,13 @@ export const styles = StyleSheet.create({
         height: 20,
         tintColor: 'green'
     },
-    
+    resubmitText: {
+        fontFamily: Font_Family.NunitoSans_Bold,
+        color: Colors.theme_color,
+        fontSize: 14
+    },
+    selectText: {
+        fontFamily: Font_Family.NunitoSans_Bold,
+        color: Colors.black
+    }
 })

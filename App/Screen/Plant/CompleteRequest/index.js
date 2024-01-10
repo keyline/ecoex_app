@@ -135,7 +135,7 @@ const CompleteRequest = ({ navigation }) => {
             for (const key in item) {
                 // Check if the key is a string and if the value includes the search query
                 if (
-                    typeof item[key] === 'string' &&
+                    typeof item[key] == 'string' &&
                     item[key].toLowerCase().includes(query.toLowerCase())
                 ) {
                     return true;
@@ -248,7 +248,7 @@ const CompleteRequest = ({ navigation }) => {
                             <RequestList
                                 item={item}
                                 index={index}
-                                headingColor={Colors.theme_color}
+                                headingColor={Colors.theme_light}
                                 backgroundColor={Colors.theme_morelight}
                                 onViewDetails={onViewDetails}
                             />}

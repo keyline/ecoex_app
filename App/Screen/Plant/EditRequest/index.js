@@ -74,7 +74,7 @@ const EditRequest = ({ navigation, route }) => {
                     return { ...item, product_imageErr: '', productErr: '', qtyErr: '', unitErr: '', sl_no: generateRandomId() }
                 })
                 setRequestList(reqlist)
-                console.log('reqlist', JSON.stringify(reqlist))
+                // console.log('reqlist', JSON.stringify(reqlist))
                 await onGetUnits();
                 setState(prev => ({
                     ...prev,
@@ -535,7 +535,7 @@ const EditRequest = ({ navigation, route }) => {
             })
             setRequestList(updateArray);
             return;
-        } 
+        }
         // else if (findQtyEmptyindex != -1) {
         //     let updateArray = requestList.map(item => {
         //         if (item.qty.trim() == '') {
@@ -753,7 +753,7 @@ const EditRequest = ({ navigation, route }) => {
             />
             {(state.collectionDatePicker) && (
                 <DateTimePickers
-                    value={state.collectionDate ? new Date(state.collectionDate) : new Date()}
+                    value={state.collectionDate ? new Date(state?.collectionDate) : new Date()}
                     mode={'date'}
                     onConfirm={onChangeCollectionDate}
                     minimumDate={new Date()}

@@ -50,13 +50,13 @@ export const CommonStyle = StyleSheet.create({
 
 export const tagsStyles = {
     b: { color: Colors.black },
-    h1: { color: Colors.black },
-    h2: { color: Colors.black },
+    h1: { color: Colors.black, textAlign: 'center' },
+    h2: { color: Colors.black, textAlign: 'center' },
     h3: { color: Colors.black },
     h5: { color: Colors.black },
     h4: { color: Colors.black },
     h6: { color: Colors.black },
-    p: { color: Colors.grey, textAlign: 'justify' },
+    p: { color: Colors.grey, textAlign: 'justify', padding: 10 },
     li: { color: Colors.grey },
     span: { color: Colors.grey }
 }

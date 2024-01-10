@@ -42,6 +42,14 @@ export const dateConvertYear = (value) => {
     }
 }
 
+export const dateConvert = (value) => {
+    if (value) {
+        return moment(new Date(value)).format("MMM DD, Y")
+    } else {
+        return null
+    }
+}
+
 export const LaunchImageLibary = async (base64, selectionLimit) => {
     try {
         let result = await GalleryPermission();

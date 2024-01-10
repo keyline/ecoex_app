@@ -12,6 +12,7 @@ import { GetUniqueArray, ToastError, ToastMessage } from '../../../Service/Commo
 import Apis from '../../../Service/Apis'
 import EmptyContent from '../../../Container/EmptyContent'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
+import CheckBox from '@react-native-community/checkbox'
 
 const list = [
     { enquiry_no: 'RD001', created_at: '14/11/2023 - 05.25 PM', updated_at: '14/11/2023 - 10.25 PM', status: 'Processing' },
@@ -32,7 +33,9 @@ const RejectRequest = ({ navigation }) => {
         filterData: [],
         searchtext: '',
         searchErr: '',
-        modalVisible: false
+        modalVisible: false,
+        isAllChecked: false,
+        showSubmitbtn: false
     })
     const [orderField, setorderField] = useState('request_id');
     const [orderType, setorderType] = useState('DESC');
@@ -65,16 +68,20 @@ const RejectRequest = ({ navigation }) => {
             }
             let response = await Apis.reject_request_list(datas);
             if (__DEV__) {
-                console.log('CompleteRequest', JSON.stringify(response))
+                console.log('RejectRequest', JSON.stringify(response))
             }
             if (response.success) {
                 let resdata = response?.data
                 if (resdata.length > 0) {
                     let array = pages == 1 ? resdata : [...state.data, ...resdata]
                     let uniqueArray = await GetUniqueArray(array, 'enq_id');
+                    let updateArray = uniqueArray.map(obj => {
+                        return { ...obj, isChecked: false }
+                    })
+                    onCheckSelect(updateArray);
                     setState(prev => ({
                         ...prev,
-                        data: uniqueArray,
+                        data: updateArray,
                         loading: false,
                         loadingNew: false
                     }))
@@ -135,7 +142,7 @@ const RejectRequest = ({ navigation }) => {
             for (const key in item) {
                 // Check if the key is a string and if the value includes the search query
                 if (
-                    typeof item[key] === 'string' &&
+                    typeof item[key] == 'string' &&
                     item[key].toLowerCase().includes(query.toLowerCase())
                 ) {
                     return true;
@@ -143,10 +150,11 @@ const RejectRequest = ({ navigation }) => {
             }
             return false;
         });
-        setState(prev => ({
-            ...prev,
-            filterData: filtered
-        }))
+        // setState(prev => ({
+        //     ...prev,
+        //     filterData: filtered
+        // }))
+        return filtered;
     }
 
     const onResetSearch = useCallback(async () => {
@@ -214,6 +222,117 @@ const RejectRequest = ({ navigation }) => {
         }
     })
 
+    const onSelect = useCallback(async (item, value) => {
+        if (item) {
+            let updateArray = state.data.map(obj => {
+                if (obj.enq_id === item.enq_id) {
+                    return { ...obj, isChecked: !obj.isChecked }
+                }
+                return obj;
+            });
+            setState(prev => ({
+                ...prev,
+                data: updateArray
+            }))
+            onCheckSelect(updateArray);
+        }
+    })
+
+    const onSelectAll = useCallback(async (val) => {
+        let updateArray = state.data.map(obj => {
+            return { ...obj, isChecked: val }
+        });
+        setState(prev => ({
+            ...prev,
+            data: updateArray,
+            isAllChecked: val
+        }))
+        onCheckSelect(updateArray)
+    })
+
+    const onCheckSelect = useCallback(async (array = state.data) => {
+        let indexfalse = array.findIndex(obj => obj.isChecked == false)
+        let indextrue = array.findIndex(obj => obj.isChecked == true)
+        if (indexfalse == -1) {
+            setState(prev => ({
+                ...prev,
+                isAllChecked: true
+            }))
+        } else {
+            setState(prev => ({
+                ...prev,
+                isAllChecked: false
+            }))
+        }
+        if (indextrue != -1) {
+            setState(prev => ({
+                ...prev,
+                showSubmitbtn: true
+            }))
+        } else {
+            setState(prev => ({
+                ...prev,
+                showSubmitbtn: false
+            }))
+        }
+    })
+
+    const onResetSelect = useCallback(async (list = state.data) => {
+        if (list.length > 0) {
+            let updateArray = list.map(obj => {
+                return { ...obj, isChecked: false }
+            })
+            setState(prev => ({
+                ...prev,
+
+            }))
+        } else {
+            setState(prev => ({
+                ...prev,
+                isAllChecked: false
+            }))
+        }
+    })
+
+    const onResubmit = useCallback(async () => {
+        try {
+            setState(prev => ({
+                ...prev,
+                loadingNew: true
+            }))
+            let updateArray = state.data.filter(obje => obje.isChecked == true).map(obj => {
+                return obj.enq_id
+            })
+            let datas = {
+                enq_ids: updateArray
+            }
+            let res = await Apis.reject_resubmit(datas);
+            if (__DEV__) {
+                console.log('RejectResubmit', JSON.stringify(res))
+            }
+            if (res.success) {
+                let updateList = state.data.filter(obj => obj?.isChecked == false)
+                setState(prev => ({
+                    ...prev,
+                    data: updateList,
+                    isAllChecked: false,
+                    showSubmitbtn: false,
+                    loadingNew: false
+                }))
+            }
+            ToastMessage(res?.message);
+        } catch (error) {
+            if (__DEV__) {
+                console.log(error)
+            }
+            setState(prev => ({
+                ...prev,
+                loadingNew: false
+            }))
+            ToastError();
+        }
+    })
+
     return (
         <SafeAreaView style={CommonStyle.container}>
             <Header
@@ -238,19 +357,48 @@ const RejectRequest = ({ navigation }) => {
                         <Image source={ImagePath.sort} style={styles.sortIcon} />
                     </TouchableOpacity>
                 </View>
+                {((state.data).length > 0) && (
+                    <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: '2%', marginHorizontal: '2%', justifyContent: 'space-between' }}>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', width: '50%' }}>
+                            {(state.searchtext.trim() == '') && (
+                                <>
+                                    <CheckBox
+                                        value={state.isAllChecked}
+                                        onValueChange={val => onSelectAll(val)}
+                                        tintColors={{ true: Colors.theme_color, false: Colors.black }}
+                                        tintColor={Colors.black}
+                                        onCheckColor={Colors.theme_color}
+                                    />
+                                    {(state.isAllChecked) ?
+                                        <Text style={styles.selectText}>Deselect All</Text>
+                                        :
+                                        <Text style={styles.selectText}>Select All</Text>
+                                    }
+                                </>
+                            )}
+                        </View>
+                        {(state.showSubmitbtn) && (
+                            <TouchableOpacity onPress={onResubmit} activeOpacity={0.5} style={styles.resubmitContainer}>
+                                <Text style={styles.resubmitText}>ReSubmit</Text>
+                            </TouchableOpacity>
+                        )}
+                    </View>
+                )}
                 <View style={{ flex: 1 }}>
                     <FlatList
                         // data={state.searchtext ? list.filter(obj => { return obj.enquiry_no.toUpperCase().includes(state.searchtext.toUpperCase()) }) : list}
-                        data={state.searchtext ? state.filterData : state.data}
+                        // data={state.searchtext ? state.filterData : state.data}
+                        data={state.searchtext ? handleSearch(state.searchtext) : state.data}
                         keyExtractor={(item, index) => index}
-                        renderItem={({ item, index }) => 
-                        <RequestList 
-                        item={item} 
-                        index={index} 
-                        headingColor={Colors.reject} 
-                        backgroundColor={Colors.reject_morelight} 
-                        onViewDetails={onViewDetails}
-                        />}
+                        renderItem={({ item, index }) =>
+                            <RequestList
+                                item={item}
+                                index={index}
+                                headingColor={Colors.reject}
+                                backgroundColor={Colors.reject_morelight}
+                                onViewDetails={onViewDetails}
+                                onSelect={onSelect}
+                            />}
                         style={{ marginBottom: 10 }}
                         showsVerticalScrollIndicator={false}
                         onEndReached={handleLoadMore}

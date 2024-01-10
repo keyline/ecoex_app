@@ -15,6 +15,7 @@ import EditRequest from '../../Screen/Plant/EditRequest';
 import PlantNotification from '../../Screen/Plant/PlantNotification';
 import WebView from '../../Screen/WebView';
 import StaticPage from '../../Screen/StaticPage';
+import ImageSlider from '../../Screen/ImageSlider';
 
 const PlantMainStack = () => {
 
@@ -39,6 +40,7 @@ const PlantMainStack = () => {
             <Stack.Screen name='PlantNotification' component={PlantNotification} />
             <Stack.Screen name='WebView' component={WebView} />
             <Stack.Screen name='StaticPage' component={StaticPage} />
+            <Stack.Screen name='ImageSlider' component={ImageSlider} />
         </Stack.Navigator>
     )
 }

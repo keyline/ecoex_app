@@ -5,8 +5,9 @@ import { CommonStyle } from '../../Utils/CommonStyle'
 import { ImagePath } from '../../Utils/ImagePath'
 import { Colors } from '../../Utils/Colors'
 import AuthContext from '../../Service/Context'
+import CheckBox from '@react-native-community/checkbox'
 
-const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDelete, onViewDetails }) => {
+const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDelete, onViewDetails, onSelect }) => {
 
     const context = useContext(AuthContext)
     const { siteData, userProfile } = context.allData
@@ -25,7 +26,18 @@ const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDel
     return (
         <View style={[styles.listContainer, { borderColor: headingColor ? headingColor : Colors.process, backgroundColor: backgroundColor ? backgroundColor : Colors.white }]}>
             <TouchableOpacity onPress={onShow} activeOpacity={0.5} style={[styles.headingContainer, { backgroundColor: headingColor ? headingColor : Colors.process }]}>
-                <Text style={CommonStyle.boldblacktext}>{item?.enquiry_no}</Text>
+                <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+                    {(item?.status == "9") && (
+                        <CheckBox
+                            value={item?.isChecked}
+                            onValueChange={val => onSelect(item, val)}
+                            tintColors={{ true: Colors.white, false: Colors.black }}
+                            tintColor={Colors.black}
+                            onCheckColor={Colors.white}
+                        />
+                    )}
+                    <Text style={CommonStyle.boldblacktext}>{item?.enquiry_no}</Text>
+                </View>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     <Text style={[CommonStyle.boldblacktext, { fontSize: 14, marginRight: 10 }]}>Products: {item?.product_count}</Text>
                     <Image source={show ? ImagePath.arrow_up : ImagePath.arrow_down} style={styles.arrow} />
@@ -38,9 +50,13 @@ const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDel
                             <Text style={CommonStyle.normalText}>Added :</Text>
                             <Text style={CommonStyle.boldblacktext}> {item?.created_at}</Text>
                         </View>
-                        <View>
+                        <View style={{ borderBottomWidth: 0.8, borderColor: Colors.grey, marginBottom: 5, paddingBottom: 5 }}>
                             <Text style={CommonStyle.normalText}>Modified :</Text>
                             <Text style={CommonStyle.boldblacktext}> {item.updated_at ? item?.updated_at : '---'}</Text>
+                        </View>
+                        <View>
+                            <Text style={CommonStyle.normalText}>Tentative Collection :</Text>
+                            <Text style={CommonStyle.boldblacktext}> {item?.collection_date}</Text>
                         </View>
                     </View>
                     {(item?.status == "0" && userProfile.is_contract_expire == 1) && (
@@ -53,6 +69,9 @@ const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDel
                             </TouchableOpacity>
                         </>
                     )}
+                    <View style={styles.statusContainer}>
+                        <Text style={styles.statusText}>{item?.status_name}</Text>
+                    </View>
                 </TouchableOpacity>
             )}
         </View>
