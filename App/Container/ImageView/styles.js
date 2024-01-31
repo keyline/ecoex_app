@@ -1,6 +1,7 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import { Colors } from "../../Utils/Colors";
 
+const { width } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
     container: {
@@ -13,7 +14,8 @@ export const styles = StyleSheet.create({
         backgroundColor: 'rgba(0,0,0,0.8)',
         zIndex: 99,
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        width: width
     },
     image: {
         width: '80%',

@@ -1,5 +1,5 @@
-import { View, Text, SafeAreaView, TouchableOpacity, Image, ScrollView } from 'react-native'
-import React, { useCallback, useState } from 'react'
+import { View, Text, SafeAreaView, TouchableOpacity, Image, ScrollView, RefreshControl } from 'react-native'
+import React, { useCallback, useContext, useState } from 'react'
 import { CommonStyle } from '../../../Utils/CommonStyle'
 import Header from '../../../Container/Header'
 import { ImagePath } from '../../../Utils/ImagePath'
@@ -10,9 +10,12 @@ import { useFocusEffect } from '@react-navigation/native'
 import { ToastError, ToastMessage } from '../../../Service/CommonFunction'
 import Apis from '../../../Service/Apis'
 import Loader from '../../../Container/Loader'
+import AuthContext from '../../../Service/Context'
 
 const PlantDashBoard = ({ navigation }) => {
 
+    const context = useContext(AuthContext);
+    const { siteData, userProfile } = context.allData
     const [state, setState] = useState({
         loading: false,
         data: '',
@@ -113,11 +116,11 @@ const PlantDashBoard = ({ navigation }) => {
                 navigation={navigation}
             />
             {(state.loading) ? <Loader loading={state.loading} /> :
-                <ScrollView>
+                <ScrollView refreshControl={<RefreshControl refreshing={false} onRefresh={onGetData} />}>
                     {(state.data) && (
                         <View style={styles.bodyContent}>
                             <View style={[styles.profileContainer, { width: '100%' }]}>
-                                <Image source={ImagePath.dp} style={styles.dp} />
+                                <Image source={userProfile?.profile_image ? { uri: userProfile?.profile_image } : ImagePath.dp} style={styles.dp} />
                                 <View style={[styles.profileInfo, { width: '80%' }]}>
                                     <NameValue name={'Company Name'} value={state.data?.company_name} />
                                     <NameValue name={'Plant Name'} value={state.data?.plant_name} />
@@ -130,10 +133,10 @@ const PlantDashBoard = ({ navigation }) => {
                             <View style={styles.btnContent}>
                                 <Text style={styles.headingText}>Request Status Wise Count</Text>
                                 <View style={styles.btnContainer}>
-                                    <BottonNew onPress={(()=>onBtnPress('AddRequest'))} name={'Add New Request'} color={'#264CD4'} />
-                                    <BottonNew onPress={(()=>onBtnPress('ProcessRequest'))} name={state.data?.step2_label + ' (' + state.data?.step2_count + ')'} color={'#E79D0CE8'} />
-                                    <BottonNew onPress={(()=>onBtnPress('RejectRequest'))} name={state.data?.step3_label + ' (' + state.data?.step3_count + ')'} color={'#E70C0CC9'} />
-                                    <BottonNew onPress={(()=>onBtnPress('CompleteRequest'))} name={state.data?.step4_label + ' (' + state.data?.step4_count + ')'} color={'#2DA952'} />
+                                    <BottonNew onPress={(() => onBtnPress('AddRequest'))} name={'Add New Request'} color={'#264CD4'} />
+                                    <BottonNew onPress={(() => onBtnPress('ProcessRequest'))} name={state.data?.step2_label + ' (' + state.data?.step2_count + ')'} color={'#E79D0CE8'} />
+                                    <BottonNew onPress={(() => onBtnPress('RejectRequest'))} name={state.data?.step3_label + ' (' + state.data?.step3_count + ')'} color={'#E70C0CC9'} />
+                                    <BottonNew onPress={(() => onBtnPress('CompleteRequest'))} name={state.data?.step4_label + ' (' + state.data?.step4_count + ')'} color={'#2DA952'} />
                                 </View>
                                 {/* <View style={styles.statusContent}>
                                     <View style={{ width: '50%' }}>

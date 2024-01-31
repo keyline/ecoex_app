@@ -19,6 +19,7 @@ import DateTimePickers from '../../../Container/DateTimePickers'
 import { Colors } from '../../../Utils/Colors'
 import DeviceInfo from 'react-native-device-info'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
+import DatePickerModal from '../../../Container/DatePickerModal'
 
 const EditRequest = ({ navigation, route }) => {
 
@@ -65,9 +66,9 @@ const EditRequest = ({ navigation, route }) => {
                 enq_id: route?.params?.id
             }
             let response = await Apis.process_request_edit(datas);
-            // if (__DEV__) {
-            //     console.log('EditRequest', JSON.stringify(response))
-            // } 
+            if (__DEV__) {
+                console.log('EditRequest', JSON.stringify(response))
+            } 
             if (response.success) {
                 let data = response?.data
                 let reqlist = data.requestList.map((item) => {
@@ -495,13 +496,20 @@ const EditRequest = ({ navigation, route }) => {
         }))
     }, [state.collectionDatePicker])
 
+    const onCloseDatePicker = useCallback(async () => {
+        setState(prev => ({
+            ...prev,
+            collectionDatePicker: false
+        }))
+    }, [state.collectionDatePicker])
+
     const onChangeCollectionDate = useCallback(async (value) => {
-        if (value.type == 'set') {
-            let time = value?.nativeEvent?.timestamp;
+        if (value) {
             setState(prev => ({
                 ...prev,
-                collectionDate: time,
-                collectionDatePicker: false
+                collectionDate: value,
+                collectionDatePicker: false,
+                collectionDateErr: ''
             }))
         } else {
             setState(prev => ({
@@ -509,6 +517,19 @@ const EditRequest = ({ navigation, route }) => {
                 collectionDatePicker: false
             }))
         }
+        // if (value.type == 'set') {
+        //     let time = value?.nativeEvent?.timestamp;
+        //     setState(prev => ({
+        //         ...prev,
+        //         collectionDate: time,
+        //         collectionDatePicker: false
+        //     }))
+        // } else {
+        //     setState(prev => ({
+        //         ...prev,
+        //         collectionDatePicker: false
+        //     }))
+        // }
     }, [state.collectionDate])
 
     const onUpdate = useCallback(async () => {
@@ -752,11 +773,18 @@ const EditRequest = ({ navigation, route }) => {
                 onSortItemSelect={onSelectImageOption}
             />
             {(state.collectionDatePicker) && (
-                <DateTimePickers
-                    value={state.collectionDate ? new Date(state?.collectionDate) : new Date()}
-                    mode={'date'}
+                // <DateTimePickers
+                //     value={state.collectionDate ? new Date(state?.collectionDate) : new Date()}
+                //     mode={'date'}
+                //     onConfirm={onChangeCollectionDate}
+                //     minimumDate={new Date()}
+                // />
+                <DatePickerModal
+                    isVisible={state.collectionDatePicker}
+                    value={state.collectionDate ? new Date(state.collectionDate) : new Date()}
                     onConfirm={onChangeCollectionDate}
                     minimumDate={new Date()}
+                    onClose={onCloseDatePicker}
                 />
             )}
             {(state.viewImgeUri) && (

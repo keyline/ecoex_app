@@ -109,5 +109,11 @@ export const styles = StyleSheet.create({
     viewdocText:{
         fontFamily:Font_Family.NunitoSans_Regular,
         color:Colors.white
+    },
+    reqText:{
+        marginTop:'4%',
+        color:'red',
+        fontSize:12,
+        fontFamily:Font_Family.NunitoSans_Regular
     }
 })

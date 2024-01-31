@@ -27,7 +27,8 @@ const App = () => {
     appData: null,
     userProfile: null,
     siteData: null,
-    userType: ''
+    userType: '',
+    appVersion: '1.0'
   })
   const appState = useRef(AppState.currentState);
 
@@ -52,6 +53,12 @@ const App = () => {
       .then(async res => {
         if (__DEV__) {
           console.log('UpdateChecker', JSON.stringify(res))
+        }
+        if (res?.currentVersion) {
+          setState(prev => ({
+            ...prev,
+            appVersion: res?.currentVersion
+          }))
         }
         if (res?.isNeeded && res?.storeUrl) {
           Alert.alert(
@@ -270,7 +277,7 @@ const App = () => {
   return (
     <AuthContext.Provider value={{ allData: state, setState, onGetStoreData, onClearStoreData, onGetUserProfile }}>
       <NavigationContainer ref={navigationRef}>
-        <StatusBar backgroundColor={Colors.theme_color} barStyle={'light-content'} />
+        <StatusBar backgroundColor={Colors.white} barStyle={'dark-content'} />
         {(!state.loading) && (
           <>
             {(state.isLogin) ?

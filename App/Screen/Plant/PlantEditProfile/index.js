@@ -83,7 +83,6 @@ const PlantEditProfile = ({ navigation }) => {
     const [memberList, setmemberList] = useState([]);
     const [timer, setTimer] = useState(60)
 
-
     useFocusEffect(
         useCallback(() => {
             const unsubscribe = onGetProfile();
@@ -485,7 +484,7 @@ const PlantEditProfile = ({ navigation }) => {
                 pincodeErr: 'Enter Valid Pincode'
             }));
             return;
-        } 
+        }
         // else if (state.email.trim() == '') {
         //     setState(prev => ({
         //         ...prev,
@@ -499,7 +498,7 @@ const PlantEditProfile = ({ navigation }) => {
         //     }));
         //     return;
         // }
-         else if (state.phnNo.trim() == '') {
+        else if (state.phnNo.trim() == '') {
             setState(prev => ({
                 ...prev,
                 phnNoErr: 'Enter Phone No'
@@ -523,37 +522,39 @@ const PlantEditProfile = ({ navigation }) => {
                 personDesignationErr: 'Enter Designated Person Designation'
             }));
             return;
-        } else if (state.bankName.trim() == '') {
-            setState(prev => ({
-                ...prev,
-                bankNameErr: 'Enter Bank Name'
-            }));
-            return;
-        } else if (state.branchName.trim() == '') {
-            setState(prev => ({
-                ...prev,
-                branchNameErr: 'Enter Branch Name'
-            }));
-            return;
-        } else if (state.ifscCode.trim() == '') {
-            setState(prev => ({
-                ...prev,
-                ifscCodeErr: 'Enter IFSC Code'
-            }));
-            return;
-        } else if (state.acntType.trim() == '') {
-            setState(prev => ({
-                ...prev,
-                acntTypeErr: 'Enter Account Type'
-            }));
-            return;
-        } else if (state.acntNo.trim() == '') {
-            setState(prev => ({
-                ...prev,
-                acntNoErr: 'Enter Account No'
-            }));
-            return;
-        } else {
+        }
+        //  else if (state.bankName.trim() == '') {
+        //     setState(prev => ({
+        //         ...prev,
+        //         bankNameErr: 'Enter Bank Name'
+        //     }));
+        //     return;
+        // } else if (state.branchName.trim() == '') {
+        //     setState(prev => ({
+        //         ...prev,
+        //         branchNameErr: 'Enter Branch Name'
+        //     }));
+        //     return;
+        // } else if (state.ifscCode.trim() == '') {
+        //     setState(prev => ({
+        //         ...prev,
+        //         ifscCodeErr: 'Enter IFSC Code'
+        //     }));
+        //     return;
+        // } else if (state.acntType.trim() == '') {
+        //     setState(prev => ({
+        //         ...prev,
+        //         acntTypeErr: 'Enter Account Type'
+        //     }));
+        //     return;
+        // } else if (state.acntNo.trim() == '') {
+        //     setState(prev => ({
+        //         ...prev,
+        //         acntNoErr: 'Enter Account No'
+        //     }));
+        //     return;
+        // } 
+        else {
             onUpdate();
             // if (state.data?.phone != state.phnNo) {
             //     onSendOtp();
@@ -726,6 +727,7 @@ const PlantEditProfile = ({ navigation }) => {
                             onChangeText={onChangeGstNo}
                             error={state.gstNoErr}
                             maxLength={15}
+                            isRequired={true}
                         />
                         <InputField
                             name={'GST Certificate'}
@@ -746,6 +748,7 @@ const PlantEditProfile = ({ navigation }) => {
                             value={state.companyName}
                             onChangeText={onChangeCname}
                             error={state.companyNameErr}
+                            isRequired={true}
                         />
                         <InputField
                             name={'Address'}
@@ -753,6 +756,7 @@ const PlantEditProfile = ({ navigation }) => {
                             onChangeText={onChangeAddress}
                             error={state.plantAddressErr}
                             multiline={true}
+                            isRequired={true}
                         />
                         {/* <InputField
                             name={'Holding No.'}
@@ -767,6 +771,7 @@ const PlantEditProfile = ({ navigation }) => {
                             onChangeText={onChangeStreet}
                             error={state.streetErr}
                             multiline={true}
+                            isRequired={true}
                         />
                         {/* <InputField
                             name={'Location'}
@@ -780,12 +785,14 @@ const PlantEditProfile = ({ navigation }) => {
                             value={state.district}
                             onChangeText={onChangeDistrict}
                             error={state.districtErr}
+                            isRequired={true}
                         />
                         <InputField
                             name={'State'}
                             value={state.state}
                             onChangeText={onChangeState}
                             error={state.stateErr}
+                            isRequired={true}
                         />
                         <InputField
                             name={'Pin Code'}
@@ -794,6 +801,7 @@ const PlantEditProfile = ({ navigation }) => {
                             error={state.pincodeErr}
                             maxLength={6}
                             keyboardType={'number-pad'}
+                            isRequired={true}
                         />
                         <InputField
                             name={'Email'}
@@ -802,6 +810,7 @@ const PlantEditProfile = ({ navigation }) => {
                             editable={false}
                             error={state.emailErr}
                             keyboardType={'email-address'}
+                            isRequired={true}
                         />
                         <InputField
                             name={'Mobile'}
@@ -810,6 +819,7 @@ const PlantEditProfile = ({ navigation }) => {
                             maxLength={10}
                             error={state.phnNoErr}
                             keyboardType={'phone-pad'}
+                            isRequired={true}
                         />
                         {/* <InputField
                             name={'Member Type'}
@@ -821,12 +831,14 @@ const PlantEditProfile = ({ navigation }) => {
                             value={state.personName}
                             onChangeText={onChangePrsnName}
                             error={state.personNameErr}
+                            isRequired={true}
                         />
                         <InputField
                             name={'Designated Person Designation'}
                             value={state.personDesignation}
                             onChangeText={onChangePrsnDesig}
                             error={state.personDesignationErr}
+                            isRequired={true}
                         />
                         <InputField
                             name={'Designated Person PAN Card / Company ID'}
@@ -888,6 +900,7 @@ const PlantEditProfile = ({ navigation }) => {
                                 onPress={() => viewPdf(state.data?.cancelled_cheque)}
                             />
                         )}
+                        <Text style={styles.reqText}>* These fields are required</Text>
                         <View style={{ marginTop: '2%' }}>
                             <Button
                                 name={'UPDATE'}

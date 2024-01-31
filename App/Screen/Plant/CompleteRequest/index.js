@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, TextInput, Image, TouchableOpacity, FlatList, RefreshControl } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { CommonStyle } from '../../../Utils/CommonStyle'
 import { ImagePath } from '../../../Utils/ImagePath'
 import Header from '../../../Container/Header'
@@ -12,6 +12,7 @@ import { GetUniqueArray, ToastError, ToastMessage } from '../../../Service/Commo
 import { useFocusEffect } from '@react-navigation/native'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
 import EmptyContent from '../../../Container/EmptyContent'
+import { useSharedValue } from 'react-native-reanimated'
 
 const list = [
     { enquiry_no: 'RD001', created_at: '14/11/2023 - 05.25 PM', updated_at: '14/11/2023 - 10.25 PM', status: 'Processing' },
@@ -215,6 +216,17 @@ const CompleteRequest = ({ navigation }) => {
         }
     })
 
+    const viewableItems = useSharedValue([]);
+    const onViewableItemsChanged = useCallback(({ viewableItems: vItems }) => {
+        viewableItems.value = vItems
+    });
+
+    const viewabilityConfig = {
+        // waitForInteraction: true,
+        itemVisiblePercentThreshold: 40
+    }
+    const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
+
     return (
         <SafeAreaView style={CommonStyle.container}>
             <Header
@@ -243,7 +255,8 @@ const CompleteRequest = ({ navigation }) => {
                     <FlatList
                         // data={state.searchtext ? list.filter(obj => { return obj.enquiry_no.toUpperCase().includes(state.searchtext.toUpperCase()) }) : list}
                         data={state.searchtext ? state.filterData : state.data}
-                        keyExtractor={(item, index) => index}
+                        keyExtractor={(item) => item.enq_id.toString()}
+                        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                         renderItem={({ item, index }) =>
                             <RequestList
                                 item={item}
@@ -251,6 +264,7 @@ const CompleteRequest = ({ navigation }) => {
                                 headingColor={Colors.theme_light}
                                 backgroundColor={Colors.theme_morelight}
                                 onViewDetails={onViewDetails}
+                                viewableItems={viewableItems}
                             />}
                         style={{ marginBottom: 10 }}
                         showsVerticalScrollIndicator={false}

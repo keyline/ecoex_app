@@ -1,10 +1,12 @@
-import { StyleSheet } from "react-native";
+import { Dimensions, StyleSheet } from "react-native";
 import { Colors } from "../../Utils/Colors";
 
+const { width } = Dimensions.get('window');
 
 export const styles = StyleSheet.create({
     modalStyle: {
         margin: 0,
+        width: width
     },
     modalContainer: {
         flex: 1,

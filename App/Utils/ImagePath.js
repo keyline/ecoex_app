@@ -42,5 +42,7 @@ export const ImagePath = {
     close_round: require('../Assets/Images/close_round.png'),
     delete_acnt: require('../Assets/Images/delete_acnt.png'),
     terms_condition:require('../Assets/Images/terms_condition.png'),
-    privacy_policy:require('../Assets/Images/privacy_policy.png')
+    privacy_policy:require('../Assets/Images/privacy_policy.png'),
+    edit_image:require('../Assets/Images/edit_image.png')
+
 }

@@ -15,16 +15,10 @@ import { Font_Family } from '../../../Utils/Fonts'
 import { Colors } from '../../../Utils/Colors'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
 import AuthContext from '../../../Service/Context'
+import ImageViewSlider from '../../../Container/ImageViewSlider'
 
 const screenHeight = Dimensions.get('window').height;
 const screenWidth = Dimensions.get('window').width;
-const list = [
-    { sl_no: '01', hsn: '124578', product: 'Product 1', weight: '1245 MT' },
-    { sl_no: '02', hsn: '124578', product: 'Product 2', weight: '1245 MT' },
-    { sl_no: '03', hsn: '124578', product: 'Product 3', weight: '1245 MT' },
-    { sl_no: '04', hsn: '124578', product: 'Product 4', weight: '1245 MT' },
-
-]
 
 const ProcessesRequestDetails = ({ navigation, route }) => {
 
@@ -40,6 +34,7 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
         imageViewUri: null,
         data: '',
         productList: [],
+        sliderImage: null
     })
     const [unitList, setUnitList] = useState([]);
 
@@ -211,16 +206,29 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                 return { uri: obj?.link }
             })
             // console.log('img', JSON.stringify(updateArrray))
-            navigation.navigate('ImageSlider', { images: updateArrray })
+            setState(prev => ({
+                ...prev,
+                sliderImage: updateArrray
+            }))
         }
     })
 
     const onShowGpsImage = useCallback(async (img) => {
         if (img) {
             let imgs = [{ uri: img }]
-            navigation.navigate('ImageSlider', { images: imgs })
+            setState(prev => ({
+                ...prev,
+                sliderImage: imgs
+            }))
         }
     })
+
+    const onCloseSlider = useCallback(async () => {
+        setState(prev => ({
+            ...prev,
+            sliderImage: null
+        }))
+    }, [state.sliderImage])
 
     const onResubmit = useCallback(async () => {
         try {
@@ -408,6 +416,12 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                     imageUri={state.imageViewUri}
                     onClose={onImageView}
                 // imageUri={}
+                />
+            )}
+            {(state.sliderImage) && (
+                <ImageViewSlider
+                    images={state.sliderImage}
+                    onClose={onCloseSlider}
                 />
             )}
             {(state.loadingNew) && (

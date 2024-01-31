@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, TextInput, Image, TouchableOpacity, FlatList, RefreshControl } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { CommonStyle } from '../../../Utils/CommonStyle'
 import Header from '../../../Container/Header'
 import { ImagePath } from '../../../Utils/ImagePath'
@@ -13,6 +13,7 @@ import Apis from '../../../Service/Apis'
 import EmptyContent from '../../../Container/EmptyContent'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
 import CheckBox from '@react-native-community/checkbox'
+import { useSharedValue } from 'react-native-reanimated'
 
 const list = [
     { enquiry_no: 'RD001', created_at: '14/11/2023 - 05.25 PM', updated_at: '14/11/2023 - 10.25 PM', status: 'Processing' },
@@ -277,23 +278,6 @@ const RejectRequest = ({ navigation }) => {
         }
     })
 
-    const onResetSelect = useCallback(async (list = state.data) => {
-        if (list.length > 0) {
-            let updateArray = list.map(obj => {
-                return { ...obj, isChecked: false }
-            })
-            setState(prev => ({
-                ...prev,
-
-            }))
-        } else {
-            setState(prev => ({
-                ...prev,
-                isAllChecked: false
-            }))
-        }
-    })
-
     const onResubmit = useCallback(async () => {
         try {
             setState(prev => ({
@@ -332,6 +316,17 @@ const RejectRequest = ({ navigation }) => {
             ToastError();
         }
     })
+
+    const viewableItems = useSharedValue([]);
+    const onViewableItemsChanged = useCallback(({ viewableItems: vItems }) => {
+        viewableItems.value = vItems
+    });
+
+    const viewabilityConfig = {
+        // waitForInteraction: true,
+        itemVisiblePercentThreshold: 40
+    }
+    const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
 
     return (
         <SafeAreaView style={CommonStyle.container}>
@@ -389,7 +384,8 @@ const RejectRequest = ({ navigation }) => {
                         // data={state.searchtext ? list.filter(obj => { return obj.enquiry_no.toUpperCase().includes(state.searchtext.toUpperCase()) }) : list}
                         // data={state.searchtext ? state.filterData : state.data}
                         data={state.searchtext ? handleSearch(state.searchtext) : state.data}
-                        keyExtractor={(item, index) => index}
+                        keyExtractor={(item, index) => item?.enq_id.toString()}
+                        viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                         renderItem={({ item, index }) =>
                             <RequestList
                                 item={item}
@@ -398,6 +394,7 @@ const RejectRequest = ({ navigation }) => {
                                 backgroundColor={Colors.reject_morelight}
                                 onViewDetails={onViewDetails}
                                 onSelect={onSelect}
+                                viewableItems={viewableItems}
                             />}
                         style={{ marginBottom: 10 }}
                         showsVerticalScrollIndicator={false}

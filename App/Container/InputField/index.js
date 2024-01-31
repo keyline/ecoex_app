@@ -3,11 +3,11 @@ import React from 'react'
 import { styles } from './styles'
 import { CommonStyle } from '../../Utils/CommonStyle'
 
-const InputField = ({ leftIcon, name, maxLength, rightIcon, rightonPress, width, value, keyboardType, secureTextEntry, multiline, onChangeText, editable = true, placeholder, error }) => {
+const InputField = ({ leftIcon, name, maxLength, rightIcon, rightonPress, width, value, keyboardType, secureTextEntry, multiline, onChangeText, editable = true, placeholder, error,isRequired }) => {
     return (
         <View style={[styles.container, { width: width ? width : '100%' }]}>
             {(name) && (
-                <Text style={CommonStyle.boldtext}>{name}</Text>
+                <Text style={CommonStyle.boldtext}>{name}{isRequired && <Text style={{color:'red'}}> *</Text>}</Text>
             )}
             <View style={[styles.inputContainer, { borderWidth: error ? 1.5 : 0 }]}>
                 <TextInput

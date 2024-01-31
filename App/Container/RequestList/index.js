@@ -6,8 +6,9 @@ import { ImagePath } from '../../Utils/ImagePath'
 import { Colors } from '../../Utils/Colors'
 import AuthContext from '../../Service/Context'
 import CheckBox from '@react-native-community/checkbox'
+import Animated, { useAnimatedStyle, withTiming } from 'react-native-reanimated'
 
-const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDelete, onViewDetails, onSelect }) => {
+const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDelete, onViewDetails, onSelect, viewableItems }) => {
 
     const context = useContext(AuthContext)
     const { siteData, userProfile } = context.allData
@@ -23,8 +24,28 @@ const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDel
         setshow(!show);
     }, [show])
 
+    const rStyle = useAnimatedStyle(() => {
+        if (viewableItems) {
+            const isVisible = Boolean(
+                viewableItems.value
+                    .filter((item) => item?.isViewable)
+                    .find((obj) => obj.item?.enq_id == item?.enq_id)
+            );
+            return {
+                opacity: withTiming(isVisible ? 1 : 0.4),
+                transform: [
+                    {
+                        scale: withTiming(isVisible ? 1 : 0.6),
+                    }
+                ]
+            }
+        } else {
+            return {}
+        }
+    });
+
     return (
-        <View style={[styles.listContainer, { borderColor: headingColor ? headingColor : Colors.process, backgroundColor: backgroundColor ? backgroundColor : Colors.white }]}>
+        <Animated.View style={[styles.listContainer, { borderColor: headingColor ? headingColor : Colors.process, backgroundColor: backgroundColor ? backgroundColor : Colors.white }, viewableItems && rStyle]}>
             <TouchableOpacity onPress={onShow} activeOpacity={0.5} style={[styles.headingContainer, { backgroundColor: headingColor ? headingColor : Colors.process }]}>
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
                     {(item?.status == "9") && (
@@ -74,7 +95,7 @@ const RequestList = ({ item, index, headingColor, backgroundColor, onEdit, onDel
                     </View>
                 </TouchableOpacity>
             )}
-        </View>
+        </Animated.View>
     )
 }
 

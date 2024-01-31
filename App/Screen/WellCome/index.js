@@ -77,7 +77,7 @@ const WellCome = ({ navigation }) => {
   })
 
   const onSubmit = useCallback(async () => {
-    navigation.replace('Login')
+    navigation.replace('LoginWithMobile')
   })
 
   return (

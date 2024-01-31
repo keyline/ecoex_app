@@ -82,6 +82,10 @@ export default class Apis {
         return Network('post', 'update-profile', data)
     }
 
+    static update_profile_image = (data) => {
+        return Network('post', 'update-profile-image', data)
+    }
+
     static plant_dashboard = () => {
         return Network('post', 'dashboard')
     }

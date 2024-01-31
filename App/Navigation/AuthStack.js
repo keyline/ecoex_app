@@ -21,12 +21,12 @@ const AuthStack = () => {
             }}
         >
             <Stack.Screen name='WellCome' component={WellCome} />
+            <Stack.Screen name='LoginWithMobile' component={LoginWithMobile} />
             <Stack.Screen name='Login' component={Login} />
             <Stack.Screen name='SignUp' component={SignUp} />
             <Stack.Screen name='ForgotPassword' component={ForgotPassword} />
             <Stack.Screen name='OtpValidate' component={OtpValidate} />
             <Stack.Screen name='ResetPassword' component={ResetPassword} />
-            <Stack.Screen name='LoginWithMobile' component={LoginWithMobile} />
             <Stack.Screen name='WebView' component={WebView} />
             <Stack.Screen name='StaticPage' component={StaticPage} />
         </Stack.Navigator>

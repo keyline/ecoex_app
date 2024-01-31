@@ -1,5 +1,5 @@
 import { View, Text, SafeAreaView, TextInput, Image, FlatList, RefreshControl } from 'react-native'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import { CommonStyle } from '../../../Utils/CommonStyle'
 import Header from '../../../Container/Header'
 import { ImagePath } from '../../../Utils/ImagePath'
@@ -11,6 +11,7 @@ import { styles } from './styles'
 import { Colors } from '../../../Utils/Colors'
 import List from './List'
 import EmptyContent from '../../../Container/EmptyContent'
+import { useSharedValue } from 'react-native-reanimated'
 
 const list = [
     1, 2, 3, 4, 3, 5, 6, 7, 8, 9, 10
@@ -117,7 +118,7 @@ const PlantNotification = ({ navigation }) => {
         const filtered = state.data.filter((item) => {
             for (const key in item) {
                 if (
-                    typeof item[key] === 'string' &&
+                    typeof item[key] == 'string' &&
                     item[key].toLowerCase().includes(query.toLowerCase())
                 ) {
                     return true;
@@ -150,6 +151,17 @@ const PlantNotification = ({ navigation }) => {
         setpage(1)
     })
 
+    const viewableItems = useSharedValue([]);
+    const onViewableItemsChanged = useCallback(({ viewableItems: vItems }) => {
+        viewableItems.value = vItems
+    });
+
+    const viewabilityConfig = {
+        // waitForInteraction: true,
+        itemVisiblePercentThreshold: 40
+    }
+    const viewabilityConfigCallbackPairs = useRef([{ viewabilityConfig, onViewableItemsChanged }])
+
     return (
         <SafeAreaView style={CommonStyle.container}>
             <Header
@@ -175,8 +187,9 @@ const PlantNotification = ({ navigation }) => {
                             data={state.filterData.length > 0 ? state.filterData : state.data}
                             // data={list}
                             keyExtractor={(item, index) => index}
+                            viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                             renderItem={({ item }) =>
-                                <List item={item} />
+                                <List item={item} viewableItems={viewableItems} />
                             }
                             showsVerticalScrollIndicator={false}
                             onEndReached={handleLoadMore}

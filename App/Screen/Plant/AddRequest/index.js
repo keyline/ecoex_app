@@ -19,6 +19,7 @@ import DeviceInfo from 'react-native-device-info'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
 import AuthContext from '../../../Service/Context'
 import SuccessModal from '../../../Container/SuccessModal'
+import DatePickerModal from '../../../Container/DatePickerModal'
 
 const AddRequest = ({ navigation }) => {
 
@@ -437,12 +438,19 @@ const AddRequest = ({ navigation }) => {
         }))
     }, [state.collectionDatePicker])
 
+    const onCloseDatePicker = useCallback(async () => {
+        setState(prev => ({
+            ...prev,
+            collectionDatePicker: false
+        }))
+    }, [state.collectionDatePicker])
+
     const onChangeCollectionDate = useCallback(async (value) => {
-        if (value.type == 'set') {
-            let time = value?.nativeEvent?.timestamp;
+        // console.log('datetime',value)
+        if (value) {
             setState(prev => ({
                 ...prev,
-                collectionDate: time,
+                collectionDate: value,
                 collectionDatePicker: false,
                 collectionDateErr: ''
             }))
@@ -452,6 +460,20 @@ const AddRequest = ({ navigation }) => {
                 collectionDatePicker: false
             }))
         }
+        // if (value.type == 'set') {
+        //     let time = value?.nativeEvent?.timestamp;
+        //     setState(prev => ({
+        //         ...prev,
+        //         collectionDate: time,
+        //         collectionDatePicker: false,
+        //         collectionDateErr: ''
+        //     }))
+        // } else {
+        //     setState(prev => ({
+        //         ...prev,
+        //         collectionDatePicker: false
+        //     }))
+        // }
     }, [state.collectionDate])
 
     const onSubmit = useCallback(async () => {
@@ -499,9 +521,9 @@ const AddRequest = ({ navigation }) => {
             setReqList(updateArray);
             return;
         } else if (state.collectionDate == '') {
-            setState(prev =>({
+            setState(prev => ({
                 ...prev,
-                collectionDateErr:'Select Date'
+                collectionDateErr: 'Select Date'
             }))
             ToastMessage('Select Collection Request Date');
             return;
@@ -575,7 +597,7 @@ const AddRequest = ({ navigation }) => {
                 <View style={styles.flexNew}>
                     <Text style={[CommonStyle.boldblacktext, { width: '60%' }]}>Tentative collection request date:  </Text>
                     <TouchableOpacity onPress={onOpenDatePicker} activeOpacity={0.5} style={{ width: '30%' }}>
-                        <TextInput value={dateConvertNew(state.collectionDate)} editable={false} placeholder='Select Date' style={[styles.productInput, { width: '100%' }, state.collectionDateErr && { borderColor: 'red',borderWidth:2 }]} />
+                        <TextInput value={dateConvertNew(state.collectionDate)} editable={false} placeholder='Select Date' style={[styles.productInput, { width: '100%' }, state.collectionDateErr && { borderColor: 'red', borderWidth: 2 }]} />
                         {/* <Image source={ImagePath.date} style={{ width: 20, height: 20 }} /> */}
                     </TouchableOpacity>
                 </View>
@@ -665,11 +687,18 @@ const AddRequest = ({ navigation }) => {
                 />
             )}
             {(state.collectionDatePicker) && (
-                <DateTimePickers
+                // <DateTimePickers
+                //     value={state.collectionDate ? new Date(state.collectionDate) : new Date()}
+                //     mode={'date'}
+                //     onConfirm={onChangeCollectionDate}
+                //     minimumDate={new Date()}
+                // />
+                <DatePickerModal
+                    isVisible={state.collectionDatePicker}
                     value={state.collectionDate ? new Date(state.collectionDate) : new Date()}
-                    mode={'date'}
                     onConfirm={onChangeCollectionDate}
                     minimumDate={new Date()}
+                    onClose={onCloseDatePicker}
                 />
             )}
             {(state.loading) && (
