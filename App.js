@@ -277,7 +277,7 @@ const App = () => {
   return (
     <AuthContext.Provider value={{ allData: state, setState, onGetStoreData, onClearStoreData, onGetUserProfile }}>
       <NavigationContainer ref={navigationRef}>
-        <StatusBar backgroundColor={Colors.white} barStyle={'dark-content'} />
+        <StatusBar backgroundColor={Colors.theme_color} barStyle={'light-content'} />
         {(!state.loading) && (
           <>
             {(state.isLogin) ?

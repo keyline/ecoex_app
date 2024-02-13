@@ -245,7 +245,7 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
             }
             if (res.success) {
                 state.data.current_step_no = '0'
-                state.data.current_step_name = 'Pending';
+                state.data.current_step_name = 'Request Submitted';
             }
             setState(prev => ({
                 ...prev,
@@ -277,7 +277,7 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                         <View style={styles.bodyContent}>
                             <View style={[styles.flex, { paddingHorizontal: '4%' }]}>
                                 <Text style={CommonStyle.normalText}>STATUS ({state.data?.current_step_no}/{state.data?.total_step}) : </Text>
-                                <Text style={[styles.statusText, state.data?.current_step_no == "9" && { backgroundColor: 'red' }, state.data?.current_step_no == "8" && { backgroundColor: 'green' }]}>{(state.data?.current_step_name).toUpperCase()}</Text>
+                                <Text style={[styles.statusText, state.data?.current_step_no == "13" && { backgroundColor: 'red' }, state.data?.current_step_no == "12" && { backgroundColor: 'green' }]}>{(state.data?.current_step_name).toUpperCase()}</Text>
                             </View>
 
                             <View style={styles.midContent}>
@@ -394,7 +394,7 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                                     </TouchableOpacity>
                                 </View>
                             )}
-                            {(state.data?.current_step_no == '9') && (
+                            {(state.data?.current_step_no == '13') && (
                                 <TouchableOpacity onPress={onResubmit} style={[styles.aprvBtn, { paddingVertical: '3%', alignSelf: 'center' }]}>
                                     <Text style={CommonStyle.boldblacktext}>ReSubmit</Text>
                                 </TouchableOpacity>
