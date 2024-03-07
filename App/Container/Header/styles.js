@@ -21,6 +21,6 @@ export const styles = StyleSheet.create({
     headingText: {
         fontFamily: Font_Family.NunitoSans_ExtraBold,
         color: Colors.white,
-        fontSize: 18
+        fontSize: 16
     }
 })

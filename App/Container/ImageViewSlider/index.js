@@ -3,7 +3,7 @@ import React, { useState } from 'react'
 import ImageView from "react-native-image-viewing";
 import { styles } from './styles';
 
-const ImageViewSlider = ({ images, onClose }) => {
+const ImageViewSlider = ({ images, onClose, imageIndex }) => {
 
     const [currentIndex, setcurrentIndex] = useState(0);
 
@@ -17,7 +17,7 @@ const ImageViewSlider = ({ images, onClose }) => {
         <View style={styles.container}>
             <ImageView
                 images={images}
-                imageIndex={0}
+                imageIndex={imageIndex ? imageIndex : 0}
                 visible={true}
                 onRequestClose={() => onClose()}
                 FooterComponent={renderFooter}

@@ -22,20 +22,21 @@ const PlantCustomDrawer = (props) => {
         pickerModal: false,
         viewImgeUri: ''
     })
-
+    
     const menuList = [
         { id: 1, name: 'Home', screen: 'PlantDashBoard', icon: ImagePath.home, logiReq: false },
-        { id: 2, name: 'Add Request', screen: 'AddRequest', icon: ImagePath.request, logiReq: true },
-        { id: 3, name: 'Process Request', screen: 'ProcessRequest', icon: ImagePath.pending, logiReq: false },
-        { id: 4, name: 'Complete Request', screen: 'CompleteRequest', icon: ImagePath.complete, logiReq: false },
-        { id: 5, name: 'Reject Request', screen: 'RejectRequest', icon: ImagePath.reject, logiReq: false },
-        { id: 6, name: 'Notification', screen: 'PlantNotification', icon: ImagePath.bell, logiReq: false },
-        { id: 7, name: 'Edit Profile', screen: 'PlantEditProfile', icon: ImagePath.edit_profile, logiReq: false },
-        { id: 8, name: 'Change Password', screen: 'PlantChangePassword', icon: ImagePath.lock, logiReq: false },
-        { id: 9, name: 'Privacy Policy', screen: 'StaticPage', slung: 'privacy-policy', icon: ImagePath.privacy_policy, logiReq: false },
-        { id: 10, name: 'Terms and Conditions', screen: 'StaticPage', slung: 'terms-conditions', icon: ImagePath.terms_condition, logiReq: false },
-        { id: 11, name: 'Sign Out', screen: 'LogOut', icon: ImagePath.logout, logiReq: false },
-        { id: 12, name: 'Delete Account', screen: 'Delete_account', icon: ImagePath.delete_acnt, logiReq: false },
+        { id: 2, name: 'Add New Request', screen: 'AddRequest', icon: ImagePath.request, logiReq: true },
+        { id: 3, name: 'Pending/Accept Request', screen: 'PendingRequest', icon: ImagePath.request, logiReq: true },
+        { id: 4, name: 'Process Request', screen: 'ProcessRequest', icon: ImagePath.pending, logiReq: false },
+        { id: 5, name: 'Complete Request', screen: 'CompleteRequest', icon: ImagePath.complete, logiReq: false },
+        { id: 6, name: 'Reject Request', screen: 'RejectRequest', icon: ImagePath.reject, logiReq: false },
+        { id: 7, name: 'Notification', screen: 'PlantNotification', icon: ImagePath.bell, logiReq: false },
+        { id: 8, name: 'Edit Profile', screen: 'PlantEditProfile', icon: ImagePath.edit_profile, logiReq: false },
+        { id: 9, name: 'Change Password', screen: 'PlantChangePassword', icon: ImagePath.lock, logiReq: false },
+        { id: 10, name: 'Privacy Policy', screen: 'StaticPage', slung: 'privacy-policy', icon: ImagePath.privacy_policy, logiReq: false },
+        { id: 11, name: 'Terms and Conditions', screen: 'StaticPage', slung: 'terms-conditions', icon: ImagePath.terms_condition, logiReq: false },
+        { id: 12, name: 'Sign Out', screen: 'LogOut', icon: ImagePath.logout, logiReq: false },
+        { id: 13, name: 'Delete Account', screen: 'Delete_account', icon: ImagePath.delete_acnt, logiReq: false },
     ]
 
     const Icon = ({ props, source }) => (

@@ -101,7 +101,25 @@ const PlantDashBoard = ({ navigation }) => {
         }))
     }, [state.progressValue, state.progressColor])
 
-    const onBtnPress = useCallback(async (screen) => {
+    const getScreen = (id) => {
+        switch (id) {
+            case 1:
+                return 'AddRequest';
+            case 2:
+                return 'PendingRequest';
+            case 3:
+                return 'ProcessRequest';
+            case 4:
+                return 'RejectRequest';
+            case 5:
+                return 'CompleteRequest';
+            default:
+                return ''
+        }
+    }
+
+    const onBtnPress = useCallback(async (id) => {
+        let screen = getScreen(id);
         if (screen) {
             navigation.navigate(screen);
         }
@@ -130,15 +148,15 @@ const PlantDashBoard = ({ navigation }) => {
                                     <NameValue name={'Plant Location'} value={state.data?.location} />
                                 </View>
                             </View>
-                            <View style={styles.btnContent}>
-                                <Text style={styles.headingText}>Request Status Wise Count</Text>
-                                <View style={styles.btnContainer}>
-                                    <BottonNew onPress={(() => onBtnPress('AddRequest'))} name={'Add New Request'} color={'#264CD4'} />
-                                    <BottonNew onPress={(() => onBtnPress('ProcessRequest'))} name={state.data?.step2_label + ' (' + state.data?.step2_count + ')'} color={'#E79D0CE8'} />
-                                    <BottonNew onPress={(() => onBtnPress('RejectRequest'))} name={state.data?.step3_label + ' (' + state.data?.step3_count + ')'} color={'#E70C0CC9'} />
-                                    <BottonNew onPress={(() => onBtnPress('CompleteRequest'))} name={state.data?.step4_label + ' (' + state.data?.step4_count + ')'} color={'#2DA952'} />
-                                </View>
-                                {/* <View style={styles.statusContent}>
+                            {(state.data?.buttons && state.data?.buttons.length > 0) && (
+                                <View style={styles.btnContent}>
+                                    <Text style={styles.headingText}>Request Status Wise Count</Text>
+                                    <View style={styles.btnContainer}>
+                                        {(state.data.buttons).map((item, key) => (
+                                            <BottonNew key={key} onPress={(() => onBtnPress(item?.id))} name={(item?.value) ? item?.label + ' (' + item?.value + ')' : item?.label} color={item?.color_code} />
+                                        ))}
+                                    </View>
+                                    {/* <View style={styles.statusContent}>
                                     <View style={{ width: '50%' }}>
                                         <Bottom onPress={() => onRequest(state.data?.step1_percent, '#264CD4')} name={state.data?.step1_label} color={'#264CD4'} />
                                         <Bottom onPress={() => onRequest(state.data?.step2_percent, '#E79D0CE8')} name={state.data?.step2_label} color={'#E79D0CE8'} />
@@ -157,7 +175,8 @@ const PlantDashBoard = ({ navigation }) => {
                                         />
                                     </View>
                                 </View> */}
-                            </View>
+                                </View>
+                            )}
                         </View>
                     )}
                 </ScrollView>

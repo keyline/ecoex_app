@@ -59,7 +59,8 @@ const ProcessRequest = ({ navigation }) => {
       let datas = {
         order_field: field,
         order_type: type,
-        page_no: pages
+        page_no: pages,
+        sub_status: ['3.3', '4.4', '5.5', '6.6', '8.8', '9.9', '10.10']
       }
       let response = await Apis.process_request_list(datas);
       if (__DEV__) {
@@ -69,7 +70,7 @@ const ProcessRequest = ({ navigation }) => {
         let resdata = response?.data
         if (resdata.length > 0) {
           let array = pages == 1 ? resdata : [...state.data, ...resdata]
-          let uniqueArray = await GetUniqueArray(array, 'enq_id');
+          let uniqueArray = await GetUniqueArray(array, 'sub_enq_id');
           let updateArray = uniqueArray.map(obj => {
             return { ...obj, isChecked: false }
           })
@@ -215,73 +216,9 @@ const ProcessRequest = ({ navigation }) => {
     }
   });
 
-  const onDeleteAlert = useCallback(async (item) => {
-    Alert.alert(
-      'Delete!',
-      'Do you really want to delete this request?',
-      [
-        {
-          text: 'No',
-          onPress: () => null
-        },
-        {
-          text: 'Yes',
-          onPress: () => onDelete(item)
-        }
-      ],
-      { cancelable: true }
-    )
-  })
-
-  const onDelete = useCallback(async (item) => {
-    try {
-      setState(prev => ({
-        ...prev,
-        loadingNew: true
-      }))
-      let datas = {
-        enq_id: item?.enq_id
-      }
-      let res = await Apis.plant_delete_request(datas);
-      if (__DEV__) {
-        console.log('DeleteRequest', JSON.stringify(res))
-      }
-      if (res.success) {
-        let array = state.data
-        let updateList = array.filter(obj => obj.enq_id != item.enq_id)
-        setState(prev => ({
-          ...prev,
-          data: updateList,
-          loadingNew: false
-        }))
-      } else {
-        setState(prev => ({
-          ...prev,
-          loadingNew: false
-        }))
-      }
-      ToastMessage(res?.message);
-    } catch (error) {
-      if (__DEV__) {
-        console.log(error)
-      }
-      setState(prev => ({
-        ...prev,
-        loadingNew: false
-      }))
-      ToastError();
-    }
-  })
-
-  const onEdit = useCallback(async (item) => {
-    // console.log('editItem', item)
-    // navigation.navigate('ProcessesRequestDetails', { item: item })
-    navigation.navigate('EditRequest', { id: item?.enq_id })
-  })
-
   const onViewDetails = useCallback(async (item) => {
     // console.log('editItem', item)
-    navigation.navigate('ProcessesRequestDetails', { id: item?.enq_id })
+    navigation.navigate('ProcessesRequestDetails', { id: item?.sub_enquiry_no })
   })
 
   const onReload = useCallback(async () => {
@@ -352,29 +289,27 @@ const ProcessRequest = ({ navigation }) => {
           </View> */}
           <View style={{ flex: 1 }}>
             <FlatList
-              // data={state.searchtext ? state.data.filter(obj => { return obj.enquiry_no.toUpperCase().includes(state.searchtext.toUpperCase()) }) : state.data}
               data={state.searchtext ? state.filterData : state.data}
-              keyExtractor={(item) => item.enq_id.toString()}
+              keyExtractor={(item) => item.sub_enq_id.toString()}
               viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
               renderItem={({ item, index }) =>
-                <RequestList
+                <List
                   item={item}
                   index={index}
-                  headingColor={Colors.process}
+                  headingColor={'#63c6db'}
                   backgroundColor={Colors.process_morelight}
-                  onEdit={onEdit}
-                  onDelete={onDeleteAlert}
+                  // onAccept={onAcceptAlert}
+                  // onReject={onRejectAlert}
                   onViewDetails={onViewDetails}
                   viewableItems={viewableItems}
-                // onSelect={onSelect}
-                />}
+                />
+              }
               style={{ marginBottom: 10 }}
               showsVerticalScrollIndicator={false}
               onEndReached={handleLoadMore}
               onEndReachedThreshold={0.5}
               refreshControl={<RefreshControl refreshing={false} onRefresh={onReload} />}
               ListEmptyComponent={<EmptyContent word={'No Request Found'} />}
-            // StickyHeaderComponent={renderHeader}
             />
           </View>
         </View>

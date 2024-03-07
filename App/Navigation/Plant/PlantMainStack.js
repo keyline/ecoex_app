@@ -7,7 +7,6 @@ import AddRequest from '../../Screen/Plant/AddRequest';
 import ProcessRequest from '../../Screen/Plant/ProcessRequest';
 import CompleteRequest from '../../Screen/Plant/CompleteRequest';
 import RejectRequest from '../../Screen/Plant/RejectRequest';
-import ProcessesRequestDetails from '../../Screen/Plant/ProcessesRequestDetails';
 import PlantEditProfile from '../../Screen/Plant/PlantEditProfile';
 import PlantChangePassword from '../../Screen/Plant/PlantChangePassword';
 import PdfViewer from '../../Screen/PdfViewer';
@@ -15,6 +14,9 @@ import EditRequest from '../../Screen/Plant/EditRequest';
 import PlantNotification from '../../Screen/Plant/PlantNotification';
 import WebView from '../../Screen/WebView';
 import StaticPage from '../../Screen/StaticPage';
+import PendingRequest from '../../Screen/Plant/PendingRequest';
+import RequestDetails from '../../Screen/Plant/RequestDetails';
+import ProcessesRequestDetails from '../../Screen/Plant/ProcessesRequestDetails';
 
 const PlantMainStack = () => {
 
@@ -31,7 +33,7 @@ const PlantMainStack = () => {
             <Stack.Screen name='ProcessRequest' component={ProcessRequest} />
             <Stack.Screen name='CompleteRequest' component={CompleteRequest} />
             <Stack.Screen name='RejectRequest' component={RejectRequest} />
-            <Stack.Screen name='ProcessesRequestDetails' component={ProcessesRequestDetails} />
+            <Stack.Screen name='RequestDetails' component={RequestDetails} />
             <Stack.Screen name='PlantEditProfile' component={PlantEditProfile} />
             <Stack.Screen name='PlantChangePassword' component={PlantChangePassword} />
             <Stack.Screen name='PdfViewer' component={PdfViewer} />
@@ -39,6 +41,8 @@ const PlantMainStack = () => {
             <Stack.Screen name='PlantNotification' component={PlantNotification} />
             <Stack.Screen name='WebView' component={WebView} />
             <Stack.Screen name='StaticPage' component={StaticPage} />
+            <Stack.Screen name='PendingRequest' component={PendingRequest} />
+            <Stack.Screen name='ProcessesRequestDetails' component={ProcessesRequestDetails} />
         </Stack.Navigator>
     )
 }

@@ -203,7 +203,7 @@ const CompleteRequest = ({ navigation }) => {
 
     const onViewDetails = useCallback(async (item) => {
         // console.log('editItem', item)
-        navigation.navigate('ProcessesRequestDetails', { id: item?.enq_id })
+        navigation.navigate('RequestDetails', { id: item?.enq_id })
     })
 
     const onReload = useCallback(async () => {

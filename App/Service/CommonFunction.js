@@ -198,3 +198,24 @@ export async function checkStoragePermission() {
     }
 }
 
+export const getSubStatus = (status) => {
+    switch (status) {
+        case '3.3':
+            return 'Vendor Assigned';
+        case '4.4':
+            return 'Pickup Scheduled';
+        case '5.5':
+            return 'Vehicle Placed';
+        case '6.6':
+            return 'Material Weighed';
+        case '8.8':
+            return 'Invoice to Vendor';
+        case '9.9':
+            return 'Payment received';
+        case '10.10':
+            return 'Vehicle Dispatched';
+        default:
+            return '';
+    }
+}
+

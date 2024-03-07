@@ -1,42 +1,42 @@
-import { View, Text, SafeAreaView, ScrollView, Image, TouchableOpacity, Dimensions, Alert, RefreshControl } from 'react-native'
-import React, { useCallback, useContext, useState } from 'react'
+import { View, Text, SafeAreaView, ScrollView, RefreshControl, TouchableOpacity, Image } from 'react-native'
+import React, { useCallback, useState } from 'react'
 import { CommonStyle } from '../../../Utils/CommonStyle'
 import Header from '../../../Container/Header'
 import { ImagePath } from '../../../Utils/ImagePath'
-import { styles } from './styles'
-import ImageView from '../../../Container/ImageView'
-import { GetUnitfromList, ToastError, ToastMessage, dateConvert } from '../../../Service/CommonFunction'
-import Apis from '../../../Service/Apis'
 import { useFocusEffect } from '@react-navigation/native'
+import { LaunchCamera, LaunchImageLibary, ToastError, ToastMessage, getSubStatus } from '../../../Service/CommonFunction'
+import Apis from '../../../Service/Apis'
 import Loader from '../../../Container/Loader'
-import Button from '../../../Container/Button'
-import Popover from 'react-native-popover-view';
-import { Font_Family } from '../../../Utils/Fonts'
+import { styles } from './styles'
+import HeaderContent from './HeaderContent'
 import { Colors } from '../../../Utils/Colors'
-import LoaderTransparent from '../../../Container/LoaderTransparent'
-import AuthContext from '../../../Service/Context'
+import List from './List'
 import ImageViewSlider from '../../../Container/ImageViewSlider'
-
-const screenHeight = Dimensions.get('window').height;
-const screenWidth = Dimensions.get('window').width;
+import MaterialWeightList from './MaterialWeightList'
+import ImageOptions from '../../../Container/ImageOptions'
+import LoaderTransparent from '../../../Container/LoaderTransparent'
+import VehicleDetails from './VehicleDetails'
 
 const ProcessesRequestDetails = ({ navigation, route }) => {
-
-    const context = useContext(AuthContext)
-    const { siteData, userProfile } = context.allData
 
     const [state, setState] = useState({
         loading: false,
         loadingNew: false,
-        btnLoading: false,
-        // item: route?.params?.item,
-        id: route?.params?.id,
-        imageViewUri: null,
-        data: '',
-        productList: [],
-        sliderImage: null
+        data: null,
+        status: null,
+        itemList: [],
+        vehiclesList: [],
+        show: false,
+        sliderImage: null,
+        materialShow: true,
+        materialList: [],
+        materialIsEditable: false,
+        selectedItem: null,
+        imagetype: '',
+        imageOptionModal: false,
+        materialWeightOrginialList: []
     })
-    const [unitList, setUnitList] = useState([]);
+    const [materialWeightList, setmaterialWeightList] = useState([]);
 
     useFocusEffect(
         useCallback(() => {
@@ -49,23 +49,45 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
         try {
             showLoading();
             let datas = {
-                enq_id: route?.params?.id
+                sub_enquiry_no: route.params?.id
             }
-            let response = await Apis.process_request_edit(datas);
+            let response = await Apis.processes_request_detais(datas);
             if (__DEV__) {
-                console.log('EditRequest', JSON.stringify(response))
+                console.log('ProcessesRequestDetails', JSON.stringify(response))
             }
             if (response.success) {
-                await onGetUnits();
+                let data = response?.data;
+                let item = data?.items;
+                let vehicles = data?.vehicles;
+                if (data?.material_weighing_edit_vendor == '0' && data?.material_weighing_edit_plant == '1') {
+                    let temparr = item.map(obj => {
+                        return {
+                            ...obj,
+                            actual_weight: obj?.materials?.actual_weight,
+                            actual_weightErr: '',
+                            weighing_slip_img: obj?.materials?.weighing_slip_img,
+                            weighing_slip_imgErr: ''
+                        }
+                    })
+                    // console.log('temparr',JSON.stringify(temparr));
+                    setmaterialWeightList(temparr);
+                    setState(prev => ({
+                        ...prev,
+                        materialShow: data?.is_plant_ecoex_confirm == '0' ? true : false,
+                        materialWeightOrginialList: temparr
+                    }))
+                }
                 setState(prev => ({
                     ...prev,
-                    data: response?.data,
-                    productList: response?.data?.requestList,
+                    data: data,
+                    status: data?.enquiry_sub_status_id,
+                    itemList: item,
+                    vehiclesList: vehicles,
                     loading: false
                 }))
             } else {
-                hideLoading();
                 ToastMessage(response?.message);
+                hideLoading();
             }
         } catch (error) {
             if (__DEV__) {
@@ -76,100 +98,183 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
         }
     })
 
-    const onGetUnits = useCallback(async () => {
-        try {
-            let res = await Apis.get_units();
-            if (__DEV__) {
-                console.log('UnitList', JSON.stringify(res))
-            }
-            if (res.success) {
-                let data = res?.data
-                if (data.length > 0) {
-                    let parray = data.map(item => {
-                        return { ...item, label: item.name, value: item.id }
-                    })
-                    setUnitList(parray)
-                    // return parray;
-                }
-            }
-        } catch (error) {
-            if (__DEV__) {
-                console.log(error)
-            }
-            // hideLoading();
-            ToastError();
-        }
-    })
-
     const showLoading = useCallback(async () => {
         setState(prev => ({
             ...prev,
             loading: true,
         }))
-    }, [state.loading]);
+    }, [state.loading])
 
     const hideLoading = useCallback(async () => {
         setState(prev => ({
             ...prev,
             loading: false,
         }))
-    }, [state.loading]);
+    }, [state.loading])
 
     const onHeaderPress = useCallback(async () => {
         navigation.goBack();
     })
 
-    const onImageView = useCallback(async (img) => {
-        if (img) {
+    const onItemListShowHide = useCallback(async () => {
+        setState(prev => ({
+            ...prev,
+            show: !state.show
+        }))
+    }, [state.show])
+
+    const onMaterialShowHide = useCallback(async () => {
+        setState(prev => ({
+            ...prev,
+            materialShow: !state.materialShow
+        }))
+    }, [state.materialShow])
+
+    const onShowImage = useCallback(async (image, key = 'link') => {
+        console.log('key', key)
+        if (image && image.length > 0) {
+            let updatearr = image.map(obj => {
+                return { uri: key ? obj[key] : obj }
+            })
             setState(prev => ({
                 ...prev,
-                imageViewUri: img
-            }))
-        } else {
-            setState(prev => ({
-                ...prev,
-                imageViewUri: null
+                sliderImage: updatearr
             }))
         }
-    }, [state.imageViewUri])
-
-    const onEdit = useCallback(async () => {
-        navigation.navigate('EditRequest', { id: state.data?.enq_id })
     })
 
-    const onDeleteAlert = useCallback(async () => {
-        Alert.alert(
-            'Delete!',
-            'Do you really want to delete this request?',
-            [
-                {
-                    text: 'No',
-                    onPress: () => null
-                },
-                {
-                    text: 'Yes',
-                    onPress: () => onDelete()
+    const onShowGpsImage = useCallback(async (image) => {
+        if (image) {
+            let array = [];
+            let obj = { uri: image }
+            array.push(obj);
+            setState(prev => ({
+                ...prev,
+                sliderImage: array
+            }))
+        }
+    })
+
+    const onCloseSlider = useCallback(async () => {
+        setState(prev => ({
+            ...prev,
+            sliderImage: null
+        }))
+    })
+
+    const onChangematerialWeight = useCallback((text, item) => {
+        if (item) {
+            let temparr = materialWeightList.map(obj => {
+                if (obj.item_id == item.item_id) {
+                    return { ...obj, actual_weight: text, actual_weightErr: '' };
                 }
-            ],
-            { cancelable: true }
-        )
+                return obj;
+            })
+            setmaterialWeightList(temparr);
+        }
+    }, [materialWeightList])
+
+    const onShowImgoptnModal = useCallback((item, type) => {
+        setState(prev => ({
+            ...prev,
+            selectedItem: item,
+            imagetype: type,
+            imageOptionModal: true
+        }))
+    }, [state.imageOptionModal])
+
+    const onHideImgoptnModal = useCallback(() => {
+        setState(prev => ({
+            ...prev,
+            selectedVehicle: null,
+            imagetype: null,
+            imageOptionModal: false
+        }))
+    }, [state.imageOptionModal])
+
+    const onSelectImageOption = useCallback(async (value) => {
+        try {
+            if (value == 1) {
+                var selectlimit = 1
+                if (state.imagetype && state.imagetype == 'weight_slip') {
+                    selectlimit = 6 - state.selectedItem?.weighing_slip_img.length
+                }
+                let libaryImageRes = await LaunchImageLibary(true, selectlimit);
+                if (__DEV__) {
+                    console.log('LibaryImage', libaryImageRes)
+                }
+                if (libaryImageRes.assets && libaryImageRes.assets.length > 0) {
+                    if (state.imagetype && state.imagetype == 'weight_slip') {
+                        let temparr = materialWeightList.map(obj => {
+                            if (obj.item_id == state.selectedItem.item_id) {
+                                return { ...obj, weighing_slip_img: [...obj.weighing_slip_img, ...libaryImageRes.assets], weighing_slip_imgErr: '' };
+                            }
+                            return obj;
+                        })
+                        setmaterialWeightList(temparr);
+                    }
+                }
+                onHideImgoptnModal();
+            } else if (value == 2) {
+                let cameraImageRes = await LaunchCamera(true);
+                if (__DEV__) {
+                    console.log('CameraImage', cameraImageRes)
+                }
+                if (cameraImageRes.assets && cameraImageRes.assets.length > 0) {
+                    if (state.imagetype && state.imagetype == 'weight_slip') {
+                        let temparr = materialWeightList.map(obj => {
+                            if (obj.item_id == state.selectedItem.item_id) {
+                                return { ...obj, weighing_slip_img: [...obj.weighing_slip_img, ...cameraImageRes.assets], weighing_slip_imgErr: '' };
+                            }
+                            return obj;
+                        })
+                        setmaterialWeightList(temparr);
+                    }
+                }
+                onHideImgoptnModal();
+            } else {
+                onHideImgoptnModal();
+            }
+        } catch (error) {
+            if (__DEV__) {
+                console.log(error)
+            }
+            onHideImgoptnModal();
+            ToastError();
+        }
     })
 
-    const onDelete = useCallback(async () => {
+    const onDeleteWeightSlipImg = useCallback(async (item, img) => {
+        if (item && img) {
+            let temparr = materialWeightList.map(obj => {
+                if (obj.item_id == item.item_id) {
+                    let filterobj = obj.weighing_slip_img.filter(ob => ob != img);
+                    return { ...obj, weighing_slip_img: filterobj };
+                }
+                return obj;
+            })
+            setmaterialWeightList(temparr);
+        }
+    }, [materialWeightList])
+
+    const onMaterialApprove = useCallback(async () => {
         try {
             setState(prev => ({
                 ...prev,
                 loadingNew: true
             }))
             let datas = {
-                enq_id: state.data?.enq_id
+                sub_enq_no: state.data?.sub_enquiry_no
             }
-            let res = await Apis.plant_delete_request(datas);
+            let res = await Apis.material_weighted_approved(datas);
             if (__DEV__) {
-                console.log('DeleteRequest', JSON.stringify(res))
+                console.log('WeightApprove', JSON.stringify(res));
             }
             if (res.success) {
-                navigation.goBack();
+                state.data['is_plant_ecoex_confirm'] = '1'
+                state.data['material_weighing_edit_plant'] = '0'
+                state.data['enquiry_sub_status_id'] = '6.6'
+                state.data['enquiry_sub_status'] = getSubStatus('6.6')
             }
             setState(prev => ({
                 ...prev,
@@ -186,248 +291,194 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
             }))
             ToastError();
         }
-    })
+    });
 
-    const Buttons = ({ name }) => (
-        <View style={styles.btmContainer}>
-            <View style={{ width: '18%', alignItems: 'center', paddingVertical: '6%' }}>
-                <Image source={ImagePath.cloud_upload} style={styles.btmIcon} />
-            </View>
-            <Text style={[CommonStyle.normalText, { width: '57%', fontSize: 13, textAlign: 'center' }]}>  {name}  </Text>
-            <TouchableOpacity style={[styles.btnRightIcon, { width: '25%', paddingVertical: '6%' }]}>
-                <Image source={ImagePath.eye_on} style={styles.btmIcon} />
-            </TouchableOpacity>
-        </View>
-    )
-
-    const onShowImage = useCallback(async (item) => {
-        if (item.length > 0) {
-            let updateArrray = item.map(obj => {
-                return { uri: obj?.link }
-            })
-            // console.log('img', JSON.stringify(updateArrray))
-            setState(prev => ({
-                ...prev,
-                sliderImage: updateArrray
-            }))
-        }
-    })
-
-    const onShowGpsImage = useCallback(async (img) => {
-        if (img) {
-            let imgs = [{ uri: img }]
-            setState(prev => ({
-                ...prev,
-                sliderImage: imgs
-            }))
-        }
-    })
-
-    const onCloseSlider = useCallback(async () => {
+    const onMaterialModify = useCallback(() => {
         setState(prev => ({
             ...prev,
-            sliderImage: null
+            materialIsEditable: true
         }))
-    }, [state.sliderImage])
+    }, [state.materialIsEditable]);
 
-    const onResubmit = useCallback(async () => {
-        try {
-            setState(prev => ({
-                ...prev,
-                loadingNew: true
-            }))
-            let datas = {
-                enq_ids: [state.data?.enq_id]
+    const onMaterialModifyCancle = useCallback(() => {
+        setState(prev => ({
+            ...prev,
+            materialIsEditable: false
+        }))
+        setmaterialWeightList(state.materialWeightOrginialList);
+    }, [materialWeightList, state.materialIsEditable])
+
+    const onMaterialUpdate = useCallback(async () => {
+        let findWeightEmptyIndex = materialWeightList.findIndex(obj => (obj.actual_weight.trim() == ''));
+        let findWeightValidindex = materialWeightList.findIndex(obj => (isNaN(Number(obj?.actual_weight)) || Number(obj?.actual_weight) <= 0));
+        if (findWeightEmptyIndex != -1) {
+            let temparr = materialWeightList.map(obj => {
+                if (obj.actual_weight.trim() == '') {
+                    return { ...obj, actual_weightErr: 'Enter Material Weight' };
+                }
+                return obj;
+            })
+            setmaterialWeightList(temparr);
+            ToastMessage('Enter Material Weight');
+            return;
+        } else if (findWeightValidindex != -1) {
+            let temparr = materialWeightList.map(obj => {
+                if (isNaN(Number(obj?.actual_weight)) || Number(obj?.actual_weight) <= 0) {
+                    return { ...obj, actual_weightErr: 'Enter Valid Weight' };
+                }
+                return obj;
+            })
+            setmaterialWeightList(temparr);
+            ToastMessage('Enter Valid Weight');
+            return;
+        } else {
+            try {
+                setState(prev => ({
+                    ...prev,
+                    loadingNew: true
+                }));
+                let temparr = materialWeightList.map(obj => {
+                    return {
+                        item_id: obj?.item_id,
+                        actual_weight: obj?.actual_weight,
+                        weighing_slip_img: obj?.weighing_slip_img
+                    }
+                })
+                let datas = {
+                    sub_enq_no: state.data?.sub_enquiry_no,
+                    materials: temparr
+                }
+                // console.log('materialWeightUpdate', JSON.stringify(datas));
+                let res = await Apis.material_weighted_update(datas);
+                if (__DEV__) {
+                    console.log('MaterialWeightUpdate', JSON.stringify(res));
+                }
+                if (res.success) {
+                    state.data['material_weighing_edit_plant'] = '0'
+                    setState(prev => ({
+                        ...prev,
+                        materialIsEditable: false
+                    }))
+                }
+                setState(prev => ({
+                    ...prev,
+                    loadingNew: false
+                }));
+                ToastMessage(res?.message);
+            } catch (error) {
+                if (__DEV__) {
+                    console.log(error)
+                }
+                setState(prev => ({
+                    ...prev,
+                    loadingNew: false
+                }))
+                ToastError();
             }
-            let res = await Apis.reject_resubmit(datas)
-            if (__DEV__) {
-                console.log('RejectResubmit', JSON.stringify(res))
-            }
-            if (res.success) {
-                state.data.current_step_no = '0'
-                state.data.current_step_name = 'Request Submitted';
-            }
-            setState(prev => ({
-                ...prev,
-                loadingNew: false
-            }))
-            ToastMessage(res?.message);
-        } catch (error) {
-            if (__DEV__) {
-                console.log(error)
-            }
-            setState(prev => ({
-                ...prev,
-                loadingNew: false
-            }))
-            ToastError();
         }
-    })
+    });
+
+    const SmallButton = ({ name, onPress }) => (
+        <TouchableOpacity style={styles.smallBtnContainer} onPress={onPress} activeOpacity={0.5} disabled={!onPress}>
+            <Text style={[CommonStyle.boldtext, { color: Colors.white }]}>{name}</Text>
+        </TouchableOpacity>
+    )
 
     return (
         <SafeAreaView style={CommonStyle.container}>
             <Header
-                name={'In Processes Request Details'}
+                name={'Request Details'}
                 leftIcon={ImagePath.back}
                 leftOnPress={onHeaderPress}
             />
-            {(state.loading) ? <Loader /> :
-                <ScrollView refreshControl={<RefreshControl onRefresh={onGetData} refreshing={false} />} showsVerticalScrollIndicator={false}>
+            {(state.loading) ? <Loader loading={state.loading} /> :
+                <ScrollView showsVerticalScrollIndicator={false} refreshControl={<RefreshControl refreshing={false} onRefresh={onGetData} />}>
                     {(state.data) && (
-                        <View style={styles.bodyContent}>
-                            <View style={[styles.flex, { paddingHorizontal: '4%' }]}>
-                                <Text style={CommonStyle.normalText}>STATUS ({state.data?.current_step_no}/{state.data?.total_step}) : </Text>
-                                <Text style={[styles.statusText, state.data?.current_step_no == "13" && { backgroundColor: 'red' }, state.data?.current_step_no == "12" && { backgroundColor: 'green' }]}>{(state.data?.current_step_name).toUpperCase()}</Text>
+                        <View style={styles.bodyContainer}>
+                            <View style={styles.statusContainer}>
+                                <Text style={styles.statusText}>STATUS :</Text>
+                                <Text style={[styles.statusTextHighlight, { backgroundColor: 'green' }]}>{state.data?.enquiry_sub_status}</Text>
                             </View>
-
-                            <View style={styles.midContent}>
-                                <View>
-                                    <View style={[styles.flex, { marginBottom: '4%' }]}>
-                                        <Image source={ImagePath.req_id} style={styles.icon} />
-                                        <Text style={CommonStyle.boldblacktext}>  Enquiry No. :  {state.data?.enquiry_no}</Text>
-                                    </View>
-                                    <View style={styles.flex}>
-                                        <Image source={ImagePath.location} style={styles.icon} />
-                                        <Text style={CommonStyle.boldblacktext}>  Location : {state.data?.plant_location} </Text>
-                                        <Popover
-                                            from={(
-                                                < TouchableOpacity activeOpacity={0.5}>
-                                                    <Image source={ImagePath.info} style={styles.info} />
-                                                </TouchableOpacity>
-                                            )}
-                                        >
-                                            <View style={{ width: screenWidth * 0.4, padding: 10 }}>
-                                                <Text style={CommonStyle.normalText}>{state.data?.plant_fulladress}</Text>
-                                            </View>
-                                        </Popover>
-                                    </View>
+                            <HeaderContent data={state.data} />
+                            <TouchableOpacity onPress={onItemListShowHide} activeOpacity={0.5} style={styles.itemHeader}>
+                                <Text style={[CommonStyle.boldblacktext, { color: Colors.white }]}>Total Item(s) : {state.itemList.length}</Text>
+                                <Image source={state.show ? ImagePath.arrow_up : ImagePath.arrow_down} style={styles.arrow} />
+                            </TouchableOpacity>
+                            {(state.show && state.itemList.length > 0) && (
+                                <View style={{ flex: 1, paddingHorizontal: '1%' }}>
+                                    {(state.itemList).map((item, key) => (
+                                        <List
+                                            key={key}
+                                            item={item}
+                                            data={state.data}
+                                            status={state.status}
+                                            onShowImage={onShowImage}
+                                        />
+                                    ))}
                                 </View>
+                            )}
+                            {(state.data?.vehicles && state.data?.vehicles.length > 0) && (
+                                <VehicleDetails vehicleData={state.data?.vehicles} onShowImage={onShowImage} />
+                            )}
+                            {(materialWeightList.length > 0 && state.data?.material_weighing_edit_plant == '1') && (
+                                <>
+                                    <TouchableOpacity onPress={onMaterialShowHide} activeOpacity={0.5} style={styles.itemHeader}>
+                                        <Text style={[CommonStyle.boldblacktext, { color: Colors.white }]}>Material Weighted</Text>
+                                        <Image source={state.materialShow ? ImagePath.arrow_up : ImagePath.arrow_down} style={styles.arrow} />
+                                    </TouchableOpacity>
+                                    {(state.materialShow) && (
+                                        <View style={{ paddingVertical: '2%', paddingHorizontal: '2%' }}>
 
-                                <View style={[styles.flexNew, { marginTop: '4%' }]}>
-                                    <View style={styles.flex}>
-                                        <Image source={ImagePath.date} style={styles.icon} />
-                                        <Text style={CommonStyle.boldblacktext}>  Submitted : {dateConvert(state.data?.booking_date)}</Text>
-                                    </View>
-                                    {/* <View style={styles.flex}>
-                                        <Image source={ImagePath.factory} style={styles.icon} />
-                                        <Text style={CommonStyle.boldblacktext}>  {state.data?.plant_id} </Text>
-                                    </View> */}
-                                </View>
-
-                                <View style={[styles.flexNew, { marginTop: '4%' }]}>
-                                    <View style={styles.flex}>
-                                        <Image source={ImagePath.car} style={styles.icon} />
-                                        <Text style={CommonStyle.boldblacktext}>  Tentative Collection : {dateConvert(state.data?.collection_date)}</Text>
-                                    </View>
-                                </View>
-                                {(state.productList.length > 0) && (
-                                    <>
-                                        <Text style={[CommonStyle.boldblacktext, { marginTop: '4%', fontSize: 16 }]}>Product List</Text>
-                                        <View style={{ marginTop: '2%' }}>
-                                            {state.productList.map((item, index) => (
-                                                <View key={index} style={styles.listContainer}>
-                                                    <View style={styles.listContent}>
-                                                        <View style={styles.slContent}>
-                                                            <Text style={styles.listText}>{index + 1}</Text>
-                                                        </View>
-                                                        <View style={styles.productContent}>
-                                                            <Text numberOfLines={2} style={CommonStyle.boldblacktext}>{item?.product_name}</Text>
-                                                        </View>
-                                                        <View style={styles.weightContent}>
-                                                            <Text style={styles.listText}>{item?.qty} {GetUnitfromList(unitList, item?.unit)}</Text>
-                                                        </View>
-                                                    </View>
-                                                    {(item?.hsn) && (
-                                                        <Text style={styles.hsntext}>HSN : {item?.hsn}</Text>
-                                                    )}
-                                                    <TouchableOpacity onPress={() => onShowImage(item?.product_image)} activeOpacity={0.5} style={styles.imgBtn}>
-                                                        <Text style={styles.imgBtnText}>Show Images</Text>
-                                                    </TouchableOpacity>
-                                                    {(item?.remarks) && (
-                                                        <Text style={[styles.hsntext, { marginTop: 2, textAlign: 'center', marginLeft: 0 }]}><Text style={{ fontFamily: Font_Family.NunitoSans_Bold }}>Remarks :</Text> {item?.remarks}</Text>
-                                                    )}
+                                            {(materialWeightList).map((item, key) => (
+                                                <View key={key} style={{ marginTop: '0%', paddingHorizontal: '0%' }}>
+                                                    <MaterialWeightList
+                                                        item={item}
+                                                        onChangematerialWeight={onChangematerialWeight}
+                                                        onShowModal={onShowImgoptnModal}
+                                                        onDeleteImage={onDeleteWeightSlipImg}
+                                                        onShowImage={onShowGpsImage}
+                                                        editable={state.materialIsEditable}
+                                                    />
                                                 </View>
                                             ))}
-                                        </View>
-                                    </>
-                                )}
-                                {(state.data?.gps_image) && (
-                                    <TouchableOpacity onPress={() => onShowGpsImage(state.data?.gps_image)} activeOpacity={0.5} style={styles.imgBtn}>
-                                        <Text style={styles.imgBtnText}>Show Gps Image</Text>
-                                    </TouchableOpacity>
-                                )}
-                                {(state.data?.enquiry_remarks) && (
-                                    <Text style={[styles.hsntext, { marginVertical: 4, textAlign: 'center', marginLeft: 0, fontSize: 14 }]}><Text style={{ fontFamily: Font_Family.NunitoSans_Bold }}>Enquiry Remarks :</Text> {state.data?.enquiry_remarks}</Text>
-                                )}
-                                {(state.data?.weighing_slip || state.data?.vehicle_image) && (
-                                    <>
-                                        <Text style={[CommonStyle.boldblacktext, { textAlign: 'center', marginVertical: '2%' }]}>Uploaded by Vendor</Text>
-                                        <View style={styles.imgContainer}>
-                                            {(state.data?.weighing_slip) && (
-                                                <TouchableOpacity onPress={() => onImageView(state.data?.weighing_slip)} activeOpacity={0.5} style={styles.imgContent}>
-                                                    <Text style={[CommonStyle.boldblacktext, { fontSize: 12 }]}>Weighing slip</Text>
-                                                    <Image source={{ uri: state.data?.weighing_slip }} style={styles.slipImage} />
-                                                </TouchableOpacity>
-                                            )}
-                                            {(state.data?.vehicle_image) && (
-                                                <TouchableOpacity onPress={() => onImageView(state.data?.vehicle_image)} activeOpacity={0.5} style={styles.imgContent}>
-                                                    <Text style={[CommonStyle.boldblacktext, { fontSize: 12 }]}>Vehicle</Text>
-                                                    <Image source={{ uri: state.data?.vehicle_image }} style={styles.slipImage} />
-                                                </TouchableOpacity>
+                                            {(state.data?.is_plant_ecoex_confirm == '0' && state.data?.material_weighing_edit_plant == '1') && (
+                                                <>
+                                                    {(state.materialIsEditable) ?
+                                                        <View style={styles.flex}>
+                                                            <SmallButton onPress={onMaterialModifyCancle} name={'Cancel'} />
+                                                            <SmallButton onPress={onMaterialUpdate} name={'Update'} />
+                                                        </View>
+                                                        :
+                                                        <View style={styles.flex}>
+                                                            <SmallButton onPress={onMaterialApprove} name={'Approve'} />
+                                                            <SmallButton onPress={onMaterialModify} name={'Modify'} />
+                                                        </View>
+                                                    }
+                                                </>
                                             )}
                                         </View>
-                                    </>
-                                )}
-                                {/* <View style={{ flexDirection: 'row', marginTop: '8%', width: '100%', alignSelf: 'center', justifyContent: 'space-between' }}>
-                                    <Buttons name={'Weighing slip'} />
-                                    <Buttons name={'Vehicle'} />
-                                </View> */}
-                                {/* // <View style={[styles.flexNew, { alignSelf: 'center' }]}> */}
-                            </View>
-                            {(state.data?.current_step_no == '0' && userProfile.is_contract_expire == 1) && (
-                                <View style={[styles.flexNew, { width: '65%', alignSelf: 'center' }]}>
-                                    <TouchableOpacity onPress={onDeleteAlert} style={styles.aprvBtn}>
-                                        <Text style={CommonStyle.boldblacktext}>Delete</Text>
-                                    </TouchableOpacity>
-                                    <TouchableOpacity onPress={onEdit} style={styles.aprvBtn}>
-                                        <Text style={CommonStyle.boldblacktext}>Edit</Text>
-                                    </TouchableOpacity>
-                                </View>
+                                    )}
+                                </>
                             )}
-                            {(state.data?.current_step_no == '13') && (
-                                <TouchableOpacity onPress={onResubmit} style={[styles.aprvBtn, { paddingVertical: '3%', alignSelf: 'center' }]}>
-                                    <Text style={CommonStyle.boldblacktext}>ReSubmit</Text>
-                                </TouchableOpacity>
-                            )}
-                            {/* {(state.data?.current_step_no == '0') && (
-                                <Button
-                                    name={'ReSubmit'}
-                                    width={'60%'}
-                                    loading={state.btnLoading}
-                                    onPress={onResubmit}
-                                />
-                            )} */}
                         </View>
                     )}
                 </ScrollView>
             }
-            {(state.imageViewUri) && (
-                <ImageView
-                    imageUri={state.imageViewUri}
-                    onClose={onImageView}
-                // imageUri={}
-                />
-            )}
             {(state.sliderImage) && (
                 <ImageViewSlider
                     images={state.sliderImage}
                     onClose={onCloseSlider}
                 />
             )}
+            <ImageOptions
+                modalVisible={state.imageOptionModal}
+                onHideModal={onHideImgoptnModal}
+                onSortItemSelect={onSelectImageOption}
+            />
             {(state.loadingNew) && (
                 <LoaderTransparent loading={state.loadingNew} />
             )}
-        </SafeAreaView >
+        </SafeAreaView>
     )
 }
 

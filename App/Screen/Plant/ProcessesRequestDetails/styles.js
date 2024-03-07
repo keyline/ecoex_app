@@ -1,152 +1,52 @@
-import { Dimensions, StyleSheet } from "react-native";
-import { Colors } from "../../../Utils/Colors";
+import { StyleSheet } from "react-native";
 import { Font_Family } from "../../../Utils/Fonts";
-const screenHeight = Dimensions.get('window').height;
-const screenWidth = Dimensions.get('window').width;
+import { Colors } from "../../../Utils/Colors";
 
 export const styles = StyleSheet.create({
-    bodyContent: {
-        flex: 1,
-        // paddingHorizontal: '2%',
-        paddingVertical: '2%'
+    bodyContainer: {
+        marginHorizontal: '2%',
+        marginVertical: '2%',
+        marginBottom:'4%',
+        flex: 1
     },
-    flex: {
+    statusContainer: {
         flexDirection: 'row',
         alignItems: 'center'
     },
     statusText: {
-        backgroundColor: Colors.light_blue,
-        fontFamily: Font_Family.NunitoSans_Regular,
-        color: Colors.white,
-        paddingHorizontal: 4,
-        paddingVertical: 1,
-        borderRadius: 2
-        // ...Common
-    },
-    midContent: {
-        flex: 1,
-        backgroundColor: '#EFEDED',
-        paddingHorizontal: '4%',
-        paddingVertical: '4%',
-        marginVertical: '2%'
-    },
-    flexNew: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between'
-    },
-    icon: {
-        width: 20,
-        height: 20,
-        resizeMode: 'contain'
-    },
-    info: {
-        width: 15,
-        height: 15,
-        resizeMode: 'contain'
-    },
-    listContainer: {
-        marginBottom: '4%',
-        // backgroundColor:'red'
-    },
-    listContent: {
-        borderRadius: 5,
-        backgroundColor: Colors.light_grey,
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        overflow: 'hidden',
-        // borderWidth:1,
-        height: screenHeight * 0.06
-    },
-    slContent: {
-        backgroundColor: Colors.theme_color,
-        width: '12%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        // paddingVertical: '2%',
-        height: screenHeight * 0.06,
-        borderTopLeftRadius: 5,
-        borderBottomLeftRadius: 5
-    },
-    productContent: {
-        // paddingVertical: '2%',
-        width: '64%',
-        height: screenHeight * 0.06,
-        paddingLeft: 10,
-        // alignItems: 'center',
-        justifyContent: 'center'
-    },
-    weightContent: {
-        backgroundColor: Colors.purple,
-        width: '24%',
-        alignItems: 'center',
-        justifyContent: 'center',
-        // paddingVertical: '2%',
-        height: screenHeight * 0.06,
-        borderTopRightRadius: 5,
-        borderBottomRightRadius: 5
-
-    },
-    listText: {
         fontFamily: Font_Family.NunitoSans_Bold,
+        color: Colors.black
+    },
+    statusTextHighlight: {
+        fontFamily: Font_Family.NunitoSans_Bold,
+        backgroundColor: Colors.blue,
         color: Colors.white,
-        fontSize: 12
+        borderRadius: 5,
+        paddingHorizontal: '1.5%',
+        paddingVertical: '0.5%',
+        marginLeft: '1%'
     },
-    hsntext: {
-        fontFamily: Font_Family.NunitoSans_Regular,
-        fontSize: 12,
-        color: Colors.black,
-        marginLeft: '15%'
-    },
-    imgContainer: {
+    itemHeader: {
+        backgroundColor: Colors.theme_light,
         flexDirection: 'row',
         alignItems: 'center',
         justifyContent: 'space-between',
-        paddingHorizontal: '4%',
-    },
-    imgContent: {
-        backgroundColor: Colors.white,
-        alignItems: 'center',
-        width: '40%',
-        paddingVertical: '1%',
-        borderRadius: 5,
+        marginTop: 10,
+        paddingVertical: '2%',
         paddingHorizontal: '2%',
-        paddingBottom: '4%'
-    },
-    slipImage: {
-        width: '90%',
-        height: 80,
-        marginTop: 10
-    },
-    btmContainer: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        borderWidth: 0.6,
-        backgroundColor: Colors.light_grey,
-        // paddingHorizontal: '4%',
-        // paddingVertical: '2%',
-        borderRadius: 5,
-        width: '48%',
-        overflow: 'hidden'
-    },
-    btmIcon: {
-        width: 22,
-        height: 22,
-        resizeMode: 'contain'
-    },
-    btnRightIcon: {
-        backgroundColor: Colors.white,
-        alignItems: 'center',
         borderRadius: 5
     },
-    aprvBtn: {
-        width: '45%',
+    arrow: {
+        width: 20,
+        height: 20,
+        tintColor: Colors.white
+    },
+    listContainer: {
         backgroundColor: Colors.light_grey,
-        alignItems: 'center',
-        paddingVertical: '4%',
-        marginVertical: '6%',
+        overflow: 'hidden',
+        paddingHorizontal: '3%',
+        paddingVertical: '3%',
+        marginTop: '2%',
         borderRadius: 5
     },
     imgBtn: {
@@ -155,10 +55,100 @@ export const styles = StyleSheet.create({
         paddingHorizontal: '2%',
         paddingVertical: '1%',
         borderRadius: 5,
-        marginVertical: '1%'
+        marginBottom: '1%',
+        marginTop: '2%'
     },
     imgBtnText: {
         color: Colors.white,
         fontFamily: Font_Family.NunitoSans_Regular
+    },
+    vehiclelist: {
+        backgroundColor: Colors.light_grey,
+        paddingHorizontal: '4%',
+        paddingVertical: '3%',
+        marginBottom: '2%',
+        borderRadius: 5
+    },
+    flex: {
+        flexDirection: 'row',
+        alignItems: 'center',
+        justifyContent: 'space-between'
+    },
+    veListInput: {
+        backgroundColor: Colors.white,
+        color: Colors.black,
+        width: '60%',
+        height: 40,
+        borderRadius: 5,
+        paddingHorizontal: '4%'
+        // marginBottom:-1
+        // height:'6%'
+    },
+    uploadimg: {
+        width: 35,
+        height: 35
+    },
+    listimg: {
+        width: 40,
+        height: 40
+    },
+    veimgContainer: {
+        width: '60%',
+        flexDirection: 'row',
+        flexWrap: 'wrap',
+        alignItems: 'center'
+    },
+    addmoreBtn: {
+        backgroundColor: Colors.theme_light,
+        alignSelf: 'flex-end',
+        paddingHorizontal: '4%',
+        paddingVertical: '1.5%',
+        borderRadius: 20,
+        marginTop: '1%'
+    },
+    closeContainer: {
+        position: 'absolute',
+        right: 8,
+        top: 8,
+        padding: 5,
+        // backgroundColor:Colors.red
+    },
+    closeicon: {
+        width: 20,
+        height: 20,
+        // tintColor:'red'
+    },
+    imgCloseContainer: {
+        position: 'absolute',
+        right: -8,
+        top: -3,
+        zIndex: 99
+
+    },
+    imgCountContent: {
+        // position:'absolute',
+        // top:'50%'
+        ...StyleSheet.absoluteFillObject,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    infoContainer: {
+        // backgroundColor:'red',
+        flexDirection: 'row',
+        alignItems: 'center',
+        alignSelf: 'flex-end'
+    },
+    info: {
+        width: 12,
+        height: 12,
+        resizeMode: 'contain'
+    },
+    smallBtnContainer: {
+        backgroundColor: Colors.theme_color,
+        width: '40%',
+        paddingVertical: '2%',
+        justifyContent: 'center',
+        alignItems: 'center',
+        borderRadius: 5
     }
 })

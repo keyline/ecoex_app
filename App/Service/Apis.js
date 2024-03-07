@@ -102,8 +102,16 @@ export default class Apis {
         return Network('post', 'process-request-add', data)
     }
 
+    static pending_request_list = (data) => {
+        return Network('post', 'pending-accepted-request-list', data)
+    }
+
     static process_request_list = (data) => {
-        return Network('post', 'process-request-list', data)
+        return Network('post', 'plant-process-enquiry-list', data)
+    }
+
+    static processes_request_detais = (data) => {
+        return Network('post', 'plant-process-enquiry-details', data)
     }
 
     static plant_delete_request = (data) => {
@@ -133,4 +141,13 @@ export default class Apis {
     static reject_resubmit = (data) => {
         return Network('post', 'convert-rejected-to-pending', data)
     }
+
+    static material_weighted_approved = (data) => {
+        return Network('post', 'plant-process-request-material-weighted-approved', data)
+    }
+
+    static material_weighted_update = (data) => {
+        return Network('post', 'plant-process-request-material-weighted', data)
+    }
+
 }
