@@ -208,12 +208,18 @@ export const getSubStatus = (status) => {
             return 'Vehicle Placed';
         case '6.6':
             return 'Material Weighed';
+        case '7.7':
+            return 'Invoice from Ho';
         case '8.8':
             return 'Invoice to Vendor';
         case '9.9':
             return 'Payment received';
         case '10.10':
             return 'Vehicle Dispatched';
+        case '11.11':
+            return 'Payment to HO';
+        case '12.12':
+            return 'Order Completed';
         default:
             return '';
     }

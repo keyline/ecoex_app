@@ -530,6 +530,8 @@ const AddRequest = ({ navigation }) => {
         } else if (!state.gps_img) {
             ToastMessage('Upload GPS Track Image');
             return;
+        } else if (!state.latitude && !state.longitude) {
+            await onGetLocation();
         } else {
             // console.log('reqlist', JSON.stringify(reqList))
             // return
@@ -572,7 +574,7 @@ const AddRequest = ({ navigation }) => {
     })
 
     const onFinish = useCallback(async () => {
-        navigation.navigate('ProcessRequest');
+        navigation.navigate('PendingRequest');
         setState(prev => ({
             ...prev,
             successModalVisible: false

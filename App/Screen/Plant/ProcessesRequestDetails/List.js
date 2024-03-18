@@ -16,7 +16,7 @@ const List = ({ item, data, status, onShowImage }) => {
     const materials = item?.materials
 
     return (
-        <View style={styles.listContainer}>
+        <View style={[styles.listContainer,{marginTop:'0%',marginBottom:'2%'}]}>
             <NameValue name={'Item Name'} value={item?.item_name} bold={true} />
             <NameValue name={'HSN'} value={item?.item_hsn} />
             {/* <NameValue name={'Qty (Weighted)'} value={item?.item_qty + ' ' + item?.item_unit} /> */}

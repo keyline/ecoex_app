@@ -57,6 +57,10 @@ const List = ({ item, index, headingColor, backgroundColor, onViewDetails, viewa
                             <Text style={CommonStyle.normalText}>Status :</Text>
                             <Text style={CommonStyle.boldblacktext}>{item?.enquiry_sub_status}</Text>
                         </View>
+                        <View style={styles.listtileContent}>
+                                <Text style={CommonStyle.normalText}>Vendor :</Text>
+                                <Text style={[styles.labelText,{width:'60%',textAlign:'right'}]}> {item?.vendor_name}</Text>
+                            </View>
                         {(item?.assigned_date) && (
                             <View style={styles.listtileContent}>
                                 <Text style={CommonStyle.normalText}>Assigned :</Text>
@@ -87,12 +91,12 @@ const List = ({ item, index, headingColor, backgroundColor, onViewDetails, viewa
                                 <Text style={styles.labelText}> {item.invoice_to_vendor_date ? item?.invoice_to_vendor_date : '---'}</Text>
                             </View>
                         )}
-                        {(item?.vendor_payment_received_date) && (
+                        {/* {(item?.vendor_payment_received_date) && (
                             <View style={styles.listtileContent}>
                                 <Text style={CommonStyle.normalText}>{getSubStatus('9.9')} :</Text>
                                 <Text style={styles.labelText}> {item.vendor_payment_received_date ? item?.vendor_payment_received_date : '---'}</Text>
                             </View>
-                        )}
+                        )} */}
                         {(item?.vehicle_dispatched_date) && (
                             <View style={styles.listtileContent}>
                                 <Text style={CommonStyle.normalText}>{getSubStatus('10.10')} :</Text>

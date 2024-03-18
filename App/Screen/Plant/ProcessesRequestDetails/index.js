@@ -16,6 +16,7 @@ import MaterialWeightList from './MaterialWeightList'
 import ImageOptions from '../../../Container/ImageOptions'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
 import VehicleDetails from './VehicleDetails'
+import ItemList from './ItemList'
 
 const ProcessesRequestDetails = ({ navigation, route }) => {
 
@@ -400,7 +401,19 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                                 <Text style={[styles.statusTextHighlight, { backgroundColor: 'green' }]}>{state.data?.enquiry_sub_status}</Text>
                             </View>
                             <HeaderContent data={state.data} />
-                            <TouchableOpacity onPress={onItemListShowHide} activeOpacity={0.5} style={styles.itemHeader}>
+                            {(state.itemList.length > 0) && (
+                                <ItemList
+                                    data={state.itemList}
+                                    status={state.status}
+                                    onShowImage={onShowImage}
+                                />
+                            )}
+                            {(state.data?.gps_image) && (
+                                <TouchableOpacity onPress={() => onShowGpsImage(state.data?.gps_image)} activeOpacity={0.5} style={[styles.imgBtn, { marginTo: '2%', paddingHorizontal: '4.5%' }]}>
+                                    <Text style={styles.imgBtnText}>View GPS Image</Text>
+                                </TouchableOpacity>
+                            )}
+                            {/* <TouchableOpacity onPress={onItemListShowHide} activeOpacity={0.5} style={styles.itemHeader}>
                                 <Text style={[CommonStyle.boldblacktext, { color: Colors.white }]}>Total Item(s) : {state.itemList.length}</Text>
                                 <Image source={state.show ? ImagePath.arrow_up : ImagePath.arrow_down} style={styles.arrow} />
                             </TouchableOpacity>
@@ -416,11 +429,11 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                                         />
                                     ))}
                                 </View>
-                            )}
+                            )} */}
                             {(state.data?.vehicles && state.data?.vehicles.length > 0) && (
                                 <VehicleDetails vehicleData={state.data?.vehicles} onShowImage={onShowImage} />
                             )}
-                            {(materialWeightList.length > 0 && state.data?.material_weighing_edit_plant == '1') && (
+                            {(materialWeightList.length > 0 && state.data?.material_weighing_edit_plant == '1' && state.data?.is_plant_ecoex_confirm == '0') && (
                                 <>
                                     <TouchableOpacity onPress={onMaterialShowHide} activeOpacity={0.5} style={styles.itemHeader}>
                                         <Text style={[CommonStyle.boldblacktext, { color: Colors.white }]}>Material Weighted</Text>
@@ -441,21 +454,21 @@ const ProcessesRequestDetails = ({ navigation, route }) => {
                                                     />
                                                 </View>
                                             ))}
-                                            {(state.data?.is_plant_ecoex_confirm == '0' && state.data?.material_weighing_edit_plant == '1') && (
-                                                <>
-                                                    {(state.materialIsEditable) ?
-                                                        <View style={styles.flex}>
-                                                            <SmallButton onPress={onMaterialModifyCancle} name={'Cancel'} />
-                                                            <SmallButton onPress={onMaterialUpdate} name={'Update'} />
-                                                        </View>
-                                                        :
-                                                        <View style={styles.flex}>
-                                                            <SmallButton onPress={onMaterialApprove} name={'Approve'} />
-                                                            <SmallButton onPress={onMaterialModify} name={'Modify'} />
-                                                        </View>
-                                                    }
-                                                </>
-                                            )}
+                                            {/* {(state.data?.is_plant_ecoex_confirm == '0' && state.data?.material_weighing_edit_plant == '1') && (
+                                                <> */}
+                                            {(state.materialIsEditable) ?
+                                                <View style={styles.flex}>
+                                                    <SmallButton onPress={onMaterialModifyCancle} name={'Cancel'} />
+                                                    <SmallButton onPress={onMaterialUpdate} name={'Update'} />
+                                                </View>
+                                                :
+                                                <View style={styles.flex}>
+                                                    <SmallButton onPress={onMaterialApprove} name={'Approve'} />
+                                                    <SmallButton onPress={onMaterialModify} name={'Modify'} />
+                                                </View>
+                                            }
+                                            {/* </>
+                                            )} */}
                                         </View>
                                     )}
                                 </>

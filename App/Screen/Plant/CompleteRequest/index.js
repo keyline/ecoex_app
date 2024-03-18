@@ -13,6 +13,7 @@ import { useFocusEffect } from '@react-navigation/native'
 import LoaderTransparent from '../../../Container/LoaderTransparent'
 import EmptyContent from '../../../Container/EmptyContent'
 import { useSharedValue } from 'react-native-reanimated'
+import List from './List'
 
 const list = [
     { enquiry_no: 'RD001', created_at: '14/11/2023 - 05.25 PM', updated_at: '14/11/2023 - 10.25 PM', status: 'Processing' },
@@ -59,20 +60,27 @@ const CompleteRequest = ({ navigation }) => {
                 loadingNew: true
             }))
             onResetSearch();
+            // let datas = {
+            //     order_field: field,
+            //     order_type: type,
+            //     page_no: pages
+            // }
+            // let response = await Apis.complete_request_list(datas);
             let datas = {
                 order_field: field,
                 order_type: type,
-                page_no: pages
-            }
-            let response = await Apis.complete_request_list(datas);
+                page_no: pages,
+                sub_status: ['12.12']
+              }
+            let response = await Apis.process_request_list(datas);
             if (__DEV__) {
-                console.log('RejectRequest', JSON.stringify(response))
+                console.log('CompleteRequest', JSON.stringify(response))
             }
             if (response.success) {
                 let resdata = response?.data
                 if (resdata.length > 0) {
                     let array = pages == 1 ? resdata : [...state.data, ...resdata]
-                    let uniqueArray = await GetUniqueArray(array, 'enq_id');
+                    let uniqueArray = await GetUniqueArray(array, 'sub_enquiry_no');
                     setState(prev => ({
                         ...prev,
                         data: uniqueArray,
@@ -203,7 +211,8 @@ const CompleteRequest = ({ navigation }) => {
 
     const onViewDetails = useCallback(async (item) => {
         // console.log('editItem', item)
-        navigation.navigate('RequestDetails', { id: item?.enq_id })
+        // navigation.navigate('RequestDetails', { id: item?.enq_id })
+        navigation.navigate('ProcessesRequestDetails', { id: item?.sub_enquiry_no })
     })
 
     const onReload = useCallback(async () => {
@@ -255,10 +264,10 @@ const CompleteRequest = ({ navigation }) => {
                     <FlatList
                         // data={state.searchtext ? list.filter(obj => { return obj.enquiry_no.toUpperCase().includes(state.searchtext.toUpperCase()) }) : list}
                         data={state.searchtext ? state.filterData : state.data}
-                        keyExtractor={(item) => item.enq_id.toString()}
+                        keyExtractor={(item) => item.sub_enquiry_no.toString()}
                         viewabilityConfigCallbackPairs={viewabilityConfigCallbackPairs.current}
                         renderItem={({ item, index }) =>
-                            <RequestList
+                            <List
                                 item={item}
                                 index={index}
                                 headingColor={Colors.theme_light}
@@ -266,7 +275,7 @@ const CompleteRequest = ({ navigation }) => {
                                 onViewDetails={onViewDetails}
                                 viewableItems={viewableItems}
                             />}
-                        style={{ marginBottom: 10 }}
+                        style={{ marginBottom: 5 }}
                         showsVerticalScrollIndicator={false}
                         onEndReached={handleLoadMore}
                         onEndReachedThreshold={0.5}

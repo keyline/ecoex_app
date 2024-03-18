@@ -37,10 +37,10 @@ const VehicleDetails = ({ vehicleData, alldata, onShowImage }) => {
                 <Image source={state.show ? ImagePath.arrow_up : ImagePath.arrow_down} style={styles.arrow} />
             </TouchableOpacity>
             {(state.data && state.data.length > 0 && state.show) && (
-                <View style={{ marginTop: '2%' }}>
+                <View style={{ marginBottom: '2%' }}>
                     {(state.data).map((item, key) => (
                         <View key={key} style={styles.vehiclelist}>
-                            <Text style={[CommonStyle.boldblacktext, { textAlign: 'center' }]}>Vehicle No. : {key + 1}</Text>
+                            <Text style={[CommonStyle.boldblacktext, { textAlign: 'center' }]}>Vehicle : {key + 1}</Text>
                             <View style={[styles.flex, { paddingBottom: '4%', paddingTop: '5%' }]}>
                                 <Text style={CommonStyle.boldblacktext}>Vehicle No. :</Text>
                                 <Text style={[CommonStyle.normalText, { width: '50%' }]}>{item?.vehicle_no}</Text>
@@ -81,4 +81,4 @@ const VehicleDetails = ({ vehicleData, alldata, onShowImage }) => {
     )
 }
 
-export default VehicleDetails
+export default memo(VehicleDetails)

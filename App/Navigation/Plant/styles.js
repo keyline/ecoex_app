@@ -9,7 +9,7 @@ export const styles = StyleSheet.create({
         // fontSize:16
         fontWeight: 'bold',
         color: Colors.black,
-        fontSize:12
+        fontSize: 12
     },
     imgContainer: {
         justifyContent: 'center',

@@ -817,6 +817,7 @@ const PlantEditProfile = ({ navigation }) => {
                             value={state.phnNo}
                             onChangeText={onChangePhnNo}
                             maxLength={10}
+                            editable={false}
                             error={state.phnNoErr}
                             keyboardType={'phone-pad'}
                             isRequired={true}

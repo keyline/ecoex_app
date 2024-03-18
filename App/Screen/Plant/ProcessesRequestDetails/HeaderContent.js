@@ -50,9 +50,10 @@ const HeaderContent = ({ data }) => {
             }
             {(data?.vehicle_placed_date) && <NameValue name={getSubStatus('5.5')} value={data?.vehicle_placed_date} fontSize={12} />}
             {(data?.material_weighted_date) && <NameValue name={getSubStatus('6.6')} value={data?.material_weighted_date} fontSize={12} />}
-            {(data?.invoice_to_vendor_date) && <NameValue name={getSubStatus('8.8')} value={data?.invoice_to_vendor_date} fontSize={12} />}
-            {(data?.vendor_payment_received_date) && <NameValue name={getSubStatus('9.9')} value={data?.vendor_payment_received_date} fontSize={12} />}
+            {/* {(data?.invoice_to_vendor_date) && <NameValue name={getSubStatus('8.8')} value={data?.invoice_to_vendor_date} fontSize={12} />} */}
             {(data?.vehicle_dispatched_date) && <NameValue name={getSubStatus('10.10')} value={data?.vehicle_dispatched_date} fontSize={12} />}
+            {(data?.ho_approve_date) && <NameValue name={getSubStatus('9.9')} value={data?.ho_approve_date} fontSize={12} />}
+            {(data?.order_complete_date) && <NameValue name={getSubStatus('12.12')} value={data?.order_complete_date} fontSize={12} />}
         </View>
     )
 }
